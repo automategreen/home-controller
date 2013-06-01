@@ -1,0 +1,20 @@
+{
+  "author": "Brandon Goode <brandon.goode@gmail.com>",
+  "name": "home-controller",
+  "description": "Home Automation Controller",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./index.js",
+  "engines": {
+    "node": ">= 0.10"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "expect.js": "*"
+  },
+  "scripts": {
+    "test": "make test"
+  }
+}
