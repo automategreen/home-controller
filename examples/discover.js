@@ -1,6 +1,6 @@
 var Insteon = require('../').Insteon;
 
-var HOST = 'home.brandongoode.com';
+var HOST = 'my.home';
 var PORT = 25105;
 var USERNAME = 'admin';
 var PASSWORD = 'password';
@@ -11,13 +11,17 @@ var gw = new Insteon(HOST, PORT, USERNAME, PASSWORD);
 var network = {};
 
 gw.info(function onInfo(err, info) {
-  if(err) return console.log('Failed to connect to gateway, ' + err);
+  if(err) {
+    return console.log('Failed to connect to gateway, ' + err);
+  }
 
   network[info.id] = info;
   console.log('Found gateway: ' + info.id + ' - ' + info.deviceCategory.name);
 
   gw.links(function onLinksFound(err, links){
-    if(err) return console.log('Failed to find any links because of an error, ' + err);
+    if(err) {
+      return console.log('Failed to find any links because of an error, ' + err);
+    }
 
     if(links && links.length > 0){
       network[info.id].links = links.slice(); // copy array
@@ -25,7 +29,9 @@ gw.info(function onInfo(err, info) {
     } else {
       console.log('No links found.  Entering linking mode for 3 minutes.\n\nHold set button on device.');
       gw.link(180, function(err, link) {
-        if(err) return console.log('Failed to link, ' + err);
+        if(err) {
+          return console.log('Failed to link, ' + err);
+        }
 
         foundLinks([link]);
       });
