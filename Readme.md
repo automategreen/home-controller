@@ -4,7 +4,7 @@ home-controller
 Introduction
 ------------
 
-home-controller is a javascript package to control Insteon home automation devices. home-controller can be used from a server-side node app or on the client-side jQuery app.  To control the Insteon devices either an [Insteon Hub](http://www.insteon.com/2242-222-insteon-hub.html) or an [Insteon SmartLinc](http://www.insteon.com/2412n-smartlinc-central-controller.html) must be accessable from the app.
+home-controller is a javascript package to control Insteon home automation devices. home-controller can be used from a server-side node app.  To control the Insteon devices either an [Insteon Hub](http://www.insteon.com/2242-222-insteon-hub.html) or an [Insteon SmartLinc](http://www.insteon.com/2412n-smartlinc-central-controller.html) must be accessable from the app.
 
 Features
 --------
@@ -18,8 +18,6 @@ Features
 Installation
 ------------
 
-### Node
-
 Install via npm.
 
 `npm install home-controller`
@@ -27,13 +25,6 @@ Install via npm.
 Add requires statement to the app to access the Insteon object
 
 	var Insteon = require('home-controller').Insteon;
-
-### Browser/jQuery
-
-Download the bundled javascript file:
-
-- [home-controller.js]()
-- [home-controller.min.js]()
 
 API
 ---
@@ -67,178 +58,6 @@ gw.auth('admin', 'password', function(error) {
 gw.auth(function(error) {
 	// Username and password cleared - auth disabled
 });
-```
-
-### Insteon Core Functions
-
-For advanced users only.  These function are leveraged by the higher level functions.
-
-#### Insteon.sendCommand(command, [timeout,] callback)
-
-Send comand to PLM function (/3) on the gateway
-
-`command` can either be the string (hex byte) for the PLM command or can be the command object with a raw property
-
-command object:
-
-```js
-{
-  raw: String,
-  type: String
-}
-```
-
-`timeout` is the number of milliseconds to wait before checking the status.  If time is omited or null, the command doesn't check the status.  timeout should be set to zero to check imidiatly
-
-#### Insteon.directCommand(id, command, [param,] [timeout,] callback)
-
-Send direct command to Insteon device.
-
-`id` is a hex string of lenght 6.
-
-`command` can either be a hex string (length 2) or an object. The string must be a standard direct command. If command is a string, then `param` can also be passed. The `param` will be defaulted to `'00'`.  If the command is an extended command, it must be passed as an object with the extended property.
-
-Standard command object:
-
-```js
-{
-  cmd1: String,
-  cmd2: String
-}
-```
-
-Extended command object:
-
-```js
-{
-  extended: true,
-  cmd1: String,
-  cmd2: String,
-  userData: Array
-}
-```
-
-#### Insteon.checkStatus(callback)
-
-Checks the status of the gateways buffer.  This is used to read response messages.  This buffer must be check after each command if a response is expected. The buffer is overwritten each time a command is sent.
-
-##### Examples
-
-```js
-var gw = Insteon('my.home.com');
-gw.checkStatus(function(error, status) {
-	// For details on the status object see below.
-});
-```
-
-##### Status Object
-
-A status object will be returned in the callback.  The status object format depends on the response type.
-
-
-Get Modem Info Response (0x60) status object:
-
-```js
-{
-  command: Object,
-  ack: Boolean,
-  response: {
-    raw: String,
-    type: String,
-    id: String,
-    deviceCategory: {
-      id: Number,
-      name: String
-    },
-    deviceSubcategory: {
-      id: Number
-    },
-    firewareVersion: String
-  }
-}
-```
-Send Message Response (0x62) status object:
-
-```js
-{
-  command: Object,
-  ack: Boolean,
-  response: {
-    raw: String,
-    type: String,
-    id: String,
-    standard: {
-      id: String,
-      gatewayId: String,
-      extended: false,
-      messageType: Number,
-      hopsLeft: Number,
-      maxHops: Number,
-      command1: String,
-      command2: String,
-      raw: String
-    },
-    extended: {
-      id: String,
-      gatewayId: String,
-      extended: true,
-      messageType: Number,
-      hopsLeft: Number,
-      maxHops: Number,
-      command1: String,
-      command2: String,
-      userData: Array(14),
-      raw: String
-    }
-  }
-}
-```
-
-All-Linking Response (0x64)
-
-```js
-{
-  command: Object,
-  ack: Boolean,
-  response: {
-    raw: String,
-    type: String,
-    isController: Boolean,
-    wasDeleted: Boolean,
-    group: Number,
-    id: String,
-    deviceCategory: {
-      id: Number,
-      name: String
-    },
-    deviceSubcategory: {
-      id: Number
-    },
-    firmwareVersion: String
-  }
-}
-```
-
-Get All-Link Record Response (0x69 & 0x6A)
-
-```js
-{
-  command: Object,
-  ack: Boolean,
-  response: {
-    raw: String,
-    type: String,
-    link: {
-      isController: Boolean,
-      isInUse: Boolean,
-      hasBeenUsed: Boolean,
-      isLast: Boolean,
-      group: Number,
-      id: String,
-      data: Array(3)
-    }
-  }
-}
 ```
 
 ### Insteon Linking Functions
@@ -422,16 +241,180 @@ gw.level('AABBCC', 50, function(error) {
 
 **Comming Soon**
 
-Build
------
+### Insteon Core Functions
 
-### Building
+*For advanced users only.  These function are leveraged by the higher level functions.*
 
-To build the browser package run:
+#### Insteon.sendCommand(command, [timeout,] callback)
 
-	grunt
+Send comand to PLM function (/3) on the gateway
 
-### Testing
+`command` can either be the string (hex byte) for the PLM command or can be the command object with a raw property
+
+command object:
+
+```js
+{
+  raw: String,
+  type: String
+}
+```
+
+`timeout` is the number of milliseconds to wait before checking the status.  If time is omited or null, the command doesn't check the status.  timeout should be set to zero to check imidiatly
+
+#### Insteon.directCommand(id, command, [param,] [timeout,] callback)
+
+Send direct command to Insteon device.
+
+`id` is a hex string of lenght 6.
+
+`command` can either be a hex string (length 2) or an object. The string must be a standard direct command. If command is a string, then `param` can also be passed. The `param` will be defaulted to `'00'`.  If the command is an extended command, it must be passed as an object with the extended property.
+
+Standard command object:
+
+```js
+{
+  cmd1: String,
+  cmd2: String
+}
+```
+
+Extended command object:
+
+```js
+{
+  extended: true,
+  cmd1: String,
+  cmd2: String,
+  userData: Array
+}
+```
+
+#### Insteon.checkStatus(callback)
+
+Checks the status of the gateways buffer.  This is used to read response messages.  This buffer must be check after each command if a response is expected. The buffer is overwritten each time a command is sent.
+
+##### Examples
+
+```js
+var gw = Insteon('my.home.com');
+gw.checkStatus(function(error, status) {
+  // For details on the status object see below.
+});
+```
+
+##### Status Object
+
+A status object will be returned in the callback.  The status object format depends on the response type.
+
+
+Get Modem Info Response (0x60) status object:
+
+```js
+{
+  command: Object,
+  ack: Boolean,
+  response: {
+    raw: String,
+    type: String,
+    id: String,
+    deviceCategory: {
+      id: Number,
+      name: String
+    },
+    deviceSubcategory: {
+      id: Number
+    },
+    firewareVersion: String
+  }
+}
+```
+Send Message Response (0x62) status object:
+
+```js
+{
+  command: Object,
+  ack: Boolean,
+  response: {
+    raw: String,
+    type: String,
+    id: String,
+    standard: {
+      id: String,
+      gatewayId: String,
+      extended: false,
+      messageType: Number,
+      hopsLeft: Number,
+      maxHops: Number,
+      command1: String,
+      command2: String,
+      raw: String
+    },
+    extended: {
+      id: String,
+      gatewayId: String,
+      extended: true,
+      messageType: Number,
+      hopsLeft: Number,
+      maxHops: Number,
+      command1: String,
+      command2: String,
+      userData: Array(14),
+      raw: String
+    }
+  }
+}
+```
+
+All-Linking Response (0x64)
+
+```js
+{
+  command: Object,
+  ack: Boolean,
+  response: {
+    raw: String,
+    type: String,
+    isController: Boolean,
+    wasDeleted: Boolean,
+    group: Number,
+    id: String,
+    deviceCategory: {
+      id: Number,
+      name: String
+    },
+    deviceSubcategory: {
+      id: Number
+    },
+    firmwareVersion: String
+  }
+}
+```
+
+Get All-Link Record Response (0x69 & 0x6A)
+
+```js
+{
+  command: Object,
+  ack: Boolean,
+  response: {
+    raw: String,
+    type: String,
+    link: {
+      isController: Boolean,
+      isInUse: Boolean,
+      hasBeenUsed: Boolean,
+      isLast: Boolean,
+      group: Number,
+      id: String,
+      data: Array(3)
+    }
+  }
+}
+```
+
+Testing
+-------
 
 To test the package run:
 
