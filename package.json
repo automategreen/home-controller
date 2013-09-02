@@ -1,8 +1,21 @@
 {
-  "author": "Brandon Goode <brandon.goode@gmail.com>",
+  "version": "0.1.0",
+  "author": "Brandon Goode <brandon@automategreen.com>",
   "name": "home-controller",
   "description": "A Node Home Automation Controller for Insteon Devices",
-  "version": "0.1.0",
+  "keywords": [
+    "automation",
+    "insteon"
+  ],
+  "homepage": "https://github.com/automategreen/home-controller",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/automategreen/home-controller"
+  },
+  "bugs": {
+    "email": "support@automategreen.com",
+    "url": "https://github.com/automategreen/home-controller/issues"
+  },
   "main": "./index.js",
   "engines": {
     "node": ">= 0.10"
@@ -25,5 +38,6 @@
     "travis-cov": {
       "threshold": 80
     }
-  }
+  },
+  "license": "MIT"
 }
