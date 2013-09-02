@@ -1,9 +1,8 @@
 {
   "author": "Brandon Goode <brandon.goode@gmail.com>",
   "name": "home-controller",
-  "description": "A Javascript Home Automation Controller for Insteon Devices",
+  "description": "A Node Home Automation Controller for Insteon Devices",
   "version": "0.1.0",
-  "private": true,
   "main": "./index.js",
   "engines": {
     "node": ">= 0.10"
