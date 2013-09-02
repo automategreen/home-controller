@@ -4,7 +4,7 @@ home-controller
 Introduction
 ------------
 
-home-controller is a javascript package to control Insteon home automation devices. home-controller can be used from a server-side node app.  To control the Insteon devices either an [Insteon Hub](http://www.insteon.com/2242-222-insteon-hub.html) or an [Insteon SmartLinc](http://www.insteon.com/2412n-smartlinc-central-controller.html) must be accessable from the app.
+home-controller is a node package to control Insteon home automation devices.  To control the Insteon devices either an [Insteon Hub](http://www.insteon.com/2242-222-insteon-hub.html) or an [Insteon SmartLinc](http://www.insteon.com/2412n-smartlinc-central-controller.html) must be accessible from the app.
 
 Features
 --------
@@ -33,7 +33,7 @@ API
 
 #### Insteon(host[, port[, username, password]])
 
-Constructor for Insteon gateway.  If no port is provided, port 80 is used.  If no username or password is povided then authentification is not used.
+Constructor for Insteon gateway.  If no port is provided, port 80 is used.  If no username or password is povided then authentication is not used.
 
 ##### Examples
 
@@ -91,7 +91,7 @@ Cancels linking/unlinking.  Like `checkForLink` it is used when `timeout` is not
 
 Gets the links of a device or the gateway.  Links are returned in the callback as an Array of link Objects.
 
-`id` is the id (6 digit hex String) of the device from which to retrive the links.
+`id` is the id (6 digit hex String) of the device from which to retrieve the links.
 
 ##### Link Object
 
@@ -125,15 +125,15 @@ Gets the link at a memory address on a device.
 
 ### Insteon Group/Scene Functions
 
-**Comming Soon**
+**Coming Soon**
 
-### Insteon Informaition Functions
+### Insteon Information Functions
 
 #### Insteon.info([id,] callback)
 
 Gets the product information about the gateway or a device.
 
-`id` is the id (6 digit hex String) of the device from witch to get the product info.  If not provided, the gateway's product info will be returned.  Product info object is retruned in callback.
+`id` is the id (6 digit hex String) of the device from witch to get the product info.  If not provided, the gateway's product info will be returned.  Product info object is returned in callback.
 
 ##### Example
 
@@ -178,9 +178,9 @@ Turns an Insteon dimmer switch on to the provided level.
 
 `id` is the id (6 digit hex String) of the light switch
 
-`level` is the percentage (0-100) of full to witch the dimmer is set. None dimmable switchs ignore this and turn on to full.
+`level` is the percentage (0-100) of full to witch the dimmer is set. None dimmable switches ignore this and turn on to full.
 
-`rate` is the speed the light is turn on to the `level`. If not provided, the defualt saved ramp rate of the device is used.  The rate value can either be 'slow', 'fast', or the number of milliseconds. 'fast' is 0.1 seconds.  'slow' is 1 minute.  If milliseconds is provided, the closes defined ramp rate less than the value is used.
+`rate` is the speed the light is turn on to the `level`. If not provided, the default saved ramp rate of the device is used.  The rate value can either be 'slow', 'fast', or the number of milliseconds. 'fast' is 0.1 seconds.  'slow' is 1 minute.  If milliseconds is provided, the closes defined ramp rate less than the value is used.
 
 #### Insteon.onFast(id, callback)
 
@@ -190,7 +190,7 @@ Turn Light On fast (no ramp) to pre saved level.
 
 #### Insteon.off(id, [rate,] callback)
 
-Truns an Insteon switch off.
+Turns an Insteon switch off.
 
 `id` is the id (6 digit hex String) of the light switch
 
@@ -222,7 +222,7 @@ Gets or sets the lights current level.
 
 `level` is the percentage (0-100) of full to which the dimmer is set. If not provided, then the current level of the device is returned in the callback.
 
-##### Eample
+##### Example
 
 ```js
 var gw = Insteon('my.home.com');
@@ -239,7 +239,7 @@ gw.level('AABBCC', 50, function(error) {
 
 ### Insteon Thermostat Functions
 
-**Comming Soon**
+**Coming Soon**
 
 ### Insteon Core Functions
 
@@ -247,7 +247,7 @@ gw.level('AABBCC', 50, function(error) {
 
 #### Insteon.sendCommand(command, [timeout,] callback)
 
-Send comand to PLM function (/3) on the gateway
+Send command to PLM function (/3) on the gateway
 
 `command` can either be the string (hex byte) for the PLM command or can be the command object with a raw property
 
@@ -260,13 +260,13 @@ command object:
 }
 ```
 
-`timeout` is the number of milliseconds to wait before checking the status.  If time is omited or null, the command doesn't check the status.  timeout should be set to zero to check imidiatly
+`timeout` is the number of milliseconds to wait before checking the status.  If time is omitted or null, the command doesn't check the status.  timeout should be set to zero to check immediately
 
 #### Insteon.directCommand(id, command, [param,] [timeout,] callback)
 
 Send direct command to Insteon device.
 
-`id` is a hex string of lenght 6.
+`id` is a hex string of length 6.
 
 `command` can either be a hex string (length 2) or an object. The string must be a standard direct command. If command is a string, then `param` can also be passed. The `param` will be defaulted to `'00'`.  If the command is an extended command, it must be passed as an object with the extended property.
 
