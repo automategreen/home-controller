@@ -1,20 +1,30 @@
 {
   "author": "Brandon Goode <brandon.goode@gmail.com>",
   "name": "home-controller",
-  "description": "Home Automation Controller",
-  "version": "0.0.1",
+  "description": "A Javascript Home Automation Controller for Insteon Devices",
+  "version": "0.1.0",
   "private": true,
   "main": "./index.js",
   "engines": {
     "node": ">= 0.10"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "mocha": "*",
-    "expect.js": "*"
+    "should": "*",
+    "nock": "~0.18.2",
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.6.1",
+    "grunt-contrib-uglify": "~0.2.2",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-mocha-test": "~0.6.2",
+    "blanket": "~1.1.5",
+    "travis-cov": "~0.2.4"
   },
   "scripts": {
-    "test": "make test"
+    "test": "grunt test",
+    "travis-cov": {
+      "threshold": 80
+    }
   }
 }
