@@ -1,10 +1,9 @@
-var util = require('util');
 var Insteon = require('../').Insteon;
 
-var HOST = 'home.brandongoode.com';
+var HOST = 'my.home';
 var PORT = 25105;
 var USERNAME = 'admin';
-var PASSWORD = '1EB552';
+var PASSWORD = 'password';
 
 
 var gw = new Insteon(HOST, PORT, USERNAME, PASSWORD);
@@ -26,8 +25,6 @@ gw.info(function onInfo(err, info) {
 
     if(links && links.length > 0){
       network[info.id].links = links.slice(); // copy array
-      console.log('Found links: \n' + util.inspect(links));
-
       foundLinks(links);
     } else {
       console.log('No links found.  Entering linking mode for 3 minutes.\n\nHold set button on device.');
@@ -69,7 +66,6 @@ function foundLinks(links) {
         console.log('Error getting links for devcie ' + link.id + ' - skipping');
         return foundLinks(links);
       }
-      console.log('Found links: \n' + util.inspect(moreLinks));
       network[link.id].links = moreLinks;
       foundLinks(links.concat(moreLinks));
     });
