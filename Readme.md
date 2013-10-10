@@ -10,8 +10,7 @@ Features
 --------
 	
 - Device and Gateway Info
-- Linking
-- Group/Scene Control **Coming soon**
+- Linking and Group Control
 - Lighting Control
 - Thermostat Control **Coming soon**
 
@@ -64,24 +63,72 @@ gw.auth(function(error) {
 });
 ```
 
-### Insteon Linking Functions
+### Insteon Linking and Group Functions
 
-#### gw.link([group,] [timeout,] callback)
+#### gw.link([[controller,] responder,] [options,] callback)
 
-Links device to the gateway
+Links controller with responder(s)
 
-*Currently requires manually holding set button.*
+`controller` is the device to setup as controller.  It can either be a device id (6 digit hex String), the string 'gw', or null.  If a device id is provided, the device will be configured as the controller.  If 'gw' is passed, the gateway will be configured as the controller.  If controller is `null`, the controller device must be put into linking state manually (hold set button for 10 sec). If the controller is manually triggered, it must be done prior to calling the 'link' function.
 
-`group` is the group number to which the device is added.  The default group is 1.
+`responder` is the device to setup as responder.  It can either be a device id (6 digit hex String), an Array of ids, the string 'gw', or null.  If a device id is provided, the device will be configured as the responder. If an array of ids is provided, each devices will be configured as a responder. If 'gw' is passed, the gateway will be configured as the responder.  If responder is `null`, the responder device must be put into linking state manually (hold set button for 10 sec). If the responder is manually triggered, it must be done after calling the 'link' function.
 
-`timeout` is the number of seconds to wait for linking to complete. (Remember you have to hold the set button for at least 10 seconds.)  If `timeout` is not defined, the callback function will be executed as soon as the linking command is sent.  This requires `checkForLink` to be manually called to see if linking has completed. 
+`options` is an Object with the options to be used during linking. 
+
+##### Link Options Object
+
+```js
+{
+  group: Number, // controller group/button
+  timeout: Number // timeout for manual linking
+}
+```
+
+`group` is the controller group to link the responders to.  Valid group numbers vary by device type.  The hub supports group numbers 0-255. Default is 1.
+
+`timeout` is the number of seconds to wait for linking to complete. (Remember you have to hold the set button for at least 10 seconds.)  If `timeout` is null, the callback function will be executed as soon as the linking command is sent.  This requires `checkForLink` to be manually called to see if linking has completed. Default is 30.
+
+##### Examples
 
 
-#### gw.unlink([group,] [timeout,] callback)
+```js
+var gw = Insteon('my.home.com');
+
+// Link two devices with for 2nd button on dimmer
+gw.link('AABBCC', '112233', {group: 2}, function(error, link) {
+  // link data from responder, 11.22.33
+});
+
+// Link gateway to multiple devices
+gw.link('gw', ['111111', '222222', '333333'], function(error, link) {
+  // link data from last responder, 33.33.33
+})
+
+// Link device to gateway
+gw.link('ABCDEF', 'gw', function(error, link) {
+  // link data from gateway
+});
+
+// Shorthand to link gateway to unknown device
+gw.link(function(error, link) { // link('gw', null, fn)
+  // link data from unknown device (responder)
+});
+
+// Link unknown device to gateway (same as link(null, 'gw', fn))
+gw.link(null, 'gw', function(error, link) {
+  // link data from gateway
+});
+
+// Shorthand to a device to an unknown device 
+gw.link('123456', function(error, link) {  // link('123456', null, fn)
+  // link data from gateway
+});
+```
+
+
+#### gw.unlink([[controller,] responder,] [options,] callback)
 
 Unlinks device from the gateway
-
-*Currently requires manually holding the set button.*
 
 See `link` for usage.
 
@@ -136,10 +183,6 @@ Gets the link at a memory address on a device
 `id` is the id (6 digit hex String) of the device
 
 `at` is the memory address.  Addresses start at 4095 (0xFFF) and count down by 8. (4095, 4087, 4079, ... ).
-
-### Insteon Group/Scene Functions
-
-**Coming Soon**
 
 ### Insteon Information Functions
 
@@ -444,3 +487,4 @@ References
 - [Insteon Command Tables](http://www.insteon.com/pdf/INSTEON_Command_Tables_20070925a.pdf)
 - [Insteon Device Categories](http://www.insteon.com/pdf/insteon_devcats_and_product_keys_20081008.pdf)
 - [Ramp Rates](http://www.madreporite.com/insteon/ramprate.htm)
+- [Automate Green Blog](http://blog.automategreen.com)

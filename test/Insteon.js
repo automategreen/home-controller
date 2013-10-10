@@ -203,7 +203,7 @@ describe('Insteon Gateway', function() {
     var gw = new Insteon(TEST_INSTEON_HOST, TEST_INSTEON_PORT, TEST_USERNAME, TEST_PASSWORD);
 
     nock(gw.url)
-    .get('/3?0262' + TEST_DEVICE_ID + '1F2E000100000000000000000000000000=I=3')
+    .get('/3?0262' + TEST_DEVICE_ID + '1F2E0001000000000000000000000000D1=I=3')
     .reply(200, '', { connection: 'close',
       'content-type': 'text/html',
       'cache-control': 'max-age=600',
@@ -227,7 +227,7 @@ describe('Insteon Gateway', function() {
     var gw = new Insteon(TEST_INSTEON_HOST, TEST_INSTEON_PORT, TEST_USERNAME, TEST_PASSWORD);
 
     nock(gw.url)
-    .get('/3?0262' + TEST_DEVICE_ID + '1F2E000100000000000000000000000000=I=3')
+    .get('/3?0262' + TEST_DEVICE_ID + '1F2E0001000000000000000000000000D1=I=3')
     .reply(200, '', { connection: 'close',
       'content-type': 'text/html',
       'cache-control': 'max-age=600',
@@ -331,7 +331,7 @@ describe('Insteon Gateway', function() {
     var gw = new Insteon(TEST_INSTEON_HOST, TEST_INSTEON_PORT, TEST_USERNAME, TEST_PASSWORD);
 
     nock(gw.url)
-    .get('/3?0262' + TEST_DEVICE_ID + '1F2F0000000FFF01000000000000000000=I=3')
+    .get('/3?0262' + TEST_DEVICE_ID + '1F2F0000000FFF010000000000000000C2=I=3')
     .reply(200, "", { connection: 'close',
     'content-type': 'text/html',
     'cache-control': 'max-age=600',
@@ -341,7 +341,7 @@ describe('Insteon Gateway', function() {
     'content-type': 'text/xml',
     'cache-control': 'no-cache',
     'access-control-allow-origin': '*' })
-    .get('/3?0262' + TEST_DEVICE_ID + '1F2F0000000FF701000000000000000000=I=3')
+    .get('/3?0262' + TEST_DEVICE_ID + '1F2F0000000FF7010000000000000000CA=I=3')
     .reply(200, "", { connection: 'close',
     'content-type': 'text/html',
     'cache-control': 'max-age=600',
@@ -368,7 +368,7 @@ describe('Insteon Gateway', function() {
   });
 
 
-  it('links to a device ', function(done) {
+  it('links gw to an unknown device ', function(done) {
     this.timeout(70000);
 
     var gw = new Insteon(TEST_INSTEON_HOST, TEST_INSTEON_PORT, TEST_USERNAME, TEST_PASSWORD);
@@ -396,11 +396,97 @@ describe('Insteon Gateway', function() {
     'cache-control': 'no-cache',
     'access-control-allow-origin': '*' });
 
-    gw.link(60, function(err, link){
+    gw.link({timeout: 60}, function(err, link){
       should.not.exist(err);
       should.exist(link);
       link.group.should.eql(1);
       link.id.should.eql('112233');
+      link.wasDeleted.should.be.false;
+      link.deviceCategory.id.should.eql(1);
+      done();
+    });
+  });
+
+
+  it('unlinks gw from a device', function(done) {
+    this.timeout(70000);
+
+    var gw = new Insteon(TEST_INSTEON_HOST, TEST_INSTEON_PORT, TEST_USERNAME, TEST_PASSWORD);
+    // var gw = new Insteon('home.brandongoode.com', TEST_INSTEON_PORT, 'admin', '1EB552');
+
+    //nock.recorder.rec();
+    nock(gw.url)
+    .get('/3?0264FF00=I=3')
+    .reply(200, "", { connection: 'close',
+    'content-type': 'text/html',
+    'cache-control': 'max-age=600',
+    'access-control-allow-origin': '*' })
+    .get('/3?026219D41C0F0A00=I=3')
+    .reply(200, "", { connection: 'close',
+    'content-type': 'text/html',
+    'cache-control': 'max-age=600',
+    'access-control-allow-origin': '*' })
+    .get('/buffstatus.xml')
+    .reply(200, "<response><BS>026219D41C0F0A00060000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n", { connection: 'close',
+    'content-type': 'text/xml',
+    'cache-control': 'no-cache',
+    'access-control-allow-origin': '*' })
+    .get('/buffstatus.xml')
+    .reply(200, "<response><BS>026219D41C0F0A0006025019D41C1EB5522F0A00025019D41C0130418F01000253FF0019D41C013041000000000000000000</BS></response>\r\n", { connection: 'close',
+    'content-type': 'text/xml',
+    'cache-control': 'no-cache',
+    'access-control-allow-origin': '*' });
+
+    gw.unlink('gw', '19D41C', {group: 0}, function(err, link){
+      should.not.exist(err);
+      should.exist(link);
+      link.group.should.eql(0);
+      link.id.should.eql('19D41C');
+      link.wasDeleted.should.be.true;
+      link.deviceCategory.id.should.eql(1);
+      done();
+    });
+  });
+
+
+  it('links gw to a device ', function(done) {
+    this.timeout(70000);
+
+    // var gw = new Insteon(TEST_INSTEON_HOST, TEST_INSTEON_PORT, TEST_USERNAME, TEST_PASSWORD);
+    var gw = new Insteon('home.brandongoode.com', TEST_INSTEON_PORT, 'admin', '1EB552');
+    
+    nock(gw.url)
+    .get('/3?02640105=I=3')
+    .reply(200, "", { connection: 'close',
+    'content-type': 'text/html',
+    'cache-control': 'max-age=600',
+    'access-control-allow-origin': '*' })
+    .get('/3?026219D41C1F090000000000000000000000000000F7=I=3')
+    .reply(200, "", { connection: 'close',
+    'content-type': 'text/html',
+    'cache-control': 'max-age=600',
+    'access-control-allow-origin': '*' })
+    .get('/buffstatus.xml')
+    .reply(200, "<response><BS>026219D41C1F090000000000000000000000000000F706000000000000000000000000000000000000000000000000000000</BS></response>\r\n", { connection: 'close',
+    'content-type': 'text/xml',
+    'cache-control': 'no-cache',
+    'access-control-allow-origin': '*' })
+    .get('/buffstatus.xml')
+    .reply(200, "<response><BS>026219D41C1F090000000000000000000000000000F706025019D41C1EB5522F0900025019D41C0130418F01000000000000</BS></response>\r\n", { connection: 'close',
+    'content-type': 'text/xml',
+    'cache-control': 'no-cache',
+    'access-control-allow-origin': '*' })
+    .get('/buffstatus.xml')
+    .reply(200, "<response><BS>D41C0130411F090000000000000000000000000000F706025019D41C1EB5522F0900025019D41C0130418F01000253010519</BS></response>\r\n", { connection: 'close',
+    'content-type': 'text/xml',
+    'cache-control': 'no-cache',
+    'access-control-allow-origin': '*' });
+
+    gw.link('gw', '19D41C', {group: 5}, function(err, link){
+      should.not.exist(err);
+      should.exist(link);
+      link.group.should.eql(5);
+      link.id.should.eql('19D41C');
       link.wasDeleted.should.be.false;
       link.deviceCategory.id.should.eql(1);
       done();
