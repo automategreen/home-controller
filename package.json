@@ -20,7 +20,9 @@
   "engines": {
     "node": ">= 0.10"
   },
-  "dependencies": {},
+  "dependencies": {
+    "commander": "~2.0.0"
+  },
   "devDependencies": {
     "mocha": "*",
     "should": "*",

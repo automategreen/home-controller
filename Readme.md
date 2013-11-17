@@ -63,15 +63,13 @@ gw.auth(function(error) {
 });
 ```
 
-### Insteon Linking and Group Functions
+### Insteon Linking and Scene Functions
 
-#### gw.link([[controller,] responder,] [options,] callback)
+#### gw.link([device,] [options,] callback)
 
-Links controller with responder(s)
+Links device(s) to gateway. Callback return link object as second argument (see `gw.links`).
 
-`controller` is the device to setup as controller.  It can either be a device id (6 digit hex String), the string 'gw', or null.  If a device id is provided, the device will be configured as the controller.  If 'gw' is passed, the gateway will be configured as the controller.  If controller is `null`, the controller device must be put into linking state manually (hold set button for 10 sec). If the controller is manually triggered, it must be done prior to calling the 'link' function.
-
-`responder` is the device to setup as responder.  It can either be a device id (6 digit hex String), an Array of ids, the string 'gw', or null.  If a device id is provided, the device will be configured as the responder. If an array of ids is provided, each devices will be configured as a responder. If 'gw' is passed, the gateway will be configured as the responder.  If responder is `null`, the responder device must be put into linking state manually (hold set button for 10 sec). If the responder is manually triggered, it must be done after calling the 'link' function.
+`device` is the device to link.  It can either be a device id (6 digit hex String), an Array of ids, or null.  If a device id is provided, the device will be linked. If an array of ids is provided, each devices will be configured linked. If device is `null`, the  device must be put into linking state manually (hold set button). The device will be setup as the responder, unless the `isController` option is true.
 
 `options` is an Object with the options to be used during linking. 
 
@@ -79,6 +77,7 @@ Links controller with responder(s)
 
 ```js
 {
+  isController: Boolean, // link the device(s) as a controller(s)
   group: Number, // controller group/button
   timeout: Number // timeout for manual linking
 }
@@ -86,7 +85,41 @@ Links controller with responder(s)
 
 `group` is the controller group to link the responders to.  Valid group numbers vary by device type.  The hub supports group numbers 0-255. Default is 1.
 
-`timeout` is the number of seconds to wait for linking to complete. (Remember you have to hold the set button for at least 10 seconds.)  If `timeout` is null, the callback function will be executed as soon as the linking command is sent.  This requires `checkForLink` to be manually called to see if linking has completed. Default is 30.
+`timeout` is the number of seconds to wait for linking to complete. (Remember you have to hold the set button for at least 10 seconds.)Default is 30.
+
+
+#### gw.scene(controller, responder, [options,] callback)
+
+Creates scene controller with responder(s). All devices must be available and linked to the gateway.
+
+`controller` is the device to setup as controller.  It can either be a device id (6 digit hex String), the string 'gw', or null.  If a device id is provided, the device will be configured as the controller.  If controller is `'gw'` the gateway will be configured as the controller.
+
+`responder` is the device to setup as responder.  It can either be a responder object or an Array of responder objects. The responder object can also be the device id (6 digit hex String); default scene values will be used.
+
+##### Responder Object
+
+```js
+{
+  id: String, // device id (6 digit hex String)
+  level: Number, // See level in gw.on()
+  rate: Number, // See rate in gw.on()
+  data: Array  // data to be configure for scene (overrides level and rate)]
+}
+```
+
+`options` is an Object with the options to be used during linking. 
+
+##### Scene Options Object
+
+```js
+{
+  group: Number // controller group/button
+}
+```
+
+`group` is the controller group to link the responders to.  Valid group numbers vary by device type.  The hub supports group numbers 0-255. Default is 1.
+
+`timeout` is the number of seconds to wait for linking to complete. (Remember you have to hold the set button for at least 10 seconds.) Default is 30.
 
 ##### Examples
 
@@ -132,19 +165,9 @@ Unlinks device from the gateway
 
 See `link` for usage.
 
-#### gw.checkForLink([timeout,] callback)
-
-Checks to see if linking/unlinking has completed
-
-Used when `timeout` is not provided for `link` or `unlink`.
-
-`timeout` is the number of seconds to wait for linking to complete.
-
 #### gw.cancelLinking(callback)
 
 Cancels linking/unlinking
-
-Like `checkForLink`, it is used when `timeout` is not provided for `link` or `unlink`.
 
 #### gw.links([id,] callback)
 
@@ -188,9 +211,9 @@ Gets the link at a memory address on a device
 
 #### gw.info([id,] callback)
 
-Gets the product information about the gateway or a device
+Gets the product information about the gateway or a device. Product info object is returned in callback.
 
-`id` is the id (6 digit hex String) of the device from which to get the product info.  If not provided, the gateway's product info will be returned.  Product info object is returned in callback.
+`id` is the id (6 digit hex String) of the device from which to get the product info.  If not provided, the gateway's product info will be returned.  
 
 ##### Example
 
@@ -227,15 +250,36 @@ gw.checkStatus('AABBCC', function(error, info) {
 }
 ```
 
+#### gw.ping(id, callback)
+
+Sends a Insteon ping to a device. Response object is returned in the callback, if the ping was successful.
+
+`id` is the id (6 digit hex String) of the device from which to get the product info.
+
+#### gw.version(id, callback)
+
+Gets the version information about a device. Version object is returned in callback. Valid version names are i1, i2, and i2cs. 
+
+`id` is the id (6 digit hex String) of the device from which to get the product info.
+
+##### Version Object
+
+```js
+{
+  code: Number,
+  name, String,
+}
+```
+
 ### Insteon Lighting Functions
 
-#### gw.on(id, level, [rate,] callback)
+#### gw.on(id, [level, [rate,]] callback)
 
 Turns an Insteon dimmer switch on to the provided level
 
 `id` is the id (6 digit hex String) of the light switch
 
-`level` is the percentage (0-100) of full to which the dimmer is set. Non-dimmable switches ignore this and turn on to full.
+`level` is the percentage (0-100) of full to which the dimmer is set. Non-dimmable switches ignore this and turn on to full. Defaults to 100 percent.
 
 `rate` is the speed at which the light is turned on to the provided `level`. If not provided, the default saved ramp rate of the device is used.  The rate value can either be 'slow', 'fast', or the number of milliseconds. 'fast' is 0.1 seconds.  'slow' is 1 minute.  If milliseconds is provided, the closest defined ramp rate less than the provided value is used.
 

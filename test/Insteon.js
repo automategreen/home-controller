@@ -1,15 +1,17 @@
+'use strict';
+
 var Insteon = require('../').Insteon;
 var should = require('should');
 var nock = require('nock');
 
-var TEST_INSTEON_HOST = 'my.home';
+var TEST_INSTEON_HOST = '192.168.1.200';
 var TEST_INSTEON_PORT = 25105;
 var TEST_DEVICE_ID = 'AABBCC';
 var TEST_USERNAME = 'admin';
 var TEST_PASSWORD = 'password';
 
 describe('Insteon Gateway', function() {
-  this.timeout(16000);
+  this.timeout(30000);
 
   afterEach(function() {
     nock.cleanAll();
@@ -38,12 +40,12 @@ describe('Insteon Gateway', function() {
 
     nock(gw.url)
     .get('/3?0260=I=3')
-    .reply(200, "", { connection: 'close',
+    .reply(200, '', { connection: 'close',
     'content-type': 'text/html',
     'cache-control': 'max-age=600',
     'access-control-allow-origin': '*' })
     .get('/buffstatus.xml')
-    .reply(200, "<response><BS>02601EB55203379C060000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n", { connection: 'close',
+    .reply(200, '<response><BS>02601EB55203379C060000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
     'content-type': 'text/xml',
     'cache-control': 'no-cache',
     'access-control-allow-origin': '*' });
@@ -67,7 +69,9 @@ describe('Insteon Gateway', function() {
 
     nock(gw.url)
     .get('/3?0262' + TEST_DEVICE_ID + '0F117F=I=3')
-    .reply(200);
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262' + TEST_DEVICE_ID + '0F117F060250' + TEST_DEVICE_ID + '1EB5522F117F000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n');
 
     gw.on(TEST_DEVICE_ID, 50, done);
   });
@@ -87,7 +91,10 @@ describe('Insteon Gateway', function() {
 
     nock(gw.url)
     .get('/3?0262' + TEST_DEVICE_ID + '0F1300=I=3')
-    .reply(200);
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262' + TEST_DEVICE_ID + '0F1300060250' + TEST_DEVICE_ID + '1EB5522F1300000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n');
+
 
     gw.off(TEST_DEVICE_ID, done);
   });
@@ -97,7 +104,10 @@ describe('Insteon Gateway', function() {
 
     nock(gw.url)
     .get('/3?0262' + TEST_DEVICE_ID + '0F1400=I=3')
-    .reply(200);
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262' + TEST_DEVICE_ID + '0F1400060250' + TEST_DEVICE_ID + '1EB5522F1400000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n');
+
 
     gw.offFast(TEST_DEVICE_ID, done);
   });
@@ -276,6 +286,40 @@ describe('Insteon Gateway', function() {
     });
   });
 
+  it('pings a device', function(done) {
+    var gw = new Insteon(TEST_INSTEON_HOST, TEST_INSTEON_PORT, TEST_USERNAME, TEST_PASSWORD);
+
+    nock(gw.url)
+    .get('/3?0262' + TEST_DEVICE_ID + '0F0F00=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262' + TEST_DEVICE_ID + '0F0F00060250' + TEST_DEVICE_ID + '1EB5522F0F00000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n');
+
+    gw.ping(TEST_DEVICE_ID, function(err, resp){
+      should.not.exist(err);
+      should.exist(resp);
+      done();
+    });
+  });
+
+  it('gets a device\'s version', function(done) {
+    var gw = new Insteon(TEST_INSTEON_HOST, TEST_INSTEON_PORT, TEST_USERNAME, TEST_PASSWORD);
+
+    nock(gw.url)
+    .get('/3?0262' + TEST_DEVICE_ID + '0F0D00=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262' + TEST_DEVICE_ID + '0F0D00060250' + TEST_DEVICE_ID + '1EB5522F0D02000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n');
+
+    gw.version(TEST_DEVICE_ID, function(err, version){
+      should.not.exist(err);
+      should.exist(version);
+      version.code.should.eql(2);
+      version.name.should.eql('i2cs');
+      done();
+    });
+  });
+
 
 
   it('get the linking data of the gateway', function(done) {
@@ -283,32 +327,32 @@ describe('Insteon Gateway', function() {
 
     nock(gw.url)
     .get('/3?0269=I=3')
-    .reply(200, "", { connection: 'close',
+    .reply(200, '', { connection: 'close',
     'content-type': 'text/html',
     'cache-control': 'max-age=600',
     'access-control-allow-origin': '*' })
     .get('/buffstatus.xml')
-    .reply(200, "<response><BS>0269060257E20111223303204100000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n", { connection: 'close',
+    .reply(200, '<response><BS>0269060257E20111223303204100000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
     'content-type': 'text/xml',
     'cache-control': 'no-cache',
     'access-control-allow-origin': '*' })
     .get('/3?026A=I=3')
-    .reply(200, "", { connection: 'close',
+    .reply(200, '', { connection: 'close',
     'content-type': 'text/html',
     'cache-control': 'max-age=600',
     'access-control-allow-origin': '*' })
     .get('/buffstatus.xml')
-    .reply(200, "<response><BS>026A060257E20119D41C03304100000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n", { connection: 'close',
+    .reply(200, '<response><BS>026A060257E20119D41C03304100000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
     'content-type': 'text/xml',
     'cache-control': 'no-cache',
     'access-control-allow-origin': '*' })
     .get('/3?026A=I=3')
-    .reply(200, "", { connection: 'close',
+    .reply(200, '', { connection: 'close',
     'content-type': 'text/html',
     'cache-control': 'max-age=600',
     'access-control-allow-origin': '*' })
     .get('/buffstatus.xml')
-    .reply(200, "<response><BS>026A150000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n", { connection: 'close',
+    .reply(200, '<response><BS>026A150000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
     'content-type': 'text/xml',
     'cache-control': 'no-cache',
     'access-control-allow-origin': '*' });
@@ -332,22 +376,22 @@ describe('Insteon Gateway', function() {
 
     nock(gw.url)
     .get('/3?0262' + TEST_DEVICE_ID + '1F2F0000000FFF010000000000000000C2=I=3')
-    .reply(200, "", { connection: 'close',
+    .reply(200, '', { connection: 'close',
     'content-type': 'text/html',
     'cache-control': 'max-age=600',
     'access-control-allow-origin': '*' })
     .get('/buffstatus.xml')
-    .reply(200, "<response><BS>AA011EB552001C01D5000FFF010000000000000000000602501122331EB5522F2F0002511122331EB552112F0000010FFF00</BS></response>\r\n", { connection: 'close',
+    .reply(200, '<response><BS>AA011EB552001C01D5000FFF010000000000000000000602501122331EB5522F2F0002511122331EB552112F0000010FFF00</BS></response>\r\n', { connection: 'close',
     'content-type': 'text/xml',
     'cache-control': 'no-cache',
     'access-control-allow-origin': '*' })
     .get('/3?0262' + TEST_DEVICE_ID + '1F2F0000000FF7010000000000000000CA=I=3')
-    .reply(200, "", { connection: 'close',
+    .reply(200, '', { connection: 'close',
     'content-type': 'text/html',
     'cache-control': 'max-age=600',
     'access-control-allow-origin': '*' })
     .get('/buffstatus.xml')
-    .reply(200, "<response><BS>0000000000000000CA000FF7010000000000000000000602501122331EB5522F2F0002511122331EB552112F0000010FF700</BS></response>\r\n", { connection: 'close',
+    .reply(200, '<response><BS>0000000000000000CA000FF7010000000000000000000602501122331EB5522F2F0002511122331EB552112F0000010FF700</BS></response>\r\n', { connection: 'close',
     'content-type': 'text/xml',
     'cache-control': 'no-cache',
     'access-control-allow-origin': '*' });
@@ -375,28 +419,32 @@ describe('Insteon Gateway', function() {
 
 
     nock(gw.url)
+    .get('/3?0265=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0265060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/3?02640101=I=3')
-    .reply(200, "", { connection: 'close',
+    .reply(200, '', { connection: 'close',
     'content-type': 'text/html',
     'cache-control': 'max-age=600',
     'access-control-allow-origin': '*' })
     .get('/buffstatus.xml')
-    .reply(200, "<response><BS>0264010106000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n", { connection: 'close',
+    .reply(200, '<response><BS>0264010106000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
     'content-type': 'text/xml',
     'cache-control': 'no-cache',
     'access-control-allow-origin': '*' })
     .get('/buffstatus.xml')
-    .reply(200, "<response><BS>0264010106000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n", { connection: 'close',
+    .reply(200, '<response><BS>0264010106000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
     'content-type': 'text/xml',
     'cache-control': 'no-cache',
     'access-control-allow-origin': '*' })
     .get('/buffstatus.xml')
-    .reply(200, "<response><BS>026401010602501122330120418F017002530101112233012041000000000000000000000000000000000000000000000000</BS></response>\r\n", { connection: 'close',
+    .reply(200, '<response><BS>026401010602501122330120418F017002530101112233012041000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
     'content-type': 'text/xml',
     'cache-control': 'no-cache',
     'access-control-allow-origin': '*' });
 
-    gw.link({timeout: 60}, function(err, link){
+    gw.link(function(err, link){
       should.not.exist(err);
       should.exist(link);
       link.group.should.eql(1);
@@ -412,32 +460,34 @@ describe('Insteon Gateway', function() {
     this.timeout(70000);
 
     var gw = new Insteon(TEST_INSTEON_HOST, TEST_INSTEON_PORT, TEST_USERNAME, TEST_PASSWORD);
-    // var gw = new Insteon('home.brandongoode.com', TEST_INSTEON_PORT, 'admin', '1EB552');
 
     //nock.recorder.rec();
     nock(gw.url)
+    .get('/3?0265=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0265060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/3?0264FF00=I=3')
-    .reply(200, "", { connection: 'close',
-    'content-type': 'text/html',
-    'cache-control': 'max-age=600',
-    'access-control-allow-origin': '*' })
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0264FF0006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/3?026219D41C0F0A00=I=3')
-    .reply(200, "", { connection: 'close',
+    .reply(200, '', { connection: 'close',
     'content-type': 'text/html',
     'cache-control': 'max-age=600',
     'access-control-allow-origin': '*' })
     .get('/buffstatus.xml')
-    .reply(200, "<response><BS>026219D41C0F0A00060000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n", { connection: 'close',
+    .reply(200, '<response><BS>026219D41C0F0A00060000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
     'content-type': 'text/xml',
     'cache-control': 'no-cache',
     'access-control-allow-origin': '*' })
     .get('/buffstatus.xml')
-    .reply(200, "<response><BS>026219D41C0F0A0006025019D41C1EB5522F0A00025019D41C0130418F01000253FF0019D41C013041000000000000000000</BS></response>\r\n", { connection: 'close',
+    .reply(200, '<response><BS>026219D41C0F0A0006025019D41C1EB5522F0A00025019D41C0130418F01000253FF0019D41C013041000000000000000000</BS></response>\r\n', { connection: 'close',
     'content-type': 'text/xml',
     'cache-control': 'no-cache',
     'access-control-allow-origin': '*' });
 
-    gw.unlink('gw', '19D41C', {group: 0}, function(err, link){
+    gw.unlink('19D41C', {group: 0}, function(err, link){
       should.not.exist(err);
       should.exist(link);
       link.group.should.eql(0);
@@ -449,40 +499,43 @@ describe('Insteon Gateway', function() {
   });
 
 
-  it('links gw to a device ', function(done) {
+  it('links gw to a device', function(done) {
     this.timeout(70000);
 
     // var gw = new Insteon(TEST_INSTEON_HOST, TEST_INSTEON_PORT, TEST_USERNAME, TEST_PASSWORD);
     var gw = new Insteon('home.brandongoode.com', TEST_INSTEON_PORT, 'admin', '1EB552');
-    
+
     nock(gw.url)
+    .get('/3?0265=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0265060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/3?02640105=I=3')
-    .reply(200, "", { connection: 'close',
-    'content-type': 'text/html',
-    'cache-control': 'max-age=600',
-    'access-control-allow-origin': '*' })
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0264010506000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/3?026219D41C1F090000000000000000000000000000F7=I=3')
-    .reply(200, "", { connection: 'close',
+    .reply(200, '', { connection: 'close',
     'content-type': 'text/html',
     'cache-control': 'max-age=600',
     'access-control-allow-origin': '*' })
     .get('/buffstatus.xml')
-    .reply(200, "<response><BS>026219D41C1F090000000000000000000000000000F706000000000000000000000000000000000000000000000000000000</BS></response>\r\n", { connection: 'close',
+    .reply(200, '<response><BS>026219D41C1F090000000000000000000000000000F706000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
     'content-type': 'text/xml',
     'cache-control': 'no-cache',
     'access-control-allow-origin': '*' })
     .get('/buffstatus.xml')
-    .reply(200, "<response><BS>026219D41C1F090000000000000000000000000000F706025019D41C1EB5522F0900025019D41C0130418F01000000000000</BS></response>\r\n", { connection: 'close',
+    .reply(200, '<response><BS>026219D41C1F090000000000000000000000000000F706025019D41C1EB5522F0900025019D41C0130418F01000000000000</BS></response>\r\n', { connection: 'close',
     'content-type': 'text/xml',
     'cache-control': 'no-cache',
     'access-control-allow-origin': '*' })
     .get('/buffstatus.xml')
-    .reply(200, "<response><BS>D41C0130411F090000000000000000000000000000F706025019D41C1EB5522F0900025019D41C0130418F01000253010519</BS></response>\r\n", { connection: 'close',
+    .reply(200, '<response><BS>D41C0130411F090000000000000000000000000000F706025019D41C1EB5522F0900025019D41C0130418F01000253010519</BS></response>\r\n', { connection: 'close',
     'content-type': 'text/xml',
     'cache-control': 'no-cache',
     'access-control-allow-origin': '*' });
 
-    gw.link('gw', '19D41C', {group: 5}, function(err, link){
+    gw.link('19D41C', {group: 5}, function(err, link){
       should.not.exist(err);
       should.exist(link);
       link.group.should.eql(5);
@@ -492,6 +545,186 @@ describe('Insteon Gateway', function() {
       done();
     });
   });
+
+  it('links gw to unknown device with options', function(done) {
+    this.timeout(70000);
+
+    // var gw = new Insteon(TEST_INSTEON_HOST, TEST_INSTEON_PORT, TEST_USERNAME, TEST_PASSWORD);
+    var gw = new Insteon('home.brandongoode.com', TEST_INSTEON_PORT, 'admin', '1EB552');
+
+
+    nock(gw.url)
+    .get('/3?0265=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0265060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?02640104=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0264010406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0264010406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
+    'content-type': 'text/xml',
+    'cache-control': 'no-cache',
+    'access-control-allow-origin': '*' })
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0264010406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
+    'content-type': 'text/xml',
+    'cache-control': 'no-cache',
+    'access-control-allow-origin': '*' })
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0264010406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
+    'content-type': 'text/xml',
+    'cache-control': 'no-cache',
+    'access-control-allow-origin': '*' })
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0264010406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
+    'content-type': 'text/xml',
+    'cache-control': 'no-cache',
+    'access-control-allow-origin': '*' })
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026401040602501CC296021C418B0100025301041CC296021C4102501CC2961EB55223010402501CC2961EB5522301040000</BS></response>\r\n', { connection: 'close',
+    'content-type': 'text/xml',
+    'cache-control': 'no-cache',
+    'access-control-allow-origin': '*' });
+
+    gw.link({timeout:60, group: 4}, function(err, link){
+      should.not.exist(err);
+      should.exist(link);
+      link.group.should.eql(4);
+      link.id.should.eql('1CC296');
+      link.wasDeleted.should.be.false;
+      link.deviceCategory.id.should.eql(2);
+      done();
+    });
+  });
+
+
+  it('links gw to multiple devices', function(done) {
+    this.timeout(70000);
+
+    // var gw = new Insteon(TEST_INSTEON_HOST, TEST_INSTEON_PORT, TEST_USERNAME, TEST_PASSWORD);
+    var gw = new Insteon('home.brandongoode.com', TEST_INSTEON_PORT, 'admin', '1EB552');
+
+    nock(gw.url)
+    .get('/3?0265=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0265060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?02640114=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0264011406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?026219D41C1F090000000000000000000000000000F7=I=3')
+    .reply(200, '', { connection: 'close',
+    'content-type': 'text/html',
+    'cache-control': 'max-age=600',
+    'access-control-allow-origin': '*' })
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026219D41C1F090000000000000000000000000000F706000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
+    'content-type': 'text/xml',
+    'cache-control': 'no-cache',
+    'access-control-allow-origin': '*' })
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026219D41C1F090000000000000000000000000000F706025019D41C1EB5522F0900025019D41C0130418F01000000000000</BS></response>\r\n', { connection: 'close',
+    'content-type': 'text/xml',
+    'cache-control': 'no-cache',
+    'access-control-allow-origin': '*' })
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>D41C0130411F090000000000000000000000000000F706025019D41C1EB5522F0900025019D41C0130418F01000253011419</BS></response>\r\n', { connection: 'close',
+    'content-type': 'text/xml',
+    'cache-control': 'no-cache',
+    'access-control-allow-origin': '*' })
+    .get('/3?0265=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0265060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?02640114=I=3')
+    .reply(200, '')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0264011406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?02621CC2961F090000000000000000000000000000F7=I=3')
+    .reply(200, '', { connection: 'close',
+    'content-type': 'text/html',
+    'cache-control': 'max-age=600',
+    'access-control-allow-origin': '*' })
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>02621CC2961F090000000000000000000000000000F706000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
+    'content-type': 'text/xml',
+    'cache-control': 'no-cache',
+    'access-control-allow-origin': '*' })
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>02621CC2961F090000000000000000000000000000F70602501CC2961EB5522F090002501CC296021C418F01000000000000</BS></response>\r\n', { connection: 'close',
+    'content-type': 'text/xml',
+    'cache-control': 'no-cache',
+    'access-control-allow-origin': '*' })
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>C296021C411F090000000000000000000000000000F70602501CC2961EB5522F090002501CC296021C418F0100025301141C</BS></response>\r\n', { connection: 'close',
+    'content-type': 'text/xml',
+    'cache-control': 'no-cache',
+    'access-control-allow-origin': '*' });
+
+    gw.link(['19D41C', '1CC296'], {group: 20}, function(err, links){
+      should.not.exist(err);
+      should.exist(links);
+      links.should.be.an.Array;
+      links.length.should.eql(2);
+      links[0].group.should.eql(20);
+      links[0].id.should.eql('19D41C');
+      links[0].wasDeleted.should.be.false;
+      links[1].group.should.eql(20);
+      links[1].id.should.eql('1CC296');
+      links[1].wasDeleted.should.be.false;
+      done();
+    });
+  });
+
+  it('links device to gw (isController = true)', function(done) {
+    this.timeout(70000);
+
+    // var gw = new Insteon(TEST_INSTEON_HOST, TEST_INSTEON_PORT, TEST_USERNAME, TEST_PASSWORD);
+    var gw = new Insteon('192.168.1.122', TEST_INSTEON_PORT, 'admin', '1EB552');
+    nock(gw.url)
+    .get('/3?0265=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0265060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?02621CC2961F090100000000000000000000000000F6=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>02621CC2961F090100000000000000000000000000F60602501CC2961EB5522F090100000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?02640000=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0264000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0264000006025300011CC2960000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n');
+
+    gw.link('1CC296', {isController: true}, function(err, link){
+      should.not.exist(err);
+      should.exist(link);
+      link.id.should.eql('1CC296');
+      link.group.should.eql(1);
+      link.isController.should.be.false;
+      link.wasDeleted.should.be.false;
+      done();
+    });
+  });
+
+  // it('links device to device', function(done) {
+  //   this.timeout(70000);
+  //   nock.recorder.rec();
+
+
+  //   // var gw = new Insteon(TEST_INSTEON_HOST, TEST_INSTEON_PORT, TEST_USERNAME, TEST_PASSWORD);
+  //   var gw = new Insteon('192.168.1.122', TEST_INSTEON_PORT, 'admin', '1EB552');
+
+  //   gw.link('19D41C', '1CC296', function(err, link){
+  //     should.not.exist(err);
+  //     should.exist(link);
+  //     done();
+  //   });
+  // });
 
 
 });

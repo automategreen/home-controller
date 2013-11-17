@@ -13,5 +13,6 @@
   "unused": true,
   "jquery": true,
   "browser": true,
-  "node": true
+  "node": true,
+  "-W065": true
 }

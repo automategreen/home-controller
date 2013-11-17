@@ -1,0 +1,62 @@
+#!/usr/bin/env node
+
+'use strict';
+
+var Insteon = require('../').Insteon;
+var util = require('util');
+var program = require('commander');
+var pkg = require('../package.json');
+var version = pkg.version;
+
+program
+  .version(version)
+  .usage('[options] <user:pass@host:port> <device ...>')
+  .option('-c, --controller', 'Devices are the controller')
+  .option('-u, --unlink', 'Unlink devices from gateway')
+  .option('-g, --group <type>', 'Group number to use for links', parseInt)
+  .parse(process.argv);
+
+if(program.args.length < 2) {
+  return program.help();
+}
+
+var username, password, host;
+var port = 25105;
+var devices = [];
+var idRegex = /^[0-9a-f]{2}\.?[0-9a-f]{2}\.?[0-9a-f]{2}$/i;
+
+var uriRegex = /^(?:([a-z0-9_.]+)(?::([a-z0-9_.]+))?@)?([a-z0-9_.]+)(?::([0-9]+))?$/i;
+
+var uriParts = uriRegex.exec(program.args.shift());
+
+username = uriParts[1];
+password = uriParts[2];
+host = uriParts[3];
+if(uriParts[4]) {
+  port = parseInt(uriParts[4]);
+}
+
+program.args.forEach(function(d) {
+  if(idRegex.test(d)){
+    devices.push(d.replace('.', ''));
+  }
+});
+
+console.log('Connecting to ' + host + ':' + port);
+var gw = new Insteon(host, port, username, password);
+
+if(program.unlink) {
+  gw.unlink(devices, program, function (err, links) {
+    if (err) {
+      return console.log('unlinking failed: ' + err);
+    }
+    console.log('unlinking done: \n\n' + util.inspect(links));
+  });
+} else {
+  gw.link(devices, program, function (err, links) {
+    if (err) {
+      return console.log('linking failed: ' + err);
+    }
+    console.log('links created: \n\n' + util.inspect(links));
+  });
+}
