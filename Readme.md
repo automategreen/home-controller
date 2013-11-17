@@ -113,7 +113,8 @@ Creates scene controller with responder(s). All devices must be available and li
 
 ```js
 {
-  group: Number // controller group/button
+  group: Number, // controller group/button (default: 1)
+  remove: boolean // remove existing responders if not passed in responder (default: false)
 }
 ```
 

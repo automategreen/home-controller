@@ -11,9 +11,9 @@ var version = pkg.version;
 program
   .version(version)
   .usage('[options] <user:pass@host:port> <device ...>')
-  .option('-c, --controller', 'Devices are the controller')
-  .option('-u, --unlink', 'Unlink devices from gateway')
-  .option('-g, --group <type>', 'Group number to use for links', parseInt)
+  .option('-c, --controller', 'devices are the controller')
+  .option('-u, --unlink', 'dnlink devices from gateway')
+  .option('-g, --group <type>', 'group number to use for links', parseInt)
   .parse(process.argv);
 
 if(program.args.length < 2) {
