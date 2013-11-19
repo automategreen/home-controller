@@ -69,7 +69,7 @@ gw.auth(function(error) {
 
 Links device(s) to gateway. Callback return link object as second argument (see `gw.links`).
 
-`device` is the device to link.  It can either be a device id (6 digit hex String), an Array of ids, or null.  If a device id is provided, the device will be linked. If an array of ids is provided, each devices will be configured linked. If device is `null`, the  device must be put into linking state manually (hold set button). The device will be setup as the responder, unless the `isController` option is true.
+`device` is the device to link.  It can either be a device id (6 digit hex String), an Array of ids, or null.  If a device id is provided, the device will be linked. If an array of ids is provided, each devices will be configured linked. If device is `null`, the  device must be put into linking state manually (hold set button). The device will be setup as the responder, unless the `controller` option is true.
 
 `options` is an Object with the options to be used during linking. 
 
@@ -77,7 +77,7 @@ Links device(s) to gateway. Callback return link object as second argument (see 
 
 ```js
 {
-  isController: Boolean, // link the device(s) as a controller(s)
+  controller: Boolean, // link the device(s) as a controller(s)
   group: Number, // controller group/button
   timeout: Number // timeout for manual linking
 }
@@ -184,7 +184,7 @@ Links are returned in the callback as an Array of Link Objects.
 {
 	id: String,
 	group: Number,
-	isController: Boolean,
+	controller: Boolean,
 	isInUse: Boolean,
 	hasBeenUsed: Boolean,
 	isLast: Boolean,
@@ -479,7 +479,7 @@ All-Linking Response (0x64) Status Object:
   response: {
     raw: String,
     type: String,
-    isController: Boolean,
+    controller: Boolean,
     wasDeleted: Boolean,
     group: Number,
     id: String,
@@ -505,7 +505,7 @@ Get All-Link Record Response (0x69 & 0x6A) Status Object:
     raw: String,
     type: String,
     link: {
-      isController: Boolean,
+      controller: Boolean,
       isInUse: Boolean,
       hasBeenUsed: Boolean,
       isLast: Boolean,

@@ -351,7 +351,7 @@ describe('Insteon Gateway', function() {
       links.length.should.eql(2);
       links[0].group.should.eql(1);
       links[0].id.should.eql('112233');
-      links[0].isController.should.be.true;
+      links[0].controller.should.be.true;
       done();
     });
   });
@@ -390,7 +390,7 @@ describe('Insteon Gateway', function() {
       links.length.should.eql(1);
       links[0].group.should.eql(1);
       links[0].id.should.eql('FFFFFF');
-      links[0].isController.should.be.false;
+      links[0].controller.should.be.false;
       links[0].isInUse.should.be.true;
       links[0].isLast.should.be.false;
       links[0].at.should.eql(4095);
@@ -662,7 +662,7 @@ describe('Insteon Gateway', function() {
     });
   });
 
-  it('links device to gw (isController = true)', function(done) {
+  it('links device to gw (controller = true)', function(done) {
     this.timeout(70000);
 
     var gw = new Insteon(TEST_INSTEON_HOST, TEST_INSTEON_PORT, TEST_USERNAME, TEST_PASSWORD);
@@ -682,12 +682,12 @@ describe('Insteon Gateway', function() {
     .get('/buffstatus.xml')
     .reply(200, '<response><BS>0264000006025300019999990000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n');
 
-    gw.link('999999', {isController: true}, function(err, link){
+    gw.link('999999', {controller: true}, function(err, link){
       should.not.exist(err);
       should.exist(link);
       link.id.should.eql('999999');
       link.group.should.eql(1);
-      link.isController.should.be.false;
+      link.controller.should.be.false;
       link.wasDeleted.should.be.false;
       done();
     });

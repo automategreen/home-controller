@@ -27,18 +27,18 @@ var idRegex = /^[0-9a-f]{2}\.?[0-9a-f]{2}\.?[0-9a-f]{2}$/i;
 
 var uriRegex = /^(?:([a-z0-9_.]+)(?::([a-z0-9_.]+))?@)?([a-z0-9_.]+)(?::([0-9]+))?$/i;
 
-var uriParts = uriRegex.exec(program.args.shift());
+program.args.forEach(function(arg) {
+  if(idRegex.test(arg)){
+    devices.push(arg.replace('.', ''));
+  } else {
+    var uriParts = uriRegex.exec(arg);
 
-username = uriParts[1];
-password = uriParts[2];
-host = uriParts[3];
-if(uriParts[4]) {
-  port = parseInt(uriParts[4]);
-}
-
-program.args.forEach(function(d) {
-  if(idRegex.test(d)){
-    devices.push(d.replace('.', ''));
+    username = uriParts[1];
+    password = uriParts[2];
+    host = uriParts[3];
+    if(uriParts[4]) {
+      port = parseInt(uriParts[4]);
+    }
   }
 });
 
