@@ -39,15 +39,9 @@ describe('Insteon Gateway', function() {
 
     nock(gw.url)
     .get('/3?0260=I=3')
-    .reply(200, '', { connection: 'close',
-    'content-type': 'text/html',
-    'cache-control': 'max-age=600',
-    'access-control-allow-origin': '*' })
+    .reply(200)
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>0260FFFFFF03379C060000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' });
+    .reply(200, '<response><BS>0260FFFFFF03379C060000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n');
 
 
     gw.info(function (err, info) {
@@ -108,18 +102,9 @@ describe('Insteon Gateway', function() {
 
     nock(gw.url)
     .get('/3?02629999990F1900=I=3')
-    .reply(200, '', { connection: 'close',
-      'content-type': 'text/html',
-      'cache-control': 'max-age=600',
-      'access-control-allow-origin': '*' })
+    .reply(200)
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>02629999990F1900060250999999FFFFFF2F01FF000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n',
-      {
-        connection: 'close',
-        'content-type': 'text/xml',
-        'cache-control': 'no-cache',
-        'access-control-allow-origin': '*'
-      });
+    .reply(200, '<response><BS>02629999990F1900060250999999FFFFFF2F01FF000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n');
 
     gw.level('999999', function(err, level) {
       should.not.exist(err);
@@ -145,20 +130,11 @@ describe('Insteon Gateway', function() {
 
     nock(gw.url)
     .post('/1?L=admin1=1=password1')
-    .reply(200, '', { connection: 'close',
-      'content-type': 'text/html',
-      'cache-control': 'no-cache',
-      'access-control-allow-origin': '*' })
+    .reply(200)
     .post('/1?L=*=1=*')
-    .reply(200, '', { connection: 'close',
-      'content-type': 'text/html',
-      'cache-control': 'no-cache',
-      'access-control-allow-origin': '*' })
+    .reply(200)
     .post('/1?L=admin=1=password')
-    .reply(200, '', { connection: 'close',
-      'content-type': 'text/html',
-      'cache-control': 'no-cache',
-      'access-control-allow-origin': '*' });
+    .reply(200);
 
     gw.auth('admin1', 'password1', function (err) {
       should.not.exist(err);
@@ -201,15 +177,9 @@ describe('Insteon Gateway', function() {
 
     nock(gw.url)
     .get('/3?02629999991F2E0001000000000000000000000000D1=I=3')
-    .reply(200, '', { connection: 'close',
-      'content-type': 'text/html',
-      'cache-control': 'max-age=600',
-      'access-control-allow-origin': '*' })
+    .reply(200)
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>201CFE1F000000000000000000000000000000000000060250999999FFFFFF2F2E000251999999FFFFFF112E000101000020</BS></response>\r\n', { connection: 'close',
-      'content-type': 'text/xml',
-      'cache-control': 'no-cache',
-      'access-control-allow-origin': '*' });
+    .reply(200, '<response><BS>201CFE1F000000000000000000000000000000000000060250999999FFFFFF2F2E000251999999FFFFFF112E000101000020</BS></response>\r\n');
 
     gw.rampRate('999999', function(err, rate){
       should.not.exist(err);
@@ -225,15 +195,9 @@ describe('Insteon Gateway', function() {
 
     nock(gw.url)
     .get('/3?02629999991F2E0001000000000000000000000000D1=I=3')
-    .reply(200, '', { connection: 'close',
-      'content-type': 'text/html',
-      'cache-control': 'max-age=600',
-      'access-control-allow-origin': '*' })
+    .reply(200)
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>201CFE1F000000000000000000000000000000000000060250999999FFFFFF2F2E000251999999FFFFFF112E000101000020</BS></response>\r\n', { connection: 'close',
-      'content-type': 'text/xml',
-      'cache-control': 'no-cache',
-      'access-control-allow-origin': '*' });
+    .reply(200, '<response><BS>201CFE1F000000000000000000000000000000000000060250999999FFFFFF2F2E000251999999FFFFFF112E000101000020</BS></response>\r\n');
 
     gw.onLevel('999999', function(err, level){
       should.not.exist(err);
@@ -249,15 +213,9 @@ describe('Insteon Gateway', function() {
 
     nock(gw.url)
     .get('/3?02629999990F0300=I=3')
-    .reply(200, '', { connection: 'close',
-      'content-type': 'text/html',
-      'cache-control': 'max-age=600',
-      'access-control-allow-origin': '*' })
+    .reply(200)
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>02629999990F0300060250999999FFFFFF2F03000251999999FFFFFF11030001000000012041001F00000000000000000000</BS></response>\r\n', { connection: 'close',
-      'content-type': 'text/xml',
-      'cache-control': 'no-cache',
-      'access-control-allow-origin': '*' });
+    .reply(200, '<response><BS>02629999990F0300060250999999FFFFFF2F03000251999999FFFFFF11030001000000012041001F00000000000000000000</BS></response>\r\n');
 
     gw.info('999999', function(err, profile){
       should.not.exist(err);
@@ -314,35 +272,17 @@ describe('Insteon Gateway', function() {
 
     nock(gw.url)
     .get('/3?0269=I=3')
-    .reply(200, '', { connection: 'close',
-    'content-type': 'text/html',
-    'cache-control': 'max-age=600',
-    'access-control-allow-origin': '*' })
+    .reply(200)
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>0269060257E20111223303204100000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' })
+    .reply(200, '<response><BS>0269060257E20111223303204100000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/3?026A=I=3')
-    .reply(200, '', { connection: 'close',
-    'content-type': 'text/html',
-    'cache-control': 'max-age=600',
-    'access-control-allow-origin': '*' })
+    .reply(200)
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>026A060257E201AAAAAA03304100000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' })
+    .reply(200, '<response><BS>026A060257E201AAAAAA03304100000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/3?026A=I=3')
-    .reply(200, '', { connection: 'close',
-    'content-type': 'text/html',
-    'cache-control': 'max-age=600',
-    'access-control-allow-origin': '*' })
+    .reply(200)
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>026A150000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' });
+    .reply(200, '<response><BS>026A150000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n');
 
 
     gw.links(function(err, links){
@@ -363,25 +303,13 @@ describe('Insteon Gateway', function() {
 
     nock(gw.url)
     .get('/3?02629999991F2F0000000FFF010000000000000000C2=I=3')
-    .reply(200, '', { connection: 'close',
-    'content-type': 'text/html',
-    'cache-control': 'max-age=600',
-    'access-control-allow-origin': '*' })
+    .reply(200)
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>AA01FFFFFF001C01D5000FFF01000000000000000000060250112233FFFFFF2F2F000251112233FFFFFF112F0000010FFF00</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' })
+    .reply(200, '<response><BS>AA01FFFFFF001C01D5000FFF01000000000000000000060250112233FFFFFF2F2F000251112233FFFFFF112F0000010FFF00</BS></response>\r\n')
     .get('/3?02629999991F2F0000000FF7010000000000000000CA=I=3')
-    .reply(200, '', { connection: 'close',
-    'content-type': 'text/html',
-    'cache-control': 'max-age=600',
-    'access-control-allow-origin': '*' })
+    .reply(200)
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>0000000000000000CA000FF701000000000000000000060250112233FFFFFF2F2F000251112233FFFFFF112F0000010FF700</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' });
+    .reply(200, '<response><BS>0000000000000000CA000FF701000000000000000000060250112233FFFFFF2F2F000251112233FFFFFF112F0000010FF700</BS></response>\r\n');
 
 
     gw.links('999999', function(err, links){
@@ -411,25 +339,13 @@ describe('Insteon Gateway', function() {
     .get('/buffstatus.xml')
     .reply(200, '<response><BS>0265060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/3?02640101=I=3')
-    .reply(200, '', { connection: 'close',
-    'content-type': 'text/html',
-    'cache-control': 'max-age=600',
-    'access-control-allow-origin': '*' })
+    .reply(200)
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>0264010106000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' })
+    .reply(200, '<response><BS>0264010106000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>0264010106000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' })
+    .reply(200, '<response><BS>0264010106000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>026401010602501122330120418F017002530101112233012041000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' });
+    .reply(200, '<response><BS>026401010602501122330120418F017002530101112233012041000000000000000000000000000000000000000000000000</BS></response>\r\n');
 
     gw.link(function(err, link){
       should.not.exist(err);
@@ -459,20 +375,11 @@ describe('Insteon Gateway', function() {
     .get('/buffstatus.xml')
     .reply(200, '<response><BS>0264FF0006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/3?0262AAAAAA0F0A00=I=3')
-    .reply(200, '', { connection: 'close',
-    'content-type': 'text/html',
-    'cache-control': 'max-age=600',
-    'access-control-allow-origin': '*' })
+    .reply(200)
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>0262AAAAAA0F0A00060000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' })
+    .reply(200, '<response><BS>0262AAAAAA0F0A00060000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>0262AAAAAA0F0A00060250AAAAAAFFFFFF2F0A000250AAAAAA0130418F01000253FF00AAAAAA013041000000000000000000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' });
+    .reply(200, '<response><BS>0262AAAAAA0F0A00060250AAAAAAFFFFFF2F0A000250AAAAAA0130418F01000253FF00AAAAAA013041000000000000000000</BS></response>\r\n');
 
     gw.unlink('AAAAAA', {group: 0}, function(err, link){
       should.not.exist(err);
@@ -501,25 +408,13 @@ describe('Insteon Gateway', function() {
     .get('/buffstatus.xml')
     .reply(200, '<response><BS>0264010506000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/3?0262AAAAAA1F090000000000000000000000000000F7=I=3')
-    .reply(200, '', { connection: 'close',
-    'content-type': 'text/html',
-    'cache-control': 'max-age=600',
-    'access-control-allow-origin': '*' })
+    .reply(200)
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>0262AAAAAA1F090000000000000000000000000000F706000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' })
+    .reply(200, '<response><BS>0262AAAAAA1F090000000000000000000000000000F706000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>0262AAAAAA1F090000000000000000000000000000F7060250AAAAAAFFFFFF2F09000250AAAAAA0130418F01000000000000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' })
+    .reply(200, '<response><BS>0262AAAAAA1F090000000000000000000000000000F7060250AAAAAAFFFFFF2F09000250AAAAAA0130418F01000000000000</BS></response>\r\n')
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>AAAA0130411F090000000000000000000000000000F7060250AAAAAAFFFFFF2F09000250AAAAAA0130418F010002530105AA</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' });
+    .reply(200, '<response><BS>AAAA0130411F090000000000000000000000000000F7060250AAAAAAFFFFFF2F09000250AAAAAA0130418F010002530105AA</BS></response>\r\n');
 
     gw.link('AAAAAA', {group: 5}, function(err, link){
       should.not.exist(err);
@@ -547,30 +442,15 @@ describe('Insteon Gateway', function() {
     .get('/buffstatus.xml')
     .reply(200, '<response><BS>0264010406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>0264010406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' })
+    .reply(200, '<response><BS>0264010406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>0264010406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' })
+    .reply(200, '<response><BS>0264010406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>0264010406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' })
+    .reply(200, '<response><BS>0264010406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>0264010406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' })
+    .reply(200, '<response><BS>0264010406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>02640104060250999999021C418B010002530104999999021C410250999999FFFFFF2301040250999999FFFFFF2301040000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' });
+    .reply(200, '<response><BS>02640104060250999999021C418B010002530104999999021C410250999999FFFFFF2301040250999999FFFFFF2301040000</BS></response>\r\n');
 
     gw.link({timeout:60, group: 4}, function(err, link){
       should.not.exist(err);
@@ -599,25 +479,13 @@ describe('Insteon Gateway', function() {
     .get('/buffstatus.xml')
     .reply(200, '<response><BS>0264011406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/3?0262AAAAAA1F090000000000000000000000000000F7=I=3')
-    .reply(200, '', { connection: 'close',
-    'content-type': 'text/html',
-    'cache-control': 'max-age=600',
-    'access-control-allow-origin': '*' })
+    .reply(200)
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>0262AAAAAA1F090000000000000000000000000000F706000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' })
+    .reply(200, '<response><BS>0262AAAAAA1F090000000000000000000000000000F706000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>0262AAAAAA1F090000000000000000000000000000F7060250AAAAAAFFFFFF2F09000250AAAAAA0130418F01000000000000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' })
+    .reply(200, '<response><BS>0262AAAAAA1F090000000000000000000000000000F7060250AAAAAAFFFFFF2F09000250AAAAAA0130418F01000000000000</BS></response>\r\n')
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>AAAA0130411F090000000000000000000000000000F7060250AAAAAAFFFFFF2F09000250AAAAAA0130418F010002530114AA</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' })
+    .reply(200, '<response><BS>AAAA0130411F090000000000000000000000000000F7060250AAAAAAFFFFFF2F09000250AAAAAA0130418F010002530114AA</BS></response>\r\n')
     .get('/3?0265=I=3')
     .reply(200)
     .get('/buffstatus.xml')
@@ -627,25 +495,13 @@ describe('Insteon Gateway', function() {
     .get('/buffstatus.xml')
     .reply(200, '<response><BS>0264011406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/3?02629999991F090000000000000000000000000000F7=I=3')
-    .reply(200, '', { connection: 'close',
-    'content-type': 'text/html',
-    'cache-control': 'max-age=600',
-    'access-control-allow-origin': '*' })
+    .reply(200)
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>02629999991F090000000000000000000000000000F706000000000000000000000000000000000000000000000000000000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' })
+    .reply(200, '<response><BS>02629999991F090000000000000000000000000000F706000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>02629999991F090000000000000000000000000000F7060250999999FFFFFF2F09000250999999021C418F01000000000000</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' })
+    .reply(200, '<response><BS>02629999991F090000000000000000000000000000F7060250999999FFFFFF2F09000250999999021C418F01000000000000</BS></response>\r\n')
     .get('/buffstatus.xml')
-    .reply(200, '<response><BS>9999021C411F090000000000000000000000000000F7060250999999FFFFFF2F09000250999999021C418F01000253011499</BS></response>\r\n', { connection: 'close',
-    'content-type': 'text/xml',
-    'cache-control': 'no-cache',
-    'access-control-allow-origin': '*' });
+    .reply(200, '<response><BS>9999021C411F090000000000000000000000000000F7060250999999FFFFFF2F09000250999999021C418F01000253011499</BS></response>\r\n');
 
     gw.link(['AAAAAA', '999999'], {group: 20}, function(err, links){
       should.not.exist(err);
@@ -662,7 +518,7 @@ describe('Insteon Gateway', function() {
     });
   });
 
-  it('links device to gw (controller = true)', function(done) {
+  it('links device to gw (controller = true)', function (done) {
     this.timeout(70000);
 
     var gw = new Insteon(TEST_INSTEON_HOST, TEST_INSTEON_PORT, TEST_USERNAME, TEST_PASSWORD);
@@ -692,6 +548,304 @@ describe('Insteon Gateway', function() {
       done();
     });
   });
+
+  it('creates a scene between two devices', function (done) {
+
+    this.timeout(70000);
+
+    var gw = new Insteon(TEST_INSTEON_HOST, TEST_INSTEON_PORT, TEST_USERNAME, TEST_PASSWORD);
+    nock(gw.url)
+    .get('/3?0260=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0260FFFFFF03379C060000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?0262AAAAAA1F2F0000000FFF010000000000000000C2=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262AAAAAA1F2F0000000FFF010000000000000000C206000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>4201BBBBBB000000DB000FFF010000000000000000C2060250AAAAAAFFFFFF2F2F000251AAAAAAFFFFFF112F0000010FFF01</BS></response>\r\n')
+    .get('/3?0262AAAAAA1F2F0000000FF7010000000000000000CA=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262AAAAAA1F2F0000000FF7010000000000000000CA06000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>EA00FFFFFF031C009B000FF7010000000000000000CA060250AAAAAAFFFFFF2F2F000251AAAAAAFFFFFF112F0000010FF701</BS></response>\r\n')
+    .get('/3?0262AAAAAA1F2F0000000FEF010000000000000000D2=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262AAAAAA1F2F0000000FEF010000000000000000D206000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>EA00FFFFFF031C00A3000FEF010000000000000000D2060250AAAAAAFFFFFF2F2F000251AAAAAAFFFFFF112F0000010FEF01</BS></response>\r\n')
+    .get('/3?0262AAAAAA1F2F0000000FE7010000000000000000DA=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262AAAAAA1F2F0000000FE7010000000000000000DA06000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>AA01FFFFFF001C00ED000FE7010000000000000000DA060250AAAAAAFFFFFF2F2F000251AAAAAAFFFFFF112F0000010FE701</BS></response>\r\n')
+    .get('/3?0262AAAAAA1F2F0000000FDF010000000000000000E2=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262AAAAAA1F2F0000000FDF010000000000000000E206000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0000000000000000E1000FDF010000000000000000E2060250AAAAAAFFFFFF2F2F000251AAAAAAFFFFFF112F0000010FDF01</BS></response>\r\n')
+    .get('/3?0262BBBBBB1F2F0000000FFF010000000000000000C2=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262BBBBBB1F2F0000000FFF010000000000000000C206000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0201AAAAAA000000B5000FFF010000000000000000C2060250BBBBBBFFFFFF2F2F000251BBBBBBFFFFFF112F0001010FFF00</BS></response>\r\n')
+    .get('/3?0262BBBBBB1F2F0000000FF7010000000000000000CA=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262BBBBBB1F2F0000000FF7010000000000000000CA06000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>E201FFFFFF001C00A5000FF7010000000000000000CA060250BBBBBBFFFFFF2F2F000251BBBBBBFFFFFF112F0001010FF700</BS></response>\r\n')
+    .get('/3?0262BBBBBB1F2F0000000FEF010000000000000000D2=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262BBBBBB1F2F0000000FEF010000000000000000D206000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>A201FFFFFF001C00ED000FEF010000000000000000D2060250BBBBBBFFFFFF2F2F000251BBBBBBFFFFFF112F0001010FEF00</BS></response>\r\n')
+    .get('/3?0262BBBBBB1F2F0000000FE7010000000000000000DA=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262BBBBBB1F2F0000000FE7010000000000000000DA06000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0000000000000000D9000FE7010000000000000000DA060250BBBBBBFFFFFF2F2F000251BBBBBBFFFFFF112F0001010FE700</BS></response>\r\n')
+    .get('/3?0262BBBBBB1F2F0000020FFF088201AAAAAAFF1B001E=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262BBBBBB1F2F0000020FFF088201AAAAAAFF1B001E06000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262BBBBBB1F2F0000020FFF088201AAAAAAFF1B001E060250BBBBBBFFFFFF2F2F0000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?0262AAAAAA1F2F0000020FFF08C201BBBBBBFF1B00AB=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262AAAAAA1F2F0000020FFF08C201BBBBBBFF1B00AB06000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262AAAAAA1F2F0000020FFF08C201BBBBBBFF1B00AB060250AAAAAAFFFFFF2F2F0000000000000000000000000000000000</BS></response>\r\n');
+
+    var responder = {
+      id: 'BBBBBB',
+      level: 100, /* 100% */
+      ramp: 2000 /* 2 sec */
+    };
+    gw.scene('AAAAAA', responder, {remove: true}, function (err) {
+      should.not.exist(err);
+      done();
+    });
+  });
+
+  it('removes devices from a scene', function (done) {
+
+
+    this.timeout(70000);
+
+    var gw = new Insteon(TEST_INSTEON_HOST, TEST_INSTEON_PORT, TEST_USERNAME, TEST_PASSWORD);
+    nock(gw.url)
+    .get('/3?0260=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0260FFFFFF03379C060000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?0262AAAAAA1F2F0000000FFF010000000000000000C2=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262AAAAAA1F2F0000000FFF010000000000000000C206000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>C201999999FF00005C000FFF010000000000000000C2060250AAAAAAFFFFFF2F2F000251AAAAAAFFFFFF112F0000010FFF01</BS></response>\r\n')
+    .get('/3?0262AAAAAA1F2F0000000FF7010000000000000000CA=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262AAAAAA1F2F0000000FF7010000000000000000CA06000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>EA00FFFFFF031C009B000FF7010000000000000000CA060250AAAAAAFFFFFF2F2F000251AAAAAAFFFFFF112F0000010FF701</BS></response>\r\n')
+    .get('/3?0262AAAAAA1F2F0000000FEF010000000000000000D2=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262AAAAAA1F2F0000000FEF010000000000000000D206000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>EA00FFFFFF031C00A3000FEF010000000000000000D2060250AAAAAAFFFFFF2F2F000251AAAAAAFFFFFF112F0000010FEF01</BS></response>\r\n')
+    .get('/3?0262AAAAAA1F2F0000000FE7010000000000000000DA=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262AAAAAA1F2F0000000FE7010000000000000000DA06000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>AA01FFFFFF001C00ED000FE7010000000000000000DA060250AAAAAAFFFFFF2F2F000251AAAAAAFFFFFF112F0000010FE701</BS></response>\r\n')
+    .get('/3?0262AAAAAA1F2F0000000FDF010000000000000000E2=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262AAAAAA1F2F0000000FDF010000000000000000E206000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0000000000000000E1000FDF010000000000000000E2060250AAAAAAFFFFFF2F2F000251AAAAAAFFFFFF112F0000010FDF01</BS></response>\r\n')
+    .get('/3?02629999991F2F0000000FFF010000000000000000C2=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>02629999991F2F0000000FFF010000000000000000C206000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>8201AAAAAAFF1B001B000FFF010000000000000000C2060250999999FFFFFF2F2F000251999999FFFFFF112F0001010FFF00</BS></response>\r\n')
+    .get('/3?02629999991F2F0000000FF7010000000000000000CA=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>02629999991F2F0000000FF7010000000000000000CA06000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>E201FFFFFF001C00A5000FF7010000000000000000CA060250999999FFFFFF2F2F000251999999FFFFFF112F0001010FF700</BS></response>\r\n')
+    .get('/3?02629999991F2F0000000FEF010000000000000000D2=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>02629999991F2F0000000FEF010000000000000000D206000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>A201FFFFFF001C00ED000FEF010000000000000000D2060250999999FFFFFF2F2F000251999999FFFFFF112F0001010FEF00</BS></response>\r\n')
+    .get('/3?02629999991F2F0000000FE7010000000000000000DA=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>02629999991F2F0000000FE7010000000000000000DA06000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0000000000000000D9000FE7010000000000000000DA060250999999FFFFFF2F2F000251999999FFFFFF112F0001010FE700</BS></response>\r\n')
+    .get('/3?02629999991F2F0000020FFF080201AAAAAA000000B8=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>02629999991F2F0000020FFF080201AAAAAA000000B806000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>02629999991F2F0000020FFF080201AAAAAA000000B8060250999999FFFFFF2F2F0000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?0262AAAAAA1F2F0000020FFF084201999999000000AB=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262AAAAAA1F2F0000020FFF084201999999000000AB06000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0262AAAAAA1F2F0000020FFF084201999999000000AB060250AAAAAAFFFFFF2F2F0000000000000000000000000000000000</BS></response>\r\n');
+
+    gw.scene('AAAAAA', null, {remove: true}, function (err) {
+      should.not.exist(err);
+      done();
+    });
+  });
+
+
+  it('creates a scene between two devices and the gateway', function (done) {
+
+    this.timeout(70000);
+
+    var gw = new Insteon(TEST_INSTEON_HOST, TEST_INSTEON_PORT, TEST_USERNAME, TEST_PASSWORD);
+    nock(gw.url)
+    .get('/3?0260=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>02601EB55203379C060000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?0269=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0269060257E20126B1CC030E4100000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?026A=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026A060257E20119D41C03304100000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?026A=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026A060257E21426B1CC7F190000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?026A=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026A060257A20126B1CC00000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?026A=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026A060257E21419D41C7F190000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?026A=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026A150000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?026226B1CC1F2F0000000FFF010000000000000000C2=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026226B1CC1F2F0000000FFF010000000000000000C206000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>82141EB5527F19006E000FFF010000000000000000C206025026B1CC1EB5522F2F00025126B1CC1EB552112F0001010FFF00</BS></response>\r\n')
+    .get('/3?026226B1CC1F2F0000000FF7010000000000000000CA=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026226B1CC1F2F0000000FF7010000000000000000CA06000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>E2011EB552001C00A5000FF7010000000000000000CA06025026B1CC1EB5522F2F00025126B1CC1EB552112F0001010FF700</BS></response>\r\n')
+    .get('/3?026226B1CC1F2F0000000FEF010000000000000000D2=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026226B1CC1F2F0000000FEF010000000000000000D206000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>A2011EB552001C00ED000FEF010000000000000000D206025026B1CC1EB5522F2F00025126B1CC1EB552112F0001010FEF00</BS></response>\r\n')
+    .get('/3?026226B1CC1F2F0000000FE7010000000000000000DA=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026226B1CC1F2F0000000FE7010000000000000000DA06000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0000000000000000D9000FE7010000000000000000DA06025026B1CC1EB5522F2F00025126B1CC1EB552112F0001010FE700</BS></response>\r\n')
+    .get('/3?026219D41C1F2F0000000FFF010000000000000000C2=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026219D41C1F2F0000000FFF010000000000000000C206000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>82141EB5527F19006E000FFF010000000000000000C206025019D41C1EB5522F2F00025119D41C1EB552112F0000010FFF01</BS></response>\r\n')
+    .get('/3?026219D41C1F2F0000000FF7010000000000000000CA=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026219D41C1F2F0000000FF7010000000000000000CA06000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>EA001EB552031C009B000FF7010000000000000000CA06025019D41C1EB5522F2F00025119D41C1EB552112F0000010FF701</BS></response>\r\n')
+    .get('/3?026219D41C1F2F0000000FEF010000000000000000D2=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026219D41C1F2F0000000FEF010000000000000000D206000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>EA001EB552031C00A3000FEF010000000000000000D206025019D41C1EB5522F2F00025119D41C1EB552112F0000010FEF01</BS></response>\r\n')
+    .get('/3?026219D41C1F2F0000000FE7010000000000000000DA=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026219D41C1F2F0000000FE7010000000000000000DA06000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>AA011EB552001C00ED000FE7010000000000000000DA06025019D41C1EB5522F2F00025119D41C1EB552112F0000010FE701</BS></response>\r\n')
+    .get('/3?026219D41C1F2F0000000FDF010000000000000000E2=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026219D41C1F2F0000000FDF010000000000000000E206000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>0000000000000000E1000FDF010000000000000000E206025019D41C1EB5522F2F00025119D41C1EB552112F0000010FDF01</BS></response>\r\n')
+    .get('/3?026226B1CC1F2F0000020FE70882321EB5527F190060=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026226B1CC1F2F0000020FE70882321EB5527F19006006000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026226B1CC1F2F0000020FE70882321EB5527F19006006025026B1CC1EB5522F2F0000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?026F40C23226B1CC7F1900=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026F40C23226B1CC7F1900060000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?026219D41C1F2F0000020FDF0882321EB5527F190068=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026219D41C1F2F0000020FDF0882321EB5527F19006806000000000000000000000000000000000000000000000000000000</BS></response>\r\n')
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026219D41C1F2F0000020FDF0882321EB5527F19006806025019D41C1EB5522F2F0000000000000000000000000000000000</BS></response>\r\n')
+    .get('/3?026F40C23219D41C7F1900=I=3')
+    .reply(200)
+    .get('/buffstatus.xml')
+    .reply(200, '<response><BS>026F40C23219D41C7F1900060000000000000000000000000000000000000000000000000000000000000000000000000000</BS></response>\r\n');
+
+    var responders = [{
+      id: '26B1CC',
+      level: 50, /* 100% */
+      ramp: 6500 /* 2 sec */
+    }, {
+      id: '19D41C',
+      level: 50, /* 100% */
+      ramp: 6500 /* 2 sec */
+    }];
+    gw.scene('gw', responders, {group: 50}, function (err) {
+      should.not.exist(err);
+      done();
+    });
+  });
+
 
 
 });
