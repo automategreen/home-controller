@@ -1,7 +1,7 @@
-home-controller
+home-controller [![Build Status](https://travis-ci.org/automategreen/home-controller.png)](https://travis-ci.org/automategreen/home-controller)
 ===============
 
-[![Build Status](https://travis-ci.org/automategreen/home-controller.png)](https://travis-ci.org/automategreen/home-controller)
+
 
 Introduction
 ------------
