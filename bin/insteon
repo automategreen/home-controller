@@ -6,6 +6,6 @@ var version = pkg.version;
 
 program
   .version(version)
-  .command('link <gateway> <device...>', 'links device(s) to a gateway')
+  .command('link <gateway> <device ... >', 'link device(s) to a gateway')
   .command('map <gateway>', 'map the Insteon network')
   .parse(process.argv);
