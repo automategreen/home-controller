@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": "Brandon Goode <brandon@automategreen.com>",
   "name": "home-controller",
   "description": "A Node Home Automation Controller for Insteon Devices",
@@ -26,7 +26,6 @@
   "devDependencies": {
     "mocha": "*",
     "should": "*",
-    "nock": "~0.18.2",
     "grunt": "~0.4.1",
     "grunt-contrib-jshint": "~0.6.1",
     "grunt-contrib-uglify": "~0.2.2",
