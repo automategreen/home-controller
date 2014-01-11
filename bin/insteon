@@ -8,4 +8,5 @@ program
   .version(version)
   .command('link <gateway> <device ... >', 'link device(s) to a gateway')
   .command('map <gateway>', 'map the Insteon network')
+  .command('plm <gateway>', 'PLM interface to gateway')
   .parse(process.argv);

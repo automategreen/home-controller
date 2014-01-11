@@ -6,7 +6,7 @@ home-controller [![Build Status](https://travis-ci.org/automategreen/home-contro
 Introduction
 ------------
 
-home-controller is a node package to control Insteon home automation devices.  To control the Insteon devices, either an [Insteon Hub](http://www.insteon.com/2242-222-insteon-hub.html) or an [Insteon SmartLinc](http://www.insteon.com/2412n-smartlinc-central-controller.html) must be accessible from the app.
+home-controller is a node package to control Insteon home automation devices.  The API uses the direct PLM connection over TCP. As of 0.3, the HTTP interface is no longer used.  To control the Insteon devices, either an [Insteon Hub](http://www.insteon.com/2242-222-insteon-hub.html) or an [Insteon SmartLinc](http://www.insteon.com/2412n-smartlinc-central-controller.html) must be accessible from the app.
 
 Features
 --------
@@ -23,47 +23,72 @@ Install via npm:
 
 `npm install home-controller`
 
-Add `require` statement to the app to access the Insteon object
-
-	var Insteon = require('home-controller').Insteon;
 
 API
 ---
 
+**Note:** As of version 0.3 the function on, onFast, off, and offFast have been renamed to turnOn, turnOnFast, turnOff, and turnOffFast.  This was done to remove the name conflict with EventEmitter.
+
 ### Insteon Gateway
 
-#### Insteon(host[, port[, username, password]])
+#### Class: Insteon()
 
-Constructor for Insteon gateway
+Add `require` statement to the app to access the Insteon class
 
-If no port is provided, port 80 is used.  If no username or password is provided, then authentication is not used.
+```js
+var Insteon = require('home-controller').Insteon;
+```
+
+The Insteon class inherits [EventEmitter](http://nodejs.org/api/events.html)
+
+
+#### gw.connect(host, [port], [connectListener])
+
+Creates a connection to the gateway.
+
+When the 'connect' event is emitted the connection is established. If there is a problem connecting, the 'connect' event will not be emitted, the 'error' event will be emitted with the exception. ([See socket.connect](http://nodejs.org/api/net.html#net_socket_connect_path_connectlistener));
+
+`connectListener`  will be added as an listener for the 'connect' event.
 
 ##### Examples
 
 ```js
-var gw = Insteon('my.home.com')
-var gw = Insteon('192.168.10.10', 25105)
-var gw = Insteon('192.168.10.10', 25105, 'user', 'pass')
-```
-
-#### gw.auth([username, password,] callback)
-
-Updates the authentication on the gateway
-
-If username or password are blank, then authentication is disabled.
-
-##### Examples
-
-```js
-var gw = Insteon('my.home.com');
-gw.auth('admin', 'password', function(error) {
-	// User name and password updated
-});
-
-gw.auth(function(error) {
-	// Username and password cleared - auth disabled
+var gw = Insteon();
+var gw.connect('my.home.com');
+var gw.connect('192.168.10.10', 9761);
+var gw.connect('192.168.10.10', function(){
+  console.log('Connected!');
 });
 ```
+
+#### gw.close()
+
+Closes the connection to the gateway.  The event `'close'` will be emitted once the connection is closed. 
+
+#### Event: 'connect'
+
+Emitted when the connection to the gateway is successfully established. 
+
+#### Event: 'close'
+
+Emitted once the socket is fully closed. The argument had_error is a boolean which says if the socket was closed due to a transmission error. ([See net.Socket Event: 'close'](http://nodejs.org/api/net.html#net_event_close_1))
+
+**Callback arguments**
+
+- `had_error` Boolean true if the socket had a transmission error
+
+#### Event: 'command'
+
+Emitted when an unsolicited command is received. The argument `command` will be the command object.
+
+**Callback arguments**
+
+- `command` received from gateway
+
+#### Event: 'error'
+
+Emitted when an error occurs. The 'close' event will be called directly following this event.
+
 
 ### Insteon Linking and Scene Functions
 
@@ -87,7 +112,7 @@ Links device(s) to gateway. Callback return link object as second argument (see 
 
 `group` is the controller group to link the responders to.  Valid group numbers vary by device type.  The hub supports group numbers 0-255. Default is 1.
 
-`timeout` is the number of seconds to wait for linking to complete. (Remember you have to hold the set button for at least 10 seconds.)Default is 30.
+`timeout` is the number of milliseconds to wait for linking to complete. (Remember you have to hold the set button for at least 10 seconds.)Default is 30000 ms.
 
 
 #### gw.scene(controller, responder, [options,] callback)
@@ -103,8 +128,8 @@ Creates scene controller with responder(s). All devices must be available and li
 ```js
 {
   id: String, // device id (6 digit hex String)
-  level: Number, // See level in gw.on()
-  rate: Number, // See rate in gw.on()
+  level: Number, // See level in gw.turnOn()
+  rate: Number, // See rate in gw.turnOn()
   data: Array  // data to be configure for scene (overrides level and rate)]
 }
 ```
@@ -122,7 +147,7 @@ Creates scene controller with responder(s). All devices must be available and li
 
 `group` is the controller group to link the responders to.  Valid group numbers vary by device type.  The hub supports group numbers 0-255. Default is 1.
 
-`timeout` is the number of seconds to wait for linking to complete. (Remember you have to hold the set button for at least 10 seconds.) Default is 30.
+`timeout` is the number of milliseconds to wait for linking to complete. (Remember you have to hold the set button for at least 10 seconds.) Default is 30,000 ms.
 
 ##### Examples
 
@@ -276,7 +301,7 @@ Gets the version information about a device. Version object is returned in callb
 
 ### Insteon Lighting Functions
 
-#### gw.on(id, [level, [rate,]] callback)
+#### gw.turnOn(id, [level, [rate,]] callback)
 
 Turns an Insteon dimmer switch on to the provided level
 
@@ -286,13 +311,13 @@ Turns an Insteon dimmer switch on to the provided level
 
 `rate` is the speed at which the light is turned on to the provided `level`. If not provided, the default saved ramp rate of the device is used.  The rate value can either be 'slow', 'fast', or the number of milliseconds. 'fast' is 0.1 seconds.  'slow' is 1 minute.  If milliseconds is provided, the closest defined ramp rate less than the provided value is used.
 
-#### gw.onFast(id, callback)
+#### gw.turnOnFast(id, callback)
 
 Turn light on fast (no ramp) to pre-saved level
 
 `id` is the id (6 digit hex String) of the light switch.
 
-#### gw.off(id, [rate,] callback)
+#### gw.turnOff(id, [rate,] callback)
 
 Turns light off
 
@@ -300,7 +325,7 @@ Turns light off
 
 `rate` is the speed the light turns off.  See `on` for values.
 
-#### gw.offFast(id, callback)
+#### gw.turnOffFast(id, callback)
 
 Turns light off fast (no ramp)
 

@@ -10,62 +10,77 @@ var version = pkg.version;
 
 program
   .version(version)
-  .usage('<user:pass@host:port>')
+  .usage('[options] <host:port>')
+  .option('-v, --verbose', 'more output')
+  .option('-d, --debug', 'alot more output')
   .parse(process.argv);
 
 if(program.args.length !== 1) {
   return program.help();
 }
 
-var username, password, host;
-var port = 25105;
+var host, port;
 
-var uriRegex = /^(?:([a-z0-9_.]+)(?::([a-z0-9_.]+))?@)?([a-z0-9_.]+)(?::([0-9]+))?$/i;
+var uri = program.args.shift();
+var uriParts = uri.split(':');
 
-var uriParts = uriRegex.exec(program.args.shift());
-
-username = uriParts[1];
-password = uriParts[2];
-host = uriParts[3];
-if(uriParts[4]) {
-  port = parseInt(uriParts[4]);
+host = uriParts[0];
+if(uriParts.length > 1) {
+  port = parseInt(uriParts[1]);
 }
 
-console.log('Connecting to ' + host + ':' + port);
-var gw = new Insteon(host, port, username, password);
+console.log('Connecting to ' + uri);
+var gw = new Insteon();
+
+gw.debug = program.debug;
+
 var network = {};
 
-gw.info(function onInfo(err, info) {
-  if(err) {
-    return console.log('Failed to connect to gateway, ' + err);
-  }
+gw.on('connect', function () {
+  console.log('Connected');
 
-  network[info.id] = info;
-  console.log('Found gateway: ' + info.id + ' - ' + info.deviceCategory.name);
-
-  console.log('Getting links for gateway ' + info.id);
-  gw.links(function onLinksFound(err, links){
+  gw.info(function onInfo(err, info) {
     if(err) {
-      return console.log('Failed to find any links because of an error, ' + err);
+      return console.log('Failed to connect to gateway, ' + err);
     }
 
-    if(links && links.length > 0){
-      network[info.id].links = links.slice(); // copy array
-      console.log('Found links: \n' + util.inspect(links));
+    network[info.id] = info;
+    console.log('Found gateway: ' + info.id + ' - ' + info.deviceCategory.name);
 
-      foundLinks(links);
-    } else {
-      console.log('No links found.  Entering linking mode for 3 minutes.\n\nHold set button on device.');
-      gw.link({timeout: 180}, function(err, link) {
-        if(err) {
-          return console.log('Failed to link, ' + err);
-        }
+    console.log('Getting links for gateway ' + info.id);
+    gw.links(function onLinksFound(err, links){
+      if(err) {
+        return console.log('Failed to find any links because of an error, ' + err);
+      }
 
-        foundLinks([link]);
-      });
-    }
+      if(links && links.length > 0){
+        network[info.id].links = links.slice(); // copy array
+        program.verbose && console.log('Found links: \n' + util.inspect(links));
+
+        foundLinks(links);
+      } else {
+        console.log('No links found.  Entering linking mode for 3 minutes.\n\nHold set button on device.');
+        gw.link({timeout: 180}, function(err, link) {
+          if(err) {
+            return console.log('Failed to link, ' + err);
+          }
+
+          foundLinks([link]);
+        });
+      }
+    });
   });
 });
+
+gw.on('close', function() {
+  console.log('Connection closed');
+});
+
+gw.on('error', function(err) {
+  console.log(err.stack);
+});
+
+gw.connect(host, port);
 
 
 function foundLinks(links) {
@@ -75,7 +90,7 @@ function foundLinks(links) {
   }
   var link = links.shift();
 
-  if(network[link.id]){
+  if(network[link.id] !== undefined){
     return foundLinks(links); // already found this link
   }
 
@@ -99,7 +114,7 @@ function foundLinks(links) {
         console.log('Error getting links for devcie ' + link.id + ' - skipping');
         return foundLinks(links);
       }
-      console.log('Found links: \n' + util.inspect(moreLinks));
+      program.verbose && console.log('Found links: \n' + util.inspect(moreLinks));
       network[link.id].links = moreLinks;
       foundLinks(links.concat(moreLinks));
     });
@@ -109,19 +124,23 @@ function foundLinks(links) {
 function printNetwork() {
   console.log('\n\nNetwork Map:');
   for(var id in network) {
-    var controls = [];
+    var controls = {};
     var type = 'Unresponsive';
     if(network[id]){
-      type = network[id].deviceCategory ? network[id].deviceCategory.name : '';
+      type = network[id].deviceCategory ? network[id].deviceCategory.name : 'Unknown Type';
       for(var i = 0; i<network[id].links.length; i++){
-        if(network[id].links[i].isController) {
-          controls.push(network[id].links[i].id);
+        var link = network[id].links[i];
+        if(link.controller) {
+          var grp = link.group.toString();
+          controls[grp] = controls[grp] || [];
+          controls[grp].push(network[id].links[i].id);
         }
       }
     }
     console.log('%s - %s', id, type);
-    if(controls.length) {
-      console.log('\tControls: %s', controls.join());
+    for(var g in controls) {
+      console.log('\tControl group %s: %s', g, controls[g].join());
     }
   }
+  process.exit();
 }
