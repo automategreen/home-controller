@@ -53,10 +53,8 @@ When the 'connect' event is emitted the connection is established. If there is a
 ##### Examples
 
 ```js
-var gw = Insteon();
-var gw.connect('my.home.com');
-var gw.connect('192.168.10.10', 9761);
-var gw.connect('192.168.10.10', function(){
+var gw = new Insteon();
+gw.connect('192.168.10.10', function(){
   console.log('Connected!');
 });
 ```
