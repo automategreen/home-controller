@@ -21,7 +21,8 @@
     "node": ">= 0.10"
   },
   "dependencies": {
-    "commander": "~2.0.0"
+    "commander": "~2.0.0",
+    "debug": "~0.7.4"
   },
   "devDependencies": {
     "mocha": "*",

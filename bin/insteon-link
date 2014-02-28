@@ -15,7 +15,6 @@ program
   .option('-u, --unlink', 'unlink devices from gateway')
   .option('-g, --group <type>', 'group number to use for links', parseInt)
   .option('-v, --verbose', 'more output')
-  .option('-d, --debug', 'alot more output')
   .parse(process.argv);
 
 if(program.args.length < 2) {
@@ -44,7 +43,6 @@ program.args.forEach(function(arg) {
 
 console.log('Connecting to ' + host + ':' + port);
 var gw = new Insteon();
-gw.debug = program.debug;
 
 gw.on('connect', function () {
   if(program.unlink) {

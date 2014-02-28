@@ -12,7 +12,6 @@ program
   .version(version)
   .usage('[options] <host:port>')
   .option('-v, --verbose', 'more output')
-  .option('-d, --debug', 'alot more output')
   .parse(process.argv);
 
 if(program.args.length !== 1) {
@@ -31,8 +30,6 @@ if(uriParts.length > 1) {
 
 console.log('Connecting to ' + uri);
 var gw = new Insteon();
-
-gw.debug = program.debug;
 
 var network = {};
 
