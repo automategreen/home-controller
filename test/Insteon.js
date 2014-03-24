@@ -25,21 +25,24 @@ var mockHub = net.createServer(function (socket) {
         break;
       }
     }
+    if(!responses) {
+      return;
+    }
 
     if(typeof responses === 'string') {
       responses = [responses];
     }
 
-    function write(responses) {
-      var resp = responses.shift();
-      socket.write(resp, 'hex');
-      if(responses.length > 0){
-        setTimeout(function() {
-          write(responses);
-        }, 100);
+    function write(response) {
+      if(!response) {
+        return;
       }
+      socket.write(response, 'hex');
+      setTimeout(function() {
+        write(responses.shift());
+      }, 100);
     }
-    write(responses);
+    write(responses.shift());
   });
 });
 
@@ -284,15 +287,15 @@ describe('Insteon Gateway', function() {
     mockData = [{
       '02629999991f2f0000000fff010000000000000000c2':
         ['02629999991f2f0000000fff010000000000000000c206',
-        '0250112233ffffff2f2f00',
-        '0251112233ffffff112f0000010fff00aa01ffffff001c01d5']
+        '0250999999ffffff2f2f00',
+        '0251999999ffffff112f0000010fff00aa01ffffff001c01d5']
 
     },
     {
       '02629999991f2f0000000ff7010000000000000000ca':
       ['02629999991f2f0000000ff7010000000000000000ca06',
-      '0250112233ffffff2f2f00',
-      '0251112233ffffff112f0000010ff7000000000000000000ca']
+      '0250999999ffffff2f2f00',
+      '0251999999ffffff112f0000010ff7000000000000000000ca']
     }];
 
     gw.connect(host, function (){

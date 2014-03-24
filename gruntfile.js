@@ -27,6 +27,12 @@ module.exports = function(grunt) {
     mochaTest: {
       test: {
         options: {
+          reporter: 'spec'
+        },
+        src: ['test/**/*.js']
+      },
+      testCoverage: {
+        options: {
           reporter: 'spec',
           require: 'test/coverage/blanket'
         },
@@ -56,8 +62,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-test');
 
 
-  grunt.registerTask('test', ['jshint', 'mochaTest']);
-
   grunt.registerTask('default', ['jshint', 'mochaTest']);
+
+  grunt.registerTask('test', ['jshint', 'mochaTest:test']);
+
+  grunt.registerTask('coverage', ['jshint', 'mochaTest:testCoverage', 'mochaTest:coverage', 'mochaTest:travis-cov']);
 
 };
