@@ -1,5 +1,5 @@
 {
-  "version": "0.3.2",
+  "version": "0.3.3",
   "author": "Brandon Goode <brandon@automategreen.com>",
   "name": "home-controller",
   "description": "A Node Home Automation Controller for Insteon Devices",
@@ -21,19 +21,19 @@
     "node": ">= 0.10"
   },
   "dependencies": {
-    "commander": "~2.0.0",
-    "debug": "~0.7.4"
+    "commander": "2.2.*",
+    "debug": "0.8.*"
   },
   "devDependencies": {
     "mocha": "*",
     "should": "*",
-    "grunt": "~0.4.1",
-    "grunt-contrib-jshint": "~0.6.1",
-    "grunt-contrib-uglify": "~0.2.2",
-    "grunt-contrib-concat": "~0.3.0",
-    "grunt-mocha-test": "~0.6.2",
-    "blanket": "~1.1.5",
-    "travis-cov": "~0.2.4"
+    "grunt": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-concat": "*",
+    "grunt-mocha-test": "*",
+    "blanket": "*",
+    "travis-cov": "*"
   },
   "scripts": {
     "test": "grunt test",
