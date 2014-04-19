@@ -571,12 +571,13 @@ describe('Insteon Gateway', function() {
       '0265': '026506'
     },
     {
-      '02629999991f090100000000000000000000000000f6':
-      ['02629999991f090100000000000000000000000000f606',
-      '0250999999ffffff2f0901']
+      '02640001': '0264000006'
     },
     {
-      '02640000': ['0264000006', '02530001999999000000']
+      '02629999991f090100000000000000000000000000f6':
+      ['02629999991f090100000000000000000000000000f606',
+      '0250999999ffffff2f0901',
+      '02530001999999000000']
     }];
 
     gw.connect(host, function (){
@@ -669,7 +670,7 @@ describe('Insteon Gateway', function() {
         level: 100, /* 100% */
         ramp: 2000 /* 2 sec */
       };
-      gw.scene('AAAAAA', responder, {remove: true}, function (err) {
+      gw.scene('AAAAAA', responder, function (err) {
         should.not.exist(err);
         done();
       });
