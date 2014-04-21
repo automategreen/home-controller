@@ -1097,4 +1097,68 @@ describe('Insteon Gateway', function() {
   }); // describe Scene Control
 
 
+  describe('Queueing', function() {
+
+    it('multiple commands', function(done) {
+      var plan = new Plan(2, done);
+      var gw = new Insteon();
+
+      mockData = [{
+        '026226ace10f1600':
+        [
+          '026226ace10f160006',
+          '025026ace11eb5522f1600'
+        ]
+      },
+      {
+        '026226b1cc0f1500':
+        [
+          '026226b1cc0f150006',
+          '025026b1cc1eb5522f1500'
+        ]
+      }];
+
+
+      gw.connect(host, function (){
+        gw.dim('26ace1', function (err) {
+          should.not.exist(err);
+          plan.ok();
+        });
+        gw.brighten('26b1cc', function (err) {
+          should.not.exist(err);
+          plan.ok();
+        });
+      });
+    });
+
+    it('multiple commands with timeout', function(done) {
+      var plan = new Plan(2, done);
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '026226b1cc0f1500':
+        [
+          '026226b1cc0f150006',
+          '025026b1cc1eb5522f1500'
+        ]
+      }];
+
+
+      gw.connect(host, function (){
+        gw.dim('26ace1', function (err, status) {
+          should.not.exist(err);
+          should.not.exist(status.standard);
+          plan.ok();
+        });
+        gw.brighten('26b1cc', function (err) {
+          should.not.exist(err);
+          plan.ok();
+        });
+      });
+    });
+
+
+  }); // describe Queueing
+
 });
