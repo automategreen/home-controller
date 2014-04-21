@@ -4,6 +4,27 @@ var Insteon = require('../').Insteon;
 var should = require('should');
 var net = require('net');
 var util = require('util');
+var assert = require('assert');
+
+
+function Plan(count, done) {
+  this.done = done;
+  this.count = count;
+}
+
+Plan.prototype.ok = function() {
+
+  if (this.count === 0) {
+    assert(false, 'Too many assertions called');
+  } else {
+    this.count--;
+  }
+
+  if (this.count === 0) {
+    this.done();
+  }
+};
+
 
 var mockData = null;
 
@@ -876,6 +897,204 @@ describe('Insteon Gateway', function() {
     });
   });
 
+
+
+  describe('Scene Control', function() {
+
+    it('scene on', function(done) {
+      var plan = new Plan(4, done);
+      var gw = new Insteon();
+
+      mockData = [{
+        '0261821100':
+        [
+          '026182110006',
+          '025026ace11eb552601185',
+          '025806025026b1cc1eb552601185025026b1cc1eb552601185'
+        ]
+      }];
+
+      gw.on('command', function (cmd) {
+        should.exist(cmd);
+        should.exist(cmd.standard);
+        cmd.standard.command1.should.eql('11');
+        cmd.standard.messageType.should.eql(3);
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        gw.sceneOn(130, function (err, report) {
+          should.not.exist(err);
+          should.exist(report);
+          report.completed.should.ok;
+          report.aborted.should.not.ok;
+          plan.ok();
+        });
+      });
+    });
+
+    it('scene on fast', function(done) {
+      var plan = new Plan(4, done);
+      var gw = new Insteon();
+
+      mockData = [{
+        '0261851200':
+        [
+          '026185120006',
+          '025026ace11eb552601285',
+          '025806025026b1cc1eb552601285025026b1cc1eb552601285'
+        ]
+      }];
+
+      gw.on('command', function (cmd) {
+        should.exist(cmd);
+        should.exist(cmd.standard);
+        cmd.standard.command1.should.eql('12');
+        cmd.standard.messageType.should.eql(3);
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        gw.sceneOnFast(133, function (err, report) {
+          should.not.exist(err);
+          should.exist(report);
+          report.completed.should.ok;
+          report.aborted.should.not.ok;
+          plan.ok();
+        });
+      });
+    });
+
+    it('scene off', function(done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+
+      mockData = [{
+        '0261851300':
+        [
+          '026185130006',
+          '025026ace11eb552601385',
+          '025806025026b1cc1eb552651385'
+        ]
+      }];
+
+      gw.on('command', function (cmd) {
+        should.exist(cmd);
+        should.exist(cmd.standard);
+        cmd.standard.command1.should.eql('13');
+        cmd.standard.messageType.should.eql(3);
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        gw.sceneOff(133, function (err, report) {
+          should.not.exist(err);
+          should.exist(report);
+          report.completed.should.ok;
+          report.aborted.should.not.ok;
+          plan.ok();
+        });
+      });
+    });
+
+    it('scene off fast', function(done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+
+      mockData = [{
+        '0261851400':
+        [
+          '026185140006',
+          '025026ace11eb552601485',
+          '025806025026b1cc1eb552651485'
+        ]
+      }];
+
+      gw.on('command', function (cmd) {
+        should.exist(cmd);
+        should.exist(cmd.standard);
+        cmd.standard.command1.should.eql('14');
+        cmd.standard.messageType.should.eql(3);
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        gw.sceneOffFast(133, function (err, report) {
+          should.not.exist(err);
+          should.exist(report);
+          report.completed.should.ok;
+          report.aborted.should.not.ok;
+          plan.ok();
+        });
+      });
+    });
+
+    it('scene dim', function(done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+
+      mockData = [{
+        '0261851500':
+        [
+          '026185150006',
+          '025026ace11eb552601585',
+          '025806025026b1cc1eb552651585'
+        ]
+      }];
+
+      gw.on('command', function (cmd) {
+        should.exist(cmd);
+        should.exist(cmd.standard);
+        cmd.standard.command1.should.eql('15');
+        cmd.standard.messageType.should.eql(3);
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        gw.sceneDim(133, function (err, report) {
+          should.not.exist(err);
+          should.exist(report);
+          report.completed.should.ok;
+          report.aborted.should.not.ok;
+          plan.ok();
+        });
+      });
+    });
+
+    it('scene brighten', function(done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+
+      mockData = [{
+        '0261851600':
+        [
+          '026185160006',
+          '025026ace11eb552601685',
+          '025806025026b1cc1eb552651685'
+        ]
+      }];
+
+      gw.on('command', function (cmd) {
+        should.exist(cmd);
+        should.exist(cmd.standard);
+        cmd.standard.command1.should.eql('16');
+        cmd.standard.messageType.should.eql(3);
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        gw.sceneBrighten(133, function (err, report) {
+          should.not.exist(err);
+          should.exist(report);
+          report.completed.should.ok;
+          report.aborted.should.not.ok;
+          plan.ok();
+        });
+      });
+    });
+
+
+  }); // describe Scene Control
 
 
 });
