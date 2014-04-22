@@ -10,7 +10,7 @@ home-controller is a node package to control Insteon home automation devices.  T
 
 Features
 --------
-	
+
 - Device and Gateway Info
 - Linking and Group Control
 - Lighting Control
@@ -61,11 +61,11 @@ gw.connect('192.168.10.10', function(){
 
 #### gw.close()
 
-Closes the connection to the gateway.  The event `'close'` will be emitted once the connection is closed. 
+Closes the connection to the gateway.  The event `'close'` will be emitted once the connection is closed.
 
 #### Event: 'connect'
 
-Emitted when the connection to the gateway is successfully established. 
+Emitted when the connection to the gateway is successfully established.
 
 #### Event: 'close'
 
@@ -88,7 +88,7 @@ Emitted when an unsolicited command is received. The argument `command` will be 
 Emitted when an error occurs. The 'close' event will be called directly following this event.
 
 
-### Insteon Linking and Scene Functions
+### Insteon Linking Functions
 
 #### gw.link([device,] [options,] callback)
 
@@ -96,7 +96,7 @@ Links device(s) to gateway. Callback return link object as second argument (see 
 
 `device` is the device to link.  It can either be a device id (6 digit hex String), an Array of ids, or null.  If a device id is provided, the device will be linked. If an array of ids is provided, each devices will be configured linked. If device is `null`, the  device must be put into linking state manually (hold set button). The device will be setup as the responder, unless the `controller` option is true.
 
-`options` is an Object with the options to be used during linking. 
+`options` is an Object with the options to be used during linking.
 
 ##### Link Options Object
 
@@ -112,40 +112,6 @@ Links device(s) to gateway. Callback return link object as second argument (see 
 
 `timeout` is the number of milliseconds to wait for linking to complete. (Remember you have to hold the set button for at least 10 seconds.)Default is 30000 ms.
 
-
-#### gw.scene(controller, responder, [options,] callback)
-
-Creates scene controller with responder(s). All devices must be available and linked to the gateway.
-
-`controller` is the device to setup as controller.  It can either be a device id (6 digit hex String), the string 'gw', or null.  If a device id is provided, the device will be configured as the controller.  If controller is `'gw'` the gateway will be configured as the controller.
-
-`responder` is the device to setup as responder.  It can either be a responder object or an Array of responder objects. The responder object can also be the device id (6 digit hex String); default scene values will be used.
-
-##### Responder Object
-
-```js
-{
-  id: String, // device id (6 digit hex String)
-  level: Number, // See level in gw.turnOn()
-  rate: Number, // See rate in gw.turnOn()
-  data: Array  // data to be configure for scene (overrides level and rate)]
-}
-```
-
-`options` is an Object with the options to be used during linking. 
-
-##### Scene Options Object
-
-```js
-{
-  group: Number, // controller group/button (default: 1)
-  remove: boolean // remove existing responders if not passed in responder (default: false)
-}
-```
-
-`group` is the controller group to link the responders to.  Valid group numbers vary by device type.  The hub supports group numbers 0-255. Default is 1.
-
-`timeout` is the number of milliseconds to wait for linking to complete. (Remember you have to hold the set button for at least 10 seconds.) Default is 30,000 ms.
 
 ##### Examples
 
@@ -178,7 +144,7 @@ gw.link(null, 'gw', function(error, link) {
   // link data from gateway
 });
 
-// Shorthand to a device to an unknown device 
+// Shorthand to a device to an unknown device
 gw.link('123456', function(error, link) {  // link('123456', null, fn)
   // link data from gateway
 });
@@ -233,6 +199,88 @@ Gets the link at a memory address on a device
 
 `at` is the memory address.  Addresses start at 4095 (0xFFF) and count down by 8. (4095, 4087, 4079, ... ).
 
+### Scene Functions
+
+
+#### gw.scene(controller, responder, [options,] callback)
+
+Creates scene controller with responder(s). All devices must be available and linked to the gateway.
+
+`controller` is the device to setup as controller.  It can either be a device id (6 digit hex String), the string 'gw', or null.  If a device id is provided, the device will be configured as the controller.  If controller is `'gw'` the gateway will be configured as the controller.
+
+`responder` is the device to setup as responder.  It can either be a responder object or an Array of responder objects. The responder object can also be the device id (6 digit hex String); default scene values will be used.
+
+##### Responder Object
+
+```js
+{
+	id: String, // device id (6 digit hex String)
+	level: Number, // See level in gw.turnOn()
+	rate: Number, // See rate in gw.turnOn()
+	data: Array  // data to be configure for scene (overrides level and rate)]
+}
+```
+
+`options` is an Object with the options to be used during linking.
+
+##### Scene Options Object
+
+```js
+{
+	group: Number, // controller group/button (default: 1)
+	remove: boolean // remove existing responders if not passed in responder (default: false)
+}
+```
+
+`group` is the controller group to link the responders to.  Valid group numbers vary by device type.  The hub supports group numbers 0-255. Default is 1.
+
+`timeout` is the number of milliseconds to wait for linking to complete. (Remember you have to hold the set button for at least 10 seconds.) Default is 30,000 ms.
+
+#### gw.sendAllLinkCmd (group, command, callback)
+
+Sends an Insteon All-link command for a link group. Used by sceneXX commands.
+
+`group` is the controller group on the gateway for which to trigger the command.
+
+`command` is the insteon command (2 digit hex String) to send to the group.
+
+#### gw.sceneOn (group, callback)
+
+Turn on a scene group.
+
+`group` is the controller group on the gateway for which to trigger the command.
+
+#### gw.sceneOnFast (group, callback)
+
+Turn on fast a scene group.
+
+`group` is the controller group on the gateway for which to trigger the command.
+
+#### gw.sceneOff (group, callback)
+
+Turn off a scene group.
+
+`group` is the controller group on the gateway for which to trigger the command.
+
+#### gw.sceneOffFast (group, callback)
+
+Turn off fast a scene group.
+
+`group` is the controller group on the gateway for which to trigger the command.
+
+#### gw.sceneDim (group, callback)
+
+Dim by one step a scene group.
+
+`group` is the controller group on the gateway for which to trigger the command.
+
+#### gw.sceneBrighten (group, callback)
+
+Brighten by one step a scene group.
+
+`group` is the controller group on the gateway for which to trigger the command.
+
+
 ### Insteon Information Functions
 
 #### gw.info([id,] callback)
@@ -284,7 +332,7 @@ Sends a Insteon ping to a device. Response object is returned in the callback, i
 
 #### gw.version(id, callback)
 
-Gets the version information about a device. Version object is returned in callback. Valid version names are i1, i2, and i2cs. 
+Gets the version information about a device. Version object is returned in callback. Valid version names are i1, i2, and i2cs.
 
 `id` is the id (6 digit hex String) of the device from which to get the product info.
 
