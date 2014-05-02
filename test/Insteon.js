@@ -6,7 +6,7 @@ var net = require('net');
 var util = require('util');
 var assert = require('assert');
 
-
+console.trace = function () {};
 function Plan(count, done) {
   this.done = done;
   this.count = count;
@@ -1160,5 +1160,97 @@ describe('Insteon Gateway', function() {
 
 
   }); // describe Queueing
+
+
+  describe('Thermostat Commands', function() {
+
+    it('get temp', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926380f6a00':
+        [
+          '02622926380f6a0006',
+          '02502926381eb5522f6a91'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638').temp(function (err, temp) {
+          should.not.exist(err);
+          temp.should.eql(72.5);
+          done();
+        });
+      });
+    });
+
+    it('get humidity', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926380f6a60':
+        [
+          '02622926380f6a6006',
+          '02502926381eb5522f6a30'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638').humidity(function (err, humidity) {
+          should.not.exist(err);
+          humidity.should.eql(48);
+          done();
+        });
+      });
+    });
+
+    it('get setpoints', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926380f6a20':
+        [
+          '02622926380f6a2006',
+          '02502926381eb5522f6a8a',
+          '02502926381eb5520f6a94'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638').setpoints(function (err, setpoints) {
+          should.not.exist(err);
+          setpoints.should.containEql(69);
+          setpoints.should.containEql(74);
+          done();
+        });
+      });
+    });
+
+    it('get mode', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926380f6b02':
+        [
+          '02622926380f6b0206',
+          '02502926381eb5522f6b03'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638').mode(function (err, mode) {
+          should.not.exist(err);
+          mode.should.eql('auto');
+          done();
+        });
+      });
+    });
+
+
+  }); //discribe Thermostat Commands
 
 });
