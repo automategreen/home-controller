@@ -8,3 +8,4 @@ coverage.html
 lib-cov/
 *.sublime-workspace
 *.sublime-project
+tmp/
