@@ -76,7 +76,7 @@ describe('Insteon Gateway', function() {
     });
   });
 
-  it('turns on a light', function(done) {
+  it('turns on a light to level', function(done) {
     var gw = new Insteon();
 
     mockData = {
@@ -85,6 +85,69 @@ describe('Insteon Gateway', function() {
 
     gw.connect(host, function (){
       gw.turnOn('999999', 50, done);
+    });
+  });
+
+  it('turns on a light to level at ramp', function(done) {
+    var gw = new Insteon();
+
+    mockData = {
+      '02629999990f2e7d': '02629999990f2e7d060250999999ffffff2f2e7d'
+    };
+
+    gw.connect(host, function (){
+      gw.turnOn('999999', 50, 2000, done);
+    });
+  });
+
+
+  it('turns on a light to level at ramp (min)', function(done) {
+    var gw = new Insteon();
+
+    mockData = {
+      '02629999990f2e7f': '02629999990f2e7f060250999999ffffff2f2e7f'
+    };
+
+    gw.connect(host, function (){
+      gw.turnOn('999999', 50, 0, done);
+    });
+  });
+
+
+  it('turns on a light to level at ramp (max)', function(done) {
+    var gw = new Insteon();
+
+    mockData = {
+      '02629999990f2e70': '02629999990f2e70060250999999ffffff2f2e70'
+    };
+
+    gw.connect(host, function (){
+      gw.turnOn('999999', 50, 10000000, done);
+    });
+  });
+
+  it('turns on a light to level at ramp (slow)', function(done) {
+    var gw = new Insteon();
+
+    mockData = {
+      '02629999990f2e76': '02629999990f2e76060250999999ffffff2f2e76'
+    };
+
+    gw.connect(host, function (){
+      gw.turnOn('999999', 50, 'slow', done);
+    });
+  });
+
+
+  it('turns on a light to level at ramp (fast)', function(done) {
+    var gw = new Insteon();
+
+    mockData = {
+      '02629999990f2e7f': '02629999990f2e7f060250999999ffffff2f2e7f'
+    };
+
+    gw.connect(host, function (){
+      gw.turnOn('999999', 50, 'fast', done);
     });
   });
 
@@ -97,6 +160,31 @@ describe('Insteon Gateway', function() {
 
     gw.connect(host, function (){
       gw.turnOff('999999', done);
+    });
+  });
+
+  it('turns off a light at ramp (slow)', function(done) {
+    var gw = new Insteon();
+
+    mockData = {
+      '02629999990f2e06': '02629999990f2e06060250999999ffffff2f2e06'
+    };
+
+    gw.connect(host, function (){
+      gw.turnOff('999999', 'slow', done);
+    });
+  });
+
+
+  it('turns off a light at ramp (fast)', function(done) {
+    var gw = new Insteon();
+
+    mockData = {
+      '02629999990f2e0f': '02629999990f2e0f060250999999ffffff2f2e0f'
+    };
+
+    gw.connect(host, function (){
+      gw.turnOff('999999', 'fast', done);
     });
   });
 
