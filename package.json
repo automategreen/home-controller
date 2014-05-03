@@ -23,7 +23,7 @@
   "dependencies": {
     "commander": "2.2.*",
     "debug": "0.8.*",
-    "crc": "~1.0.0"
+    "q": "1.0.*"
   },
   "devDependencies": {
     "mocha": "*",
