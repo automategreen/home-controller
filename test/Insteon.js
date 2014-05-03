@@ -167,7 +167,7 @@ describe('Insteon Gateway', function() {
     var gw = new Insteon();
 
     mockData = {
-      '02629999990f2e06': '02629999990f2e06060250999999ffffff2f2e06'
+      '02629999990f2f06': '02629999990f2f06060250999999ffffff2f2f06'
     };
 
     gw.connect(host, function (){
@@ -180,7 +180,7 @@ describe('Insteon Gateway', function() {
     var gw = new Insteon();
 
     mockData = {
-      '02629999990f2e0f': '02629999990f2e0f060250999999ffffff2f2e0f'
+      '02629999990f2f0f': '02629999990f2f0f060250999999ffffff2f2f0f'
     };
 
     gw.connect(host, function (){
