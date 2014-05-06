@@ -37,7 +37,9 @@
     "travis-cov": "*"
   },
   "scripts": {
-    "test": "grunt test",
+    "test": "grunt test"
+  },
+  "config": {
     "travis-cov": {
       "threshold": 80
     }

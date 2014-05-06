@@ -69,7 +69,7 @@ var mockHub = net.createServer(function (socket) {
 
 
 describe('Insteon Gateway', function() {
-  this.timeout(30000);
+  this.timeout(5000);
 
   before(function(done) {
     mockHub.listen(port, host, function() {
@@ -1132,6 +1132,8 @@ describe('Insteon Gateway', function() {
     });
 
     it('multiple commands with timeout', function(done) {
+      this.timeout(15000);
+
       var plan = new Plan(2, done);
       var gw = new Insteon();
 
@@ -1247,6 +1249,287 @@ describe('Insteon Gateway', function() {
           mode.should.eql('auto');
           done();
         });
+      });
+    });
+
+    it('turn temp up', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f68040000000000000000000000000094':
+        [
+          '02',
+          '622926381f6804000000000000000000000000009406',
+          '02502926381eb5522f6804'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .tempUp(2)
+        .then(function (status) {
+          should.exist(status.response.standard);
+        })
+        .then(done, done);
+      });
+    });
+
+    it('turn temp down', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f69040000000000000000000000000093':
+        [
+          '02622926381f6904000000000000000000000000009306',
+          '02502926381eb5522f6904'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .tempDown(2)
+        .then(function (status) {
+          should.exist(status.response.standard);
+        })
+        .then(done, done);
+      });
+    });
+
+    it('set heat temp', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f6d88000000000000000000000000000b':
+        [
+          '02',
+          '622926381f6d88000000000000000000000000000b06',
+          '02502926381eb5522f6d88'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .heatTemp(68)
+        .then(function (status) {
+          should.exist(status.response.standard);
+        })
+        .then(done, done);
+      });
+    });
+
+    it('set cool temp', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f6c920000000000000000000000000002':
+        [
+          '02',
+          '622926381f6c9200000000000000000000000000',
+          '0206',
+          '02502926381eb5522f6c92'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .coolTemp(73)
+        .then(function (status) {
+          should.exist(status.response.standard);
+        })
+        .then(done, done);
+      });
+    });
+
+    it('set high humidity', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f2e00010b460000000000000000000080':
+        [
+          '02622926381f2e00010b46000000000000000000008006'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .highHumidity(70)
+        .then(function (status) {
+          status.ack.should.be.true;
+        })
+        .then(done, done);
+      });
+    });
+
+    it('set low humidity', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f2e00010c2300000000000000000000a2':
+        [
+          '0262',
+          '2926381f2e00010c2300000000000000000000a206'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .lowHumidity(35)
+        .then(function (status) {
+          status.ack.should.be.true;
+        })
+        .then(done, done);
+      });
+    });
+
+    it('set backlight', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f2e0001051e00000000000000000000ae':
+        [
+          '02622926381f2e0001051e00000000000000000000ae06'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .backlight(30)
+        .then(function (status) {
+          status.ack.should.be.true;
+        })
+        .then(done, done);
+      });
+    });
+
+    it('set cycle delay', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f2e0001060600000000000000000000c5':
+        [
+          '02622926381f2e0001060600000000000000000000c506'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .cycleDelay(6)
+        .then(function (status) {
+          status.ack.should.be.true;
+        })
+        .then(done, done);
+      });
+    });
+
+    it('set energy mode change', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f2e0001070500000000000000000000c5':
+        [
+          '02622926381f2e0001070500000000000000000000',
+          'c506'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .energyChange(5)
+        .then(function (status) {
+          status.ack.should.be.true;
+        })
+        .then(done, done);
+      });
+    });
+
+    it('set date (day, hour, min, sec)', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f2e0202020a271a0000000000000036ca':
+        [
+          '02622926381f2e0202020a271a0000000000000036ca06'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .date(new Date('2014-05-06T14:39:26.669Z'))
+        .then(function (status) {
+          status.ack.should.be.true;
+        })
+        .then(done, done);
+      });
+    });
+
+    it('get details', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f2e020000000000000000000000009296':
+        [
+          '02622926381f2e02000000000000000000000000929606',
+          '02502926381eb5522f2e02',
+          '02502926381eb5522f2e02',
+          '02512926381eb552112e02010209232710493900e0804451b1'
+        ]
+      },
+      {
+        '02622926381f2e00000000000000000000000000636b':
+        [
+          '02622926381f2e00000000000000000000000000636b06',
+          '02502926381eb5522f2e00',
+          '02512926381eb552112e00000100e03901ff01001e06050000'
+        ]
+      },
+      {
+        '02622926381f2e000000010000000000000000009f3a':
+        [
+          '026229',
+          '26381f2e000000010000000000000000009f3a06',
+          '02502926381eb5522f2e00',
+          '02512926381eb552112e0000010146230d494401000100d0f7'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .details()
+        .then(function (details) {
+          details.mode.should.eql('auto');
+          details.fan.should.be.false;
+          details.date.should.eql({day:2, hour:9, minute:35, seconds:39});
+          details.setpoints.should.eql({
+            cool: 73,
+            heat: 68,
+            highHumidity: 70,
+            lowHumidity: 35
+          });
+
+          details.humidity.should.eql(57);
+          details.tempature.should.eql(72.32);
+          details.cooling.should.be.false;
+          details.heating.should.be.false;
+          details.energySaving.should.be.false;
+          details.hold.should.be.false;
+          details.unit.should.eql('F');
+          details.backlight.should.eql(30);
+          details.delay.should.eql(6);
+          details.energyOffset.should.eql(5);
+
+        })
+        .then(done, done);
       });
     });
 
