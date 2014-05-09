@@ -1518,7 +1518,7 @@ describe('Insteon Gateway', function() {
           });
 
           details.humidity.should.eql(57);
-          details.tempature.should.eql(72.32);
+          details.temperature.should.eql(72.32);
           details.cooling.should.be.false;
           details.heating.should.be.false;
           details.energySaving.should.be.false;
