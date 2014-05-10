@@ -1456,15 +1456,15 @@ describe('Insteon Gateway', function() {
 
       mockData = [
       {
-        '02622926381f2e0202020a271a0000000000000036ca':
+        '02622926381f2e0202020e271b00000000000000a500':
         [
-          '02622926381f2e0202020a271a0000000000000036ca06'
+          '02622926381f2e0202020e271b00000000000000a50006'
         ]
       }];
 
       gw.connect(host, function (){
         gw.thermostat('292638')
-        .date(new Date('2014-05-06T14:39:26.669Z'))
+        .date(new Date(2014, 4, 6, 14, 39, 27, 0))
         .then(function (status) {
           status.ack.should.be.true;
         })
