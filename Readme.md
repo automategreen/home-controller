@@ -6,7 +6,7 @@ home-controller [![Build Status](https://travis-ci.org/automategreen/home-contro
 Introduction
 ------------
 
-home-controller is a node package to control Insteon home automation devices.  The API uses the direct PLM connection over TCP. As of 0.3, the HTTP interface is no longer used.  To control the Insteon devices, either an [Insteon Hub](http://www.insteon.com/2242-222-insteon-hub.html) or an [Insteon SmartLinc](http://www.insteon.com/2412n-smartlinc-central-controller.html) must be accessible from the app.
+home-controller is a node package to control Insteon home automation devices.  The API uses the direct PLM connection over TCP.  To control the Insteon devices, either an [Insteon Hub](http://www.insteon.com/2242-222-insteon-hub.html) or an [Insteon SmartLinc](http://www.insteon.com/2412n-smartlinc-central-controller.html) must be accessible from the app.
 
 Features
 --------
@@ -58,13 +58,14 @@ hub.connect(process.env.HUB_IP, function () {
 API
 ---
 
-**0.4 Updates:**
+**0.4 Update Highlights:**
 
   - Major refactoring of the code structure.
   - All functions return promises (via [Q](https://github.com/kriskowal/q)). The callback function is now optional.
   - The lighting function have been moved to the light class.  Old function are deprecated and will be removed with a later release.
   - Thermostat control is now available
   - As always, several bug wer fixed (and probably several new one introduced).  Please open an issue if you find a bug.
+  - [Full releases notes](http://blog.automategreen.com/post/home-controller-0.4.0)
 
 ### Insteon Gateway
 
