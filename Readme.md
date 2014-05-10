@@ -6,28 +6,66 @@ home-controller [![Build Status](https://travis-ci.org/automategreen/home-contro
 Introduction
 ------------
 
-home-controller is a node package to control Insteon home automation devices.  The API uses the direct PLM connection over TCP. As of 0.3, the HTTP interface is no longer used.  To control the Insteon devices, either an [Insteon Hub](http://www.insteon.com/2242-222-insteon-hub.html) or an [Insteon SmartLinc](http://www.insteon.com/2412n-smartlinc-central-controller.html) must be accessible from the app.
+home-controller is a node package to control Insteon home automation devices.  The API uses the direct PLM connection over TCP.  To control the Insteon devices, either an [Insteon Hub](http://www.insteon.com/2242-222-insteon-hub.html) or an [Insteon SmartLinc](http://www.insteon.com/2412n-smartlinc-central-controller.html) must be accessible from the app.
 
 Features
 --------
-	
+
 - Device and Gateway Info
 - Linking and Group Control
+- Scene Control
 - Lighting Control
-- Thermostat Control **Coming soon**
+- Thermostat Control
 
-Installation
-------------
+Getting Started
+---------------
+
+### Install
 
 Install via npm:
 
 `npm install home-controller`
 
+### Example
+
+The example below is a simple RESTful interface using the home-controller module and Express.
+
+```js
+var Insteon = require('home-controller').Insteon;
+var hub = new Insteon();
+var express = require('express');
+var app = express();
+
+app.get('/light/:id/on', function(req, res){
+  var id = req.params.id;
+  hub.light(id).turnOn()
+  .then(function (status) {
+    if(status.response) {
+      res.send(200);
+    } else {
+      res.send(404);
+    }
+  });
+});
+
+hub.connect(process.env.HUB_IP, function () {
+  app.listen(3000);
+});
+```
+
+### [Additional Examples](http://blog.automategreen.com/tag/home-controller-examples)
 
 API
 ---
 
-**Note:** As of version 0.3 the function on, onFast, off, and offFast have been renamed to turnOn, turnOnFast, turnOff, and turnOffFast.  This was done to remove the name conflict with EventEmitter.
+**0.4 Update Highlights:**
+
+  - Major refactoring of the code structure.
+  - All functions return promises (via [Q](https://github.com/kriskowal/q)). The callback function is now optional.
+  - The lighting function have been moved to the light class.  Old function are deprecated and will be removed with a later release.
+  - Thermostat control is now available
+  - As always, several bug wer fixed (and probably several new one introduced).  Please open an issue if you find a bug.
+  - [Full releases notes](http://blog.automategreen.com/post/home-controller-0.4.0)
 
 ### Insteon Gateway
 
@@ -42,7 +80,7 @@ var Insteon = require('home-controller').Insteon;
 The Insteon class inherits [EventEmitter](http://nodejs.org/api/events.html)
 
 
-#### gw.connect(host, [port], [connectListener])
+#### insteon.connect(host, [port], [connectListener])
 
 Creates a connection to the gateway.
 
@@ -53,19 +91,19 @@ When the 'connect' event is emitted the connection is established. If there is a
 ##### Examples
 
 ```js
-var gw = new Insteon();
-gw.connect('192.168.10.10', function(){
+var insteon = new Insteon();
+insteon.connect('192.168.10.10', function(){
   console.log('Connected!');
 });
 ```
 
-#### gw.close()
+#### insteon.close()
 
-Closes the connection to the gateway.  The event `'close'` will be emitted once the connection is closed. 
+Closes the connection to the gateway.  The event `'close'` will be emitted once the connection is closed.
 
 #### Event: 'connect'
 
-Emitted when the connection to the gateway is successfully established. 
+Emitted when the connection to the gateway is successfully established.
 
 #### Event: 'close'
 
@@ -88,15 +126,15 @@ Emitted when an unsolicited command is received. The argument `command` will be 
 Emitted when an error occurs. The 'close' event will be called directly following this event.
 
 
-### Insteon Linking and Scene Functions
+### Insteon Linking Functions
 
-#### gw.link([device,] [options,] callback)
+#### insteon.link([device,] [options,] [callback])
 
-Links device(s) to gateway. Callback return link object as second argument (see `gw.links`).
+Links device(s) to gateway. Callback return link object as second argument (see `insteon.links`).
 
 `device` is the device to link.  It can either be a device id (6 digit hex String), an Array of ids, or null.  If a device id is provided, the device will be linked. If an array of ids is provided, each devices will be configured linked. If device is `null`, the  device must be put into linking state manually (hold set button). The device will be setup as the responder, unless the `controller` option is true.
 
-`options` is an Object with the options to be used during linking. 
+`options` is an Object with the options to be used during linking.
 
 ##### Link Options Object
 
@@ -113,89 +151,55 @@ Links device(s) to gateway. Callback return link object as second argument (see 
 `timeout` is the number of milliseconds to wait for linking to complete. (Remember you have to hold the set button for at least 10 seconds.)Default is 30000 ms.
 
 
-#### gw.scene(controller, responder, [options,] callback)
-
-Creates scene controller with responder(s). All devices must be available and linked to the gateway.
-
-`controller` is the device to setup as controller.  It can either be a device id (6 digit hex String), the string 'gw', or null.  If a device id is provided, the device will be configured as the controller.  If controller is `'gw'` the gateway will be configured as the controller.
-
-`responder` is the device to setup as responder.  It can either be a responder object or an Array of responder objects. The responder object can also be the device id (6 digit hex String); default scene values will be used.
-
-##### Responder Object
-
-```js
-{
-  id: String, // device id (6 digit hex String)
-  level: Number, // See level in gw.turnOn()
-  rate: Number, // See rate in gw.turnOn()
-  data: Array  // data to be configure for scene (overrides level and rate)]
-}
-```
-
-`options` is an Object with the options to be used during linking. 
-
-##### Scene Options Object
-
-```js
-{
-  group: Number, // controller group/button (default: 1)
-  remove: boolean // remove existing responders if not passed in responder (default: false)
-}
-```
-
-`group` is the controller group to link the responders to.  Valid group numbers vary by device type.  The hub supports group numbers 0-255. Default is 1.
-
-`timeout` is the number of milliseconds to wait for linking to complete. (Remember you have to hold the set button for at least 10 seconds.) Default is 30,000 ms.
-
 ##### Examples
 
 
 ```js
-var gw = Insteon('my.home.com');
+var insteon = Insteon('my.home.com');
 
 // Link two devices with for 2nd button on dimmer
-gw.link('AABBCC', '112233', {group: 2}, function(error, link) {
+insteon.link('AABBCC', '112233', {group: 2}, function(error, link) {
   // link data from responder, 11.22.33
 });
 
 // Link gateway to multiple devices
-gw.link('gw', ['111111', '222222', '333333'], function(error, link) {
+insteon.link('insteon', ['111111', '222222', '333333'], function(error, link) {
   // link data from last responder, 33.33.33
 })
 
 // Link device to gateway
-gw.link('ABCDEF', 'gw', function(error, link) {
+insteon.link('ABCDEF', 'insteon', function(error, link) {
   // link data from gateway
 });
 
 // Shorthand to link gateway to unknown device
-gw.link(function(error, link) { // link('gw', null, fn)
+insteon.link(function(error, link) { // link('insteon', null, fn)
   // link data from unknown device (responder)
 });
 
-// Link unknown device to gateway (same as link(null, 'gw', fn))
-gw.link(null, 'gw', function(error, link) {
+// Link unknown device to gateway (same as link(null, 'insteon', fn))
+insteon.link(null, 'insteon', function(error, link) {
   // link data from gateway
 });
 
-// Shorthand to a device to an unknown device 
-gw.link('123456', function(error, link) {  // link('123456', null, fn)
+// Shorthand to a device to an unknown device
+insteon.link('123456', function(error, link) {  // link('123456', null, fn)
   // link data from gateway
 });
 ```
 
 
-#### gw.unlink([[controller,] responder,] [options,] callback)
+#### insteon.unlink([[controller,] responder,] [options,] [callback])
 
 Unlinks device from the gateway
 
 See `link` for usage.
 
-#### gw.cancelLinking(callback)
+#### insteon.cancelLinking([callback])
 
 Cancels linking/unlinking
 
-#### gw.links([id,] callback)
+#### insteon.links([id,] [callback])
 
 Gets the links of a device or the gateway
 
@@ -217,15 +221,15 @@ Links are returned in the callback as an Array of Link Objects.
 }
 ```
 
-#### gw.firstLink(callback)
+#### insteon.firstLink([callback])
 
 Gets the first link record on the gateway
 
-#### gw.nextLink(callback)
+#### insteon.nextLink([callback])
 
 Gets the next link record on the gateway
 
-#### gw.linkAt(id, at, callback)
+#### insteon.linkAt(id, at, [callback])
 
 Gets the link at a memory address on a device
 
@@ -233,9 +237,91 @@ Gets the link at a memory address on a device
 
 `at` is the memory address.  Addresses start at 4095 (0xFFF) and count down by 8. (4095, 4087, 4079, ... ).
 
+### Scene Functions
+
+
+#### insteon.scene(controller, responder, [options,] [callback])
+
+Creates scene controller with responder(s). All devices must be available and linked to the gateway.
+
+`controller` is the device to setup as controller.  It can either be a device id (6 digit hex String), the string 'insteon', or null.  If a device id is provided, the device will be configured as the controller.  If controller is `'insteon'` the gateway will be configured as the controller.
+
+`responder` is the device to setup as responder.  It can either be a responder object or an Array of responder objects. The responder object can also be the device id (6 digit hex String); default scene values will be used.
+
+##### Responder Object
+
+```js
+{
+	id: String, // device id (6 digit hex String)
+	level: Number, // See level in insteon.turnOn()
+	rate: Number, // See rate in insteon.turnOn()
+	data: Array  // data to be configure for scene (overrides level and rate)]
+}
+```
+
+`options` is an Object with the options to be used during linking.
+
+##### Scene Options Object
+
+```js
+{
+	group: Number, // controller group/button (default: 1)
+	remove: boolean // remove existing responders if not passed in responder (default: false)
+}
+```
+
+`group` is the controller group to link the responders to.  Valid group numbers vary by device type.  The hub supports group numbers 0-255. Default is 1.
+
+`timeout` is the number of milliseconds to wait for linking to complete. (Remember you have to hold the set button for at least 10 seconds.) Default is 30,000 ms.
+
+#### insteon.sendAllLinkCmd (group, command, [callback])
+
+Sends an Insteon All-link command for a link group. Used by sceneXX commands.
+
+`group` is the controller group on the gateway for which to trigger the command.
+
+`command` is the insteon command (2 digit hex String) to send to the group.
+
+#### insteon.sceneOn (group, [callback])
+
+Turn on a scene group.
+
+`group` is the controller group on the gateway for which to trigger the command.
+
+#### insteon.sceneOnFast (group, [callback])
+
+Turn on fast a scene group.
+
+`group` is the controller group on the gateway for which to trigger the command.
+
+#### insteon.sceneOff (group, [callback])
+
+Turn off a scene group.
+
+`group` is the controller group on the gateway for which to trigger the command.
+
+#### insteon.sceneOffFast (group, [callback])
+
+Turn off fast a scene group.
+
+`group` is the controller group on the gateway for which to trigger the command.
+
+#### insteon.sceneDim (group, [callback])
+
+Dim by one step a scene group.
+
+`group` is the controller group on the gateway for which to trigger the command.
+
+#### insteon.sceneBrighten (group, [callback])
+
+Brighten by one step a scene group.
+
+`group` is the controller group on the gateway for which to trigger the command.
+
+
 ### Insteon Information Functions
 
-#### gw.info([id,] callback)
+#### insteon.info([id,] [callback])
 
 Gets the product information about the gateway or a device. Product info object is returned in callback.
 
@@ -244,15 +330,15 @@ Gets the product information about the gateway or a device. Product info object 
 ##### Example
 
 ```js
-var gw = Insteon('my.home.com');
+var insteon = Insteon('my.home.com');
 
 // Get gateway info
-gw.checkStatus(function(error, info) {
+insteon.checkStatus(function(error, info) {
   // For details on the info object see below.
 });
 
 // Get Device info
-gw.checkStatus('AABBCC', function(error, info) {
+insteon.checkStatus('AABBCC', function(error, info) {
   // For details on the info object see below.
 });
 ```
@@ -276,15 +362,15 @@ gw.checkStatus('AABBCC', function(error, info) {
 }
 ```
 
-#### gw.ping(id, callback)
+#### insteon.ping(id, [callback])
 
 Sends a Insteon ping to a device. Response object is returned in the callback, if the ping was successful.
 
 `id` is the id (6 digit hex String) of the device from which to get the product info.
 
-#### gw.version(id, callback)
+#### insteon.version(id, [callback])
 
-Gets the version information about a device. Version object is returned in callback. Valid version names are i1, i2, and i2cs. 
+Gets the version information about a device. Version object is returned in callback. Valid version names are i1, i2, and i2cs.
 
 `id` is the id (6 digit hex String) of the device from which to get the product info.
 
@@ -299,80 +385,196 @@ Gets the version information about a device. Version object is returned in callb
 
 ### Insteon Lighting Functions
 
-#### gw.turnOn(id, [level, [rate,]] callback)
+**NOTE:** Lighting function have been moved into their own class.
+
+#### insteon.light(id)
+
+Creates a lighting object for the gateway. Use this to access all lighting control.
+
+`id` is the id (6 digit hex String) of the light switch.
+
+#### light.turnOn([level, [rate,]] [callback])
 
 Turns an Insteon dimmer switch on to the provided level
-
-`id` is the id (6 digit hex String) of the light switch
 
 `level` is the percentage (0-100) of full to which the dimmer is set. Non-dimmable switches ignore this and turn on to full. Defaults to 100 percent.
 
 `rate` is the speed at which the light is turned on to the provided `level`. If not provided, the default saved ramp rate of the device is used.  The rate value can either be 'slow', 'fast', or the number of milliseconds. 'fast' is 0.1 seconds.  'slow' is 1 minute.  If milliseconds is provided, the closest defined ramp rate less than the provided value is used.
 
-#### gw.turnOnFast(id, callback)
+#### light.turnOnFast([callback])
 
 Turn light on fast (no ramp) to pre-saved level
 
-`id` is the id (6 digit hex String) of the light switch.
-
-#### gw.turnOff(id, [rate,] callback)
+#### light.turnOff([rate,] [callback])
 
 Turns light off
 
-`id` is the id (6 digit hex String) of the light switch.
-
 `rate` is the speed the light turns off.  See `on` for values.
 
-#### gw.turnOffFast(id, callback)
+#### light.turnOffFast([callback])
 
 Turns light off fast (no ramp)
 
-`id` is the id (6 digit hex String) of the light switch.
-
-#### gw.brighten(id, callback)
+#### light.brighten([callback])
 
 Brightens the light one step
 
-`id` is the id (6 digit hex String) of the light switch.
-
-#### gw.dim(id, callback)
+#### light.dim([callback])
 
 Dims the light one step
 
-`id` is the id (6 digit hex String) of the light switch.
-
-#### gw.level(id, [level,] callback)
+#### light.level([level,] [callback])
 
 Gets or sets the light's current level
-
-`id` is the id (6 digit hex String) of the light switch.
 
 `level` is the percentage (0-100) of full to which the dimmer is set. If not provided, then the current level of the device is returned in the callback.
 
 ##### Example
 
 ```js
-var gw = Insteon('my.home.com');
+var insteon = Insteon();
 
-// Set light level
-gw.level('AABBCC', 50, function(error) {
+insteon.connect('my.home.com', function () {
 
-  // Get light level
-  gw.level('AABBCC', function(error, level)){
-    console.log(level); // Should print 50
-  }
+  var light = insteon.light('AABBCC'); // Create light object
+
+  light.level(50) // Set light level
+  .then(function() {
+    return light.level(); // Get light level
+  })
+  .then(function(level){
+    console.log(level); // 50
+  });
 });
 ```
 
 ### Insteon Thermostat Functions
 
-**Coming Soon**
+#### insteon.thermostat(id)
+
+Creates a Thermostat object with the Insteon id.
+
+`id` is the id (6 digit hex String) of the thermostat.
+
+#### thermostat.tempUp([change,] [callback])
+
+Increases the setpoints by `change`. If `change` is not provided increases the setpoints by 1 degree.
+
+`change` is the number of degrees to increase the setpoints. Defaults to 1.
+
+#### thermostat.tempDown([change,] [callback])
+
+Decreases the setpoints by `change`. If `change` is not provided decreases the setpoints by 1 degree.
+
+`change` is the number of degrees to decrease the setpoints. Defaults to 1.
+
+#### thermostat.temp([zone,] [callback])
+
+Gets the current air temperature for the `zone`.  If no `zone` is provided, the default zone (0) is assumed.
+
+`zone` is the zone number. Defaults to 0.
+
+#### thermostat.setpoints([zone,] [callback])
+
+Gets the current setpoints for the `zone`.  If no `zone` is provided, the default zone (0) is assumed. setpoints are provided as an array of either one or two setpoints depending on the mode.
+
+`zone` is the zone number. Defaults to 0.
+
+#### thermostat.mode([mode,] [callback])
+
+Gets or sets the mode. If no `mode` parameter is provided then the current mode is returned.
+
+`mode` can be one of the following: 'off', 'heat', 'cool', 'auto', 'fan', 'program', 'program heat', 'program cool', or 'fan auto'.  
+
+*Note: Not all thermostats support all modes.*
+
+#### thermostat.coolTemp(temperature, [callback])
+
+Sets the cool temperature setpoint to `temperature`.
+
+`temperature` is the integer value to set the cool setpoint to.
+
+#### thermostat.heatTemp(temperature, [callback])
+
+Sets the heat temperature setpoint to `temperature`.
+
+`temperature` is the integer value to set the heat setpoint to.
+
+#### thermostat.highHumidity(level, [callback])
+
+Sets the high humidity to `level`.
+
+`level` is the integer value from 1 to 100.
+
+#### thermostat.lowHumidity(level, [callback])
+
+Sets the low humidity to `level`.
+
+`level` is the integer value from 1 to 100.
+
+#### thermostat.backlight(delay, [callback])
+
+Sets how long the backlight will stay lite to `delay` in seconds
+
+`delay` is the integer value in seconds for how long the backlight should stay lite. A value of 0 turns off the backlight.
+
+#### thermostat.cycleDelay(delay, [callback])
+
+Sets how long to delay between cycles.
+
+`delay` is the integer value in minutes for how long to delay between cycles.
+
+#### thermostat.energyChange(change, [callback])
+
+Sets how many degrees change should been applied when the thermostat is in engery saving mode.
+
+`change` is the integer value in degrees of change.
+
+#### thermostat.date(date, [callback])
+
+Sets the date (day of week, hour, minute, seconds).
+
+`date` is the Date object to set the thermostat to.  If `date` is not a Date object, it is converged to a Date object with `new Date(date)`.  The default value is `new Date()`.
+
+#### thermostat.details(change, [callback])
+
+Gets all the details about the thermostat.  The returned default object is described below:
+
+```js
+{
+  date: {
+    day: Number, // 0-6 (0=Sunday, 1=Monday, ...)
+    hour: Number, // 0-23
+    minute: Number, // 0-59
+    seconds: Number, // 0-59
+  },
+  mode: String, // 'off', 'auto', 'heat', 'cool', 'program'
+  fan: Boolean, // if fan mode is on, true; if fan mode is auto, false
+  setpoints: {
+    cool: Number,
+    heat: Number,
+    highHumidity: Number,
+    lowHumidity: Number
+  },
+  humidity: Number, // Current air humidity
+  temperature: Number, // Current air temperature
+  unit: String, // 'F' or 'C'
+  cooling: Boolean, // true if the system is currently cooling
+  heating: Boolean, // true if the system is currently heating
+  energySaving: Boolean, // true if energy saving mode is active
+  hold: Boolean, // true if hold is enabled
+  backlight: Number, // Backlight delay before turning off
+  delay: Number, // Delay between cycles
+  energyOffset: Number // Number of degree to change the temperature by in energy mode
+}
+```
+
 
 ### Insteon Core Functions
 
 *For advanced users only.  These function are leveraged by the higher level functions.*
 
-#### gw.sendCommand(command, [timeout,] callback)
+#### insteon.sendCommand(command, [timeout,] [callback])
 
 Sends command to PLM function on the gateway
 
@@ -389,7 +591,7 @@ Command Object:
 
 `timeout` is the number of milliseconds to wait before checking the status.  If `timeout` is omitted or null, the command doesn't check the status.  `timeout` should be set to zero to check immediately.
 
-#### gw.directCommand(id, command, [param,] [timeout,] callback)
+#### insteon.directCommand(id, command, [param,] [timeout,] [callback])
 
 Sends direct command to Insteon device
 
@@ -417,7 +619,7 @@ Extended Command Object:
 }
 ```
 
-#### gw.checkStatus(callback)
+#### insteon.checkStatus([callback])
 
 Checks the status of the gateway's buffer
 
@@ -426,8 +628,8 @@ This is used to read response messages.  This buffer must be checked after each 
 ##### Examples
 
 ```js
-var gw = Insteon('my.home.com');
-gw.checkStatus(function(error, status) {
+var insteon = Insteon('my.home.com');
+insteon.checkStatus(function(error, status) {
   // For details on the status object see below.
 });
 ```

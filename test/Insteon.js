@@ -4,6 +4,27 @@ var Insteon = require('../').Insteon;
 var should = require('should');
 var net = require('net');
 var util = require('util');
+var assert = require('assert');
+
+console.trace = function () {};
+function Plan(count, done) {
+  this.done = done;
+  this.count = count;
+}
+
+Plan.prototype.ok = function() {
+
+  if (this.count === 0) {
+    assert(false, 'Too many assertions called');
+  } else {
+    this.count--;
+  }
+
+  if (this.count === 0) {
+    this.done();
+  }
+};
+
 
 var mockData = null;
 
@@ -48,7 +69,7 @@ var mockHub = net.createServer(function (socket) {
 
 
 describe('Insteon Gateway', function() {
-  this.timeout(30000);
+  this.timeout(5000);
 
   before(function(done) {
     mockHub.listen(port, host, function() {
@@ -571,12 +592,13 @@ describe('Insteon Gateway', function() {
       '0265': '026506'
     },
     {
-      '02629999991f090100000000000000000000000000f6':
-      ['02629999991f090100000000000000000000000000f606',
-      '0250999999ffffff2f0901']
+      '02640001': '0264000006'
     },
     {
-      '02640000': ['0264000006', '02530001999999000000']
+      '02629999991f090100000000000000000000000000f6':
+      ['02629999991f090100000000000000000000000000f606',
+      '0250999999ffffff2f0901',
+      '02530001999999000000']
     }];
 
     gw.connect(host, function (){
@@ -669,7 +691,7 @@ describe('Insteon Gateway', function() {
         level: 100, /* 100% */
         ramp: 2000 /* 2 sec */
       };
-      gw.scene('AAAAAA', responder, {remove: true}, function (err) {
+      gw.scene('AAAAAA', responder, function (err) {
         should.not.exist(err);
         done();
       });
@@ -876,5 +898,642 @@ describe('Insteon Gateway', function() {
   });
 
 
+
+  describe('Scene Control', function() {
+
+    it('scene on', function(done) {
+      var plan = new Plan(4, done);
+      var gw = new Insteon();
+
+      mockData = [{
+        '0261821100':
+        [
+          '026182110006',
+          '025026ace11eb552601185',
+          '025806025026b1cc1eb552601185025026b1cc1eb552601185'
+        ]
+      }];
+
+      gw.on('command', function (cmd) {
+        should.exist(cmd);
+        should.exist(cmd.standard);
+        cmd.standard.command1.should.eql('11');
+        cmd.standard.messageType.should.eql(3);
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        gw.sceneOn(130, function (err, report) {
+          should.not.exist(err);
+          should.exist(report);
+          report.completed.should.ok;
+          report.aborted.should.not.ok;
+          plan.ok();
+        });
+      });
+    });
+
+    it('scene on fast', function(done) {
+      var plan = new Plan(4, done);
+      var gw = new Insteon();
+
+      mockData = [{
+        '0261851200':
+        [
+          '026185120006',
+          '025026ace11eb552601285',
+          '025806025026b1cc1eb552601285025026b1cc1eb552601285'
+        ]
+      }];
+
+      gw.on('command', function (cmd) {
+        should.exist(cmd);
+        should.exist(cmd.standard);
+        cmd.standard.command1.should.eql('12');
+        cmd.standard.messageType.should.eql(3);
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        gw.sceneOnFast(133, function (err, report) {
+          should.not.exist(err);
+          should.exist(report);
+          report.completed.should.ok;
+          report.aborted.should.not.ok;
+          plan.ok();
+        });
+      });
+    });
+
+    it('scene off', function(done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+
+      mockData = [{
+        '0261851300':
+        [
+          '026185130006',
+          '025026ace11eb552601385',
+          '025806025026b1cc1eb552651385'
+        ]
+      }];
+
+      gw.on('command', function (cmd) {
+        should.exist(cmd);
+        should.exist(cmd.standard);
+        cmd.standard.command1.should.eql('13');
+        cmd.standard.messageType.should.eql(3);
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        gw.sceneOff(133, function (err, report) {
+          should.not.exist(err);
+          should.exist(report);
+          report.completed.should.ok;
+          report.aborted.should.not.ok;
+          plan.ok();
+        });
+      });
+    });
+
+    it('scene off fast', function(done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+
+      mockData = [{
+        '0261851400':
+        [
+          '026185140006',
+          '025026ace11eb552601485',
+          '025806025026b1cc1eb552651485'
+        ]
+      }];
+
+      gw.on('command', function (cmd) {
+        should.exist(cmd);
+        should.exist(cmd.standard);
+        cmd.standard.command1.should.eql('14');
+        cmd.standard.messageType.should.eql(3);
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        gw.sceneOffFast(133, function (err, report) {
+          should.not.exist(err);
+          should.exist(report);
+          report.completed.should.ok;
+          report.aborted.should.not.ok;
+          plan.ok();
+        });
+      });
+    });
+
+    it('scene dim', function(done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+
+      mockData = [{
+        '0261851500':
+        [
+          '026185150006',
+          '025026ace11eb552601585',
+          '025806025026b1cc1eb552651585'
+        ]
+      }];
+
+      gw.on('command', function (cmd) {
+        should.exist(cmd);
+        should.exist(cmd.standard);
+        cmd.standard.command1.should.eql('15');
+        cmd.standard.messageType.should.eql(3);
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        gw.sceneDim(133, function (err, report) {
+          should.not.exist(err);
+          should.exist(report);
+          report.completed.should.ok;
+          report.aborted.should.not.ok;
+          plan.ok();
+        });
+      });
+    });
+
+    it('scene brighten', function(done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+
+      mockData = [{
+        '0261851600':
+        [
+          '026185160006',
+          '025026ace11eb552601685',
+          '025806025026b1cc1eb552651685'
+        ]
+      }];
+
+      gw.on('command', function (cmd) {
+        should.exist(cmd);
+        should.exist(cmd.standard);
+        cmd.standard.command1.should.eql('16');
+        cmd.standard.messageType.should.eql(3);
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        gw.sceneBrighten(133, function (err, report) {
+          should.not.exist(err);
+          should.exist(report);
+          report.completed.should.ok;
+          report.aborted.should.not.ok;
+          plan.ok();
+        });
+      });
+    });
+
+
+  }); // describe Scene Control
+
+
+  describe('Queueing', function() {
+
+    it('multiple commands', function(done) {
+      var plan = new Plan(2, done);
+      var gw = new Insteon();
+
+      mockData = [{
+        '026226ace10f1600':
+        [
+          '026226ace10f160006',
+          '025026ace11eb5522f1600'
+        ]
+      },
+      {
+        '026226b1cc0f1500':
+        [
+          '026226b1cc0f150006',
+          '025026b1cc1eb5522f1500'
+        ]
+      }];
+
+
+      gw.connect(host, function (){
+        gw.dim('26ace1', function (err) {
+          should.not.exist(err);
+          plan.ok();
+        });
+        gw.brighten('26b1cc', function (err) {
+          should.not.exist(err);
+          plan.ok();
+        });
+      });
+    });
+
+    it('multiple commands with timeout', function(done) {
+      this.timeout(15000);
+
+      var plan = new Plan(2, done);
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '026226b1cc0f1500':
+        [
+          '026226b1cc0f150006',
+          '025026b1cc1eb5522f1500'
+        ]
+      }];
+
+
+      gw.connect(host, function (){
+        gw.dim('26ace1', function (err, status) {
+          should.not.exist(err);
+          should.not.exist(status.standard);
+          plan.ok();
+        });
+        gw.brighten('26b1cc', function (err) {
+          should.not.exist(err);
+          plan.ok();
+        });
+      });
+    });
+
+
+  }); // describe Queueing
+
+
+  describe('Thermostat Commands', function() {
+
+    it('get temp', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926380f6a00':
+        [
+          '02622926380f6a0006',
+          '02502926381eb5522f6a91'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638').temp(function (err, temp) {
+          should.not.exist(err);
+          temp.should.eql(72.5);
+          done();
+        });
+      });
+    });
+
+    it('get humidity', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926380f6a60':
+        [
+          '02622926380f6a6006',
+          '02502926381eb5522f6a30'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638').humidity(function (err, humidity) {
+          should.not.exist(err);
+          humidity.should.eql(48);
+          done();
+        });
+      });
+    });
+
+    it('get setpoints', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926380f6a20':
+        [
+          '02622926380f6a2006',
+          '02502926381eb5522f6a8a',
+          '02502926381eb5520f6a94'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638').setpoints(function (err, setpoints) {
+          should.not.exist(err);
+          setpoints.should.containEql(69);
+          setpoints.should.containEql(74);
+          done();
+        });
+      });
+    });
+
+    it('get mode', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926380f6b02':
+        [
+          '02622926380f6b0206',
+          '02502926381eb5522f6b03'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638').mode(function (err, mode) {
+          should.not.exist(err);
+          mode.should.eql('auto');
+          done();
+        });
+      });
+    });
+
+    it('turn temp up', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f68040000000000000000000000000094':
+        [
+          '02',
+          '622926381f6804000000000000000000000000009406',
+          '02502926381eb5522f6804'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .tempUp(2)
+        .then(function (status) {
+          should.exist(status.response.standard);
+        })
+        .then(done, done);
+      });
+    });
+
+    it('turn temp down', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f69040000000000000000000000000093':
+        [
+          '02622926381f6904000000000000000000000000009306',
+          '02502926381eb5522f6904'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .tempDown(2)
+        .then(function (status) {
+          should.exist(status.response.standard);
+        })
+        .then(done, done);
+      });
+    });
+
+    it('set heat temp', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f6d88000000000000000000000000000b':
+        [
+          '02',
+          '622926381f6d88000000000000000000000000000b06',
+          '02502926381eb5522f6d88'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .heatTemp(68)
+        .then(function (status) {
+          should.exist(status.response.standard);
+        })
+        .then(done, done);
+      });
+    });
+
+    it('set cool temp', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f6c920000000000000000000000000002':
+        [
+          '02',
+          '622926381f6c9200000000000000000000000000',
+          '0206',
+          '02502926381eb5522f6c92'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .coolTemp(73)
+        .then(function (status) {
+          should.exist(status.response.standard);
+        })
+        .then(done, done);
+      });
+    });
+
+    it('set high humidity', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f2e00010b460000000000000000000080':
+        [
+          '02622926381f2e00010b46000000000000000000008006'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .highHumidity(70)
+        .then(function (status) {
+          status.ack.should.be.true;
+        })
+        .then(done, done);
+      });
+    });
+
+    it('set low humidity', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f2e00010c2300000000000000000000a2':
+        [
+          '0262',
+          '2926381f2e00010c2300000000000000000000a206'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .lowHumidity(35)
+        .then(function (status) {
+          status.ack.should.be.true;
+        })
+        .then(done, done);
+      });
+    });
+
+    it('set backlight', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f2e0001051e00000000000000000000ae':
+        [
+          '02622926381f2e0001051e00000000000000000000ae06'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .backlight(30)
+        .then(function (status) {
+          status.ack.should.be.true;
+        })
+        .then(done, done);
+      });
+    });
+
+    it('set cycle delay', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f2e0001060600000000000000000000c5':
+        [
+          '02622926381f2e0001060600000000000000000000c506'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .cycleDelay(6)
+        .then(function (status) {
+          status.ack.should.be.true;
+        })
+        .then(done, done);
+      });
+    });
+
+    it('set energy mode change', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f2e0001070500000000000000000000c5':
+        [
+          '02622926381f2e0001070500000000000000000000',
+          'c506'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .energyChange(5)
+        .then(function (status) {
+          status.ack.should.be.true;
+        })
+        .then(done, done);
+      });
+    });
+
+    it('set date (day, hour, min, sec)', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f2e0202020a271a0000000000000036ca':
+        [
+          '02622926381f2e0202020a271a0000000000000036ca06'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .date(new Date('2014-05-06T14:39:26.669Z'))
+        .then(function (status) {
+          status.ack.should.be.true;
+        })
+        .then(done, done);
+      });
+    });
+
+    it('get details', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f2e020000000000000000000000009296':
+        [
+          '02622926381f2e02000000000000000000000000929606',
+          '02502926381eb5522f2e02',
+          '02502926381eb5522f2e02',
+          '02512926381eb552112e02010209232710493900e0804451b1'
+        ]
+      },
+      {
+        '02622926381f2e00000000000000000000000000636b':
+        [
+          '02622926381f2e00000000000000000000000000636b06',
+          '02502926381eb5522f2e00',
+          '02512926381eb552112e00000100e03901ff01001e06050000'
+        ]
+      },
+      {
+        '02622926381f2e000000010000000000000000009f3a':
+        [
+          '026229',
+          '26381f2e000000010000000000000000009f3a06',
+          '02502926381eb5522f2e00',
+          '02512926381eb552112e0000010146230d494401000100d0f7'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .details()
+        .then(function (details) {
+          details.mode.should.eql('auto');
+          details.fan.should.be.false;
+          details.date.should.eql({day:2, hour:9, minute:35, seconds:39});
+          details.setpoints.should.eql({
+            cool: 73,
+            heat: 68,
+            highHumidity: 70,
+            lowHumidity: 35
+          });
+
+          details.humidity.should.eql(57);
+          details.temperature.should.eql(72.32);
+          details.cooling.should.be.false;
+          details.heating.should.be.false;
+          details.energySaving.should.be.false;
+          details.hold.should.be.false;
+          details.unit.should.eql('F');
+          details.backlight.should.eql(30);
+          details.delay.should.eql(6);
+          details.energyOffset.should.eql(5);
+
+        })
+        .then(done, done);
+      });
+    });
+
+
+  }); //discribe Thermostat Commands
 
 });
