@@ -333,12 +333,12 @@ Gets the product information about the gateway or a device. Product info object 
 var insteon = Insteon('my.home.com');
 
 // Get gateway info
-insteon.checkStatus(function(error, info) {
+insteon.info(function(error, info) {
   // For details on the info object see below.
 });
 
 // Get Device info
-insteon.checkStatus('AABBCC', function(error, info) {
+insteon.info('AABBCC', function(error, info) {
   // For details on the info object see below.
 });
 ```
@@ -591,49 +591,6 @@ Command Object:
 
 `timeout` is the number of milliseconds to wait before checking the status.  If `timeout` is omitted or null, the command doesn't check the status.  `timeout` should be set to zero to check immediately.
 
-#### insteon.directCommand(id, command, [param,] [timeout,] [callback])
-
-Sends direct command to Insteon device
-
-`id` is the id (6 digit hex String) of the device.
-
-`command` can either be a hex String (length 2) or an Object. The String must be a standard direct command. If command is a String, then `param` can also be passed. The `param` will be defaulted to `'00'`.  If the command is an extended command, it must be passed as an Object with the extended property.
-
-Standard Command Object:
-
-```js
-{
-  cmd1: String,
-  cmd2: String
-}
-```
-
-Extended Command Object:
-
-```js
-{
-  extended: true,
-  cmd1: String,
-  cmd2: String,
-  userData: Array
-}
-```
-
-#### insteon.checkStatus([callback])
-
-Checks the status of the gateway's buffer
-
-This is used to read response messages.  This buffer must be checked after each command if a response is expected. The buffer is overwritten each time a command is sent.
-
-##### Examples
-
-```js
-var insteon = Insteon('my.home.com');
-insteon.checkStatus(function(error, status) {
-  // For details on the status object see below.
-});
-```
-
 ##### Status Object
 
 A Status Object will be returned in the callback.  The Status Object format depends on the response type.
@@ -743,6 +700,36 @@ Get All-Link Record Response (0x69 & 0x6A) Status Object:
   }
 }
 ```
+
+#### insteon.directCommand(id, command, [param,] [timeout,] [callback])
+
+Sends direct command to Insteon device
+
+`id` is the id (6 digit hex String) of the device.
+
+`command` can either be a hex String (length 2) or an Object. The String must be a standard direct command. If command is a String, then `param` can also be passed. The `param` will be defaulted to `'00'`.  If the command is an extended command, it must be passed as an Object with the extended property.
+
+Standard Command Object:
+
+```js
+{
+  cmd1: String,
+  cmd2: String
+}
+```
+
+Extended Command Object:
+
+```js
+{
+  extended: true,
+  cmd1: String,
+  cmd2: String,
+  userData: Array
+}
+```
+
+
 
 Testing
 -------
