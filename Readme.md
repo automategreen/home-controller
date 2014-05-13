@@ -333,12 +333,12 @@ Gets the product information about the gateway or a device. Product info object 
 var insteon = Insteon('my.home.com');
 
 // Get gateway info
-insteon.checkStatus(function(error, info) {
+insteon.info(function(error, info) {
   // For details on the info object see below.
 });
 
 // Get Device info
-insteon.checkStatus('AABBCC', function(error, info) {
+insteon.info('AABBCC', function(error, info) {
   // For details on the info object see below.
 });
 ```
@@ -619,7 +619,7 @@ Extended Command Object:
 }
 ```
 
-#### insteon.checkStatus([callback])
+#### insteon.info([callback])
 
 Checks the status of the gateway's buffer
 
@@ -629,7 +629,7 @@ This is used to read response messages.  This buffer must be checked after each 
 
 ```js
 var insteon = Insteon('my.home.com');
-insteon.checkStatus(function(error, status) {
+insteon.info(function(error, status) {
   // For details on the status object see below.
 });
 ```
