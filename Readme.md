@@ -348,7 +348,7 @@ insteon.info('AABBCC', function(error, info) {
 ```js
 {
   id: String,
-  productKey, String,
+  firmware, String,
   deviceCategory: {
     id: Number,
     name: String

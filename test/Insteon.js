@@ -302,25 +302,25 @@ describe('Insteon Gateway', function() {
     var gw = new Insteon();
 
     mockData = {
-      '02629999990f0300':
+      '02622926380f1000':
       [
-      '02629999990f030006',
-      '0250999999ffffff2f0300',
-      '0251999999ffffff11030001000000012041001f0000000000'
+      '02622926380f100006',
+      '02502926381eb5522f1000',
+      '0250292638050b0d8f01350250292638050b0d8f0135'
       ]
     };
 
     gw.connect(host, function (){
-      gw.info('999999', function(err, profile){
+      gw.info('292638', function(err, profile){
         should.not.exist(err);
         should.exist(profile);
-        profile.id.should.eql('999999');
-        profile.productKey.should.eql('000000');
-        profile.deviceCategory.id.should.eql(1);
-        profile.deviceSubcategory.id.should.eql(32);
-        profile.isDimmable.should.be.ok;
-        profile.isLighting.should.be.ok;
-        profile.isThermostat.should.not.be.ok;
+        profile.id.should.eql('292638');
+        profile.firmware.should.eql('0d');
+        profile.deviceCategory.id.should.eql(5);
+        profile.deviceSubcategory.id.should.eql(11);
+        profile.isDimmable.should.be.false;
+        profile.isLighting.should.be.false;
+        profile.isThermostat.should.be.true;
         done();
       });
     });
