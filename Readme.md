@@ -58,6 +58,10 @@ hub.connect(process.env.HUB_IP, function () {
 API
 ---
 
+**0.4.2 Update Highlights:**
+
+  - Add connect.serial()
+
 **0.4 Update Highlights:**
 
   - Major refactoring of the code structure.
@@ -87,6 +91,14 @@ Creates a connection to the gateway.
 When the 'connect' event is emitted the connection is established. If there is a problem connecting, the 'connect' event will not be emitted, the 'error' event will be emitted with the exception. ([See socket.connect](http://nodejs.org/api/net.html#net_socket_connect_path_connectlistener));
 
 `connectListener`  will be added as an listener for the 'connect' event.
+
+#### insteon.serial(comName, [options], [connectListener])
+
+Creates a connection to a PowerLinc USB driver residing at the specified USB serial device.
+The 'options' parameter, if present, contains values suitable for use with the
+[serialport](https://github.com/voodootikigod/node-serialport)
+[constructor](https://github.com/voodootikigod/node-serialport#to-use).
+The 'connectListener' parameter, if present, will be invoked once the connection is open;
 
 ##### Examples
 
