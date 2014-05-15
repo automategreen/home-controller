@@ -1,5 +1,5 @@
 {
-  "version": "0.4.0",
+  "version": "0.4.1",
   "author": "Brandon Goode <brandon@automategreen.com>",
   "name": "home-controller",
   "description": "A Node Home Automation Controller for Insteon Devices",
@@ -23,7 +23,8 @@
   "dependencies": {
     "commander": "2.2.*",
     "debug": "0.8.*",
-    "q": "1.0.*"
+    "q": "1.0.*",
+    "serialport": "~1.1.0"
   },
   "devDependencies": {
     "mocha": "*",
