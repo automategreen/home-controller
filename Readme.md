@@ -58,7 +58,7 @@ hub.connect(process.env.HUB_IP, function () {
 API
 ---
 
-**0.4.1 Update Highlights:**
+**0.4.2 Update Highlights:**
 
   - Add connect.serial()
 
@@ -95,7 +95,7 @@ When the 'connect' event is emitted the connection is established. If there is a
 #### insteon.serial(comName, [options], [connectListener])
 
 Creates a connection to a PowerLinc USB driver residing at the specified USB serial device.
-The 'options' parameter, if present, contains values suitable for use with the 
+The 'options' parameter, if present, contains values suitable for use with the
 [serialport](https://github.com/voodootikigod/node-serialport)
 [constructor](https://github.com/voodootikigod/node-serialport#to-use).
 The 'connectListener' parameter, if present, will be invoked once the connection is open;
