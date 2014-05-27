@@ -24,7 +24,7 @@
     "commander": "2.2.*",
     "debug": "0.8.*",
     "q": "1.0.*",
-    "serialport": "~1.1.0"
+    "serialport": "1.4.*"
   },
   "devDependencies": {
     "mocha": "*",
