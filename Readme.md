@@ -548,9 +548,9 @@ Sets the date (day of week, hour, minute, seconds).
 
 `date` is the Date object to set the thermostat to.  If `date` is not a Date object, it is converged to a Date object with `new Date(date)`.  The default value is `new Date()`.
 
-#### thermostat.details(change, [callback])
+#### thermostat.details([callback])
 
-Gets all the details about the thermostat.  The returned default object is described below:
+Gets all the details about the thermostat.  The returned details object is described below:
 
 ```js
 {
@@ -578,6 +578,34 @@ Gets all the details about the thermostat.  The returned default object is descr
   backlight: Number, // Backlight delay before turning off
   delay: Number, // Delay between cycles
   energyOffset: Number // Number of degree to change the temperature by in energy mode
+}
+```
+
+#### thermostat.status([callback])
+
+Gets the status of the thermostat. This is a subset of `.details()`, but it only requires a single Insteon command (i.e. faster).  The returned status object (subset of details object) is described below:
+
+```js
+{
+  date: {
+    day: Number, // 0-6 (0=Sunday, 1=Monday, ...)
+    hour: Number, // 0-23
+    minute: Number, // 0-59
+    seconds: Number, // 0-59
+  },
+  mode: String, // 'off', 'auto', 'heat', 'cool', 'program'
+  fan: Boolean, // if fan mode is on, true; if fan mode is auto, false
+  setpoints: {
+    cool: Number,
+    heat: Number
+  },
+  humidity: Number, // Current air humidity
+  temperature: Number, // Current air temperature
+  unit: String, // 'F' or 'C'
+  cooling: Boolean, // true if the system is currently cooling
+  heating: Boolean, // true if the system is currently heating
+  energySaving: Boolean, // true if energy saving mode is active
+  hold: Boolean, // true if hold is enabled
 }
 ```
 
