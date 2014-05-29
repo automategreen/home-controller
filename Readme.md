@@ -58,6 +58,11 @@ hub.connect(process.env.HUB_IP, function () {
 API
 ---
 
+**0.4.3 Update Highlights:**
+
+  - Add thermostat.status()
+  - Several bug fixes
+
 **0.4.2 Update Highlights:**
 
   - Add connect.serial()
