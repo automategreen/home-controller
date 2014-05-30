@@ -58,6 +58,10 @@ hub.connect(process.env.HUB_IP, function () {
 API
 ---
 
+**0.5 Updates Hightlights:**
+
+  - Add event for devices
+
 **0.4.3 Update Highlights:**
 
   - Add thermostat.status()
@@ -464,6 +468,115 @@ insteon.connect('my.home.com', function () {
   });
 });
 ```
+
+#### Events Overview
+
+The light object allows you to trigger on events from the device. This allows for functionality like, send me a text when my light is turned on. Why would you want this?  I don't know, but I'll just assume you're a little crazy.
+
+**Example:**
+```js
+var hub = new Insteon();
+var light = hub.light('112233');
+
+light.on('turnOn', function () {
+  sendTxt('My light is on');
+});
+
+hub.connect(...);
+```
+
+There are several event's that could tell you your lights are own.  You may want the text for all of them (again crazy).
+
+**Example:**
+```js
+var hub = new Insteon();
+var light = hub.light('112233');
+
+light.on('turnOn', sendOnTxt);
+light.on('turnOnFast', sendOnTxt);
+light.on('brightened', sendOnTxt);
+
+function sendOnTxt() {
+  sendTxt('My light is on');
+}
+
+hub.connect(...);
+```
+
+#### Event: 'turnOn'
+
+Event emitted when a light's on button is tapped once.
+
+**Callback arguments**
+
+- `group` the group/button for which the command was sent
+
+#### Event: 'turnOnFast'
+
+Event emitted when a light's on button is tapped twice.
+
+**Callback arguments**
+
+- `group` the group/button for which the command was sent
+
+#### Event: 'turnOff'
+
+Event emitted when a light's off button is tapped once.
+
+**Callback arguments**
+
+- `group` the group/button for which the command was sent
+
+#### Event: 'turnOffFast'
+
+Event emitted when a light's off button is tapped twice.
+
+**Callback arguments**
+
+- `group` the group/button for which the command was sent
+
+#### Event: 'brightening'
+
+Event emitted when a light's on button is held.
+
+**Callback arguments**
+
+- `group` the group/button for which the command was sent
+
+#### Event: 'brightened'
+
+Event emitted when a light's on button is released.
+
+**Callback arguments**
+
+- `group` the group/button for which the command was sent
+
+#### Event: 'dimming'
+
+Event emitted when a light's off button is held.
+
+**Callback arguments**
+
+- `group` the group/button for which the command was sent
+
+#### Event: 'dimmed'
+
+Event emitted when a light's off button is released.
+
+**Callback arguments**
+
+- `group` the group/button for which the command was sent
+
+#### Event: 'command'
+
+Generic event emitted when a device generates a command. Only needed if you want direct access the the command data.
+
+**Callback arguments**
+
+- `group` the group/button for which the command was sent
+- `command1` the first command (the command type)
+- `command2` the second command (the command options)
+
 
 ### Insteon Thermostat Functions
 
