@@ -32,6 +32,7 @@ var host = '127.0.0.1';
 var port = 9761;
 
 var mockHub = net.createServer(function (socket) {
+  mockHub.socket = socket;
   socket.setEncoding('hex');
   socket.on('data', function (cmd) {
     if(!util.isArray(mockData)){
@@ -46,26 +47,31 @@ var mockHub = net.createServer(function (socket) {
         break;
       }
     }
-    if(!responses) {
-      return;
-    }
 
-    if(typeof responses === 'string') {
-      responses = [responses];
-    }
-
-    function write(response) {
-      if(!response) {
-        return;
-      }
-      socket.write(response, 'hex');
-      setTimeout(function() {
-        write(responses.shift());
-      }, 100);
-    }
-    write(responses.shift());
+    mockHub.send(responses);
   });
 });
+
+mockHub.send = function (responses) {
+  if(!responses) {
+    return;
+  }
+
+  if(typeof responses === 'string') {
+    responses = [responses];
+  }
+
+  function write(response) {
+    if(!response) {
+      return;
+    }
+    mockHub.socket.write(response, 'hex');
+    setTimeout(function() {
+      write(responses.shift());
+    }, 100);
+  }
+  write(responses.shift());
+};
 
 
 describe('Insteon Gateway', function() {
@@ -295,6 +301,186 @@ describe('Insteon Gateway', function() {
         done();
 
       });
+    });
+  });
+
+  // Light Events
+
+  it('emits turnOn event', function (done) {
+    var plan = new Plan(2, done);
+    var gw = new Insteon();
+    var light = gw.light('19d41c');
+
+    light.on('command', function (group, cmd1, cmd2) {
+      group.should.equal(1);
+      cmd1.should.equal('11');
+      cmd2.should.equal('00');
+      plan.ok();
+    });
+
+    light.on('turnOn', function (group) {
+      group.should.equal(1);
+      plan.ok();
+    });
+
+    gw.connect(host, function (){
+      setTimeout(function () { // make sure server connection event fires first
+        mockHub.send([
+          '025019d41c000001cb1100',
+          '025019d41c1eb552451101',
+          '025019d41c110101cf0600'
+        ]);
+      }, 10);
+    });
+  });
+
+  it('emits turnOff event', function (done) {
+    var plan = new Plan(2, done);
+    var gw = new Insteon();
+    var light = gw.light('19d41c');
+
+    light.on('command', function (group, cmd1, cmd2) {
+      group.should.equal(1);
+      cmd1.should.equal('13');
+      cmd2.should.equal('00');
+      plan.ok();
+    });
+
+    light.on('turnOff', function (group) {
+      group.should.equal(1);
+      plan.ok();
+    });
+
+    gw.connect(host, function (){
+      setTimeout(function () { // make sure server connection event fires first
+        mockHub.send([
+          '025019d41c000001cf1300',
+          '025019d41c1eb552451301',
+          '025019d41c130101cf0600'
+        ]);
+      }, 10);
+    });
+  });
+
+  it('emits turnOnFast event', function (done) {
+    var plan = new Plan(2, done);
+    var gw = new Insteon();
+    var light = gw.light('19d41c');
+
+    light.on('command', function (group, cmd1, cmd2) {
+      group.should.equal(1);
+      cmd1.should.equal('12');
+      cmd2.should.equal('00');
+      plan.ok();
+    });
+
+    light.on('turnOnFast', function (group) {
+      group.should.equal(1);
+      plan.ok();
+    });
+
+    gw.connect(host, function (){
+      setTimeout(function () { // make sure server connection event fires first
+        mockHub.send([
+          '025019d41c000001cf1200',
+          '025019d41c1eb552451201',
+          '025019d41c120101cf0600'
+        ]);
+      }, 10);
+    });
+  });
+
+  it('emits turnOffFast event', function (done) {
+    var plan = new Plan(2, done);
+    var gw = new Insteon();
+    var light = gw.light('19d41c');
+
+    light.on('command', function (group, cmd1, cmd2) {
+      group.should.equal(1);
+      cmd1.should.equal('14');
+      cmd2.should.equal('00');
+      plan.ok();
+    });
+
+    light.on('turnOffFast', function (group) {
+      group.should.equal(1);
+      plan.ok();
+    });
+
+    gw.connect(host, function (){
+      setTimeout(function () { // make sure server connection event fires first
+        mockHub.send([
+          '025019d41c000001cf1400',
+          '025019d41c1eb552451401',
+          '025019d41c1eb5524a1401',
+          '025019d41c1eb5524f1401',
+          '025019d41c140101cf0600'
+        ]);
+      }, 10);
+    });
+  });
+
+  it('emits dim events', function (done) {
+    var plan = new Plan(4, done);
+    var gw = new Insteon();
+    var light = gw.light('19d41c');
+
+    light.on('command', function (group, cmd1, cmd2) {
+      group.should.equal(1);
+      cmd1.should.match(/1[78]/);
+      cmd2.should.equal('00');
+      plan.ok();
+    });
+
+    light.on('dimming', function (group) {
+      group.should.equal(1);
+      plan.ok();
+    });
+
+    light.on('dimmed', function (group) {
+      group.should.equal(1);
+      plan.ok();
+    });
+
+    gw.connect(host, function (){
+      setTimeout(function () { // make sure server connection event fires first
+        mockHub.send([
+          '025019d41c000001cf1700',
+          '025019d41c000001cb1800'
+        ]);
+      }, 10);
+    });
+  });
+
+  it('emits brighten events', function (done) {
+    var plan = new Plan(4, done);
+    var gw = new Insteon();
+    var light = gw.light('19d41c');
+
+    light.on('command', function (group, cmd1, cmd2) {
+      group.should.equal(1);
+      cmd1.should.match(/1[78]/);
+      cmd2.should.match(/0[01]/);
+      plan.ok();
+    });
+
+    light.on('brightening', function (group) {
+      group.should.equal(1);
+      plan.ok();
+    });
+
+    light.on('brightened', function (group) {
+      group.should.equal(1);
+      plan.ok();
+    });
+
+    gw.connect(host, function (){
+      setTimeout(function () { // make sure server connection event fires first
+        mockHub.send([
+          '025019d41c000001cf1701',
+          '025019d41c000001cf1800'
+        ]);
+      }, 10);
     });
   });
 
