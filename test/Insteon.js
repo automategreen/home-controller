@@ -52,8 +52,11 @@ var mockHub = net.createServer(function (socket) {
   });
 });
 
-mockHub.send = function (responses) {
+mockHub.send = function (responses, next) {
   if(!responses) {
+    if(next) {
+      next();
+    }
     return;
   }
 
@@ -63,12 +66,15 @@ mockHub.send = function (responses) {
 
   function write(response) {
     if(!response) {
+      if(next) {
+        next();
+      }
       return;
     }
     mockHub.socket.write(response, 'hex');
     setTimeout(function() {
       write(responses.shift());
-    }, 100);
+    }, 10);
   }
   write(responses.shift());
 };
@@ -103,386 +109,497 @@ describe('Insteon Gateway', function() {
     });
   });
 
-  it('turns on a light to level', function(done) {
-    var gw = new Insteon();
+  describe('Light commands', function () {
 
-    mockData = {
-      '02629999990f117f': '02629999990f117f060250999999ffffff2f117f'
-    };
+    it('turns on a light to level', function(done) {
+      var gw = new Insteon();
 
-    gw.connect(host, function (){
-      gw.turnOn('999999', 50, done);
-    });
-  });
+      mockData = {
+        '02629999990f117f': '02629999990f117f060250999999ffffff2f117f'
+      };
 
-  it('turns on a light to level at ramp', function(done) {
-    var gw = new Insteon();
-
-    mockData = {
-      '02629999990f2e7d': '02629999990f2e7d060250999999ffffff2f2e7d'
-    };
-
-    gw.connect(host, function (){
-      gw.turnOn('999999', 50, 2000, done);
-    });
-  });
-
-
-  it('turns on a light to level at ramp (min)', function(done) {
-    var gw = new Insteon();
-
-    mockData = {
-      '02629999990f2e7f': '02629999990f2e7f060250999999ffffff2f2e7f'
-    };
-
-    gw.connect(host, function (){
-      gw.turnOn('999999', 50, 0, done);
-    });
-  });
-
-
-  it('turns on a light to level at ramp (max)', function(done) {
-    var gw = new Insteon();
-
-    mockData = {
-      '02629999990f2e70': '02629999990f2e70060250999999ffffff2f2e70'
-    };
-
-    gw.connect(host, function (){
-      gw.turnOn('999999', 50, 10000000, done);
-    });
-  });
-
-  it('turns on a light to level at ramp (slow)', function(done) {
-    var gw = new Insteon();
-
-    mockData = {
-      '02629999990f2e76': '02629999990f2e76060250999999ffffff2f2e76'
-    };
-
-    gw.connect(host, function (){
-      gw.turnOn('999999', 50, 'slow', done);
-    });
-  });
-
-
-  it('turns on a light to level at ramp (fast)', function(done) {
-    var gw = new Insteon();
-
-    mockData = {
-      '02629999990f2e7f': '02629999990f2e7f060250999999ffffff2f2e7f'
-    };
-
-    gw.connect(host, function (){
-      gw.turnOn('999999', 50, 'fast', done);
-    });
-  });
-
-  it('turns off a light', function(done) {
-    var gw = new Insteon();
-
-    mockData = {
-      '02629999990f1300': '02629999990f1300060250999999ffffff2f1300'
-    };
-
-    gw.connect(host, function (){
-      gw.turnOff('999999', done);
-    });
-  });
-
-  it('turns off a light at ramp (slow)', function(done) {
-    var gw = new Insteon();
-
-    mockData = {
-      '02629999990f2f06': '02629999990f2f06060250999999ffffff2f2f06'
-    };
-
-    gw.connect(host, function (){
-      gw.turnOff('999999', 'slow', done);
-    });
-  });
-
-
-  it('turns off a light at ramp (fast)', function(done) {
-    var gw = new Insteon();
-
-    mockData = {
-      '02629999990f2f0f': '02629999990f2f0f060250999999ffffff2f2f0f'
-    };
-
-    gw.connect(host, function (){
-      gw.turnOff('999999', 'fast', done);
-    });
-  });
-
-  it('turns off a light fast', function(done) {
-    var gw = new Insteon();
-
-    mockData = {
-      '02629999990f1400': '02629999990f1400060250999999ffffff2f1400'
-    };
-
-    gw.connect(host, function (){
-      gw.turnOffFast('999999', done);
-    });
-  });
-
-  it('gets the light level', function(done) {
-    var gw = new Insteon();
-
-    mockData = {
-      '02629999990f1900': '02629999990f1900060250999999ffffff2f01ff'
-    };
-
-    gw.connect(host, function (){
-      gw.level('999999', function(err, level) {
-        should.not.exist(err);
-        level.should.eql(100);
-        done();
+      gw.connect(host, function (){
+        gw.turnOn('999999', 50, done);
       });
     });
-  });
 
-  it('error when trying to turn light to invlaid level', function() {
-    var gw = new Insteon();
+    it('turns on a light to level at ramp', function(done) {
+      var gw = new Insteon();
 
-    mockData = {};
+      mockData = {
+        '02629999990f2e7d': '02629999990f2e7d060250999999ffffff2f2e7d'
+      };
 
-    gw.connect(host, function (){
-      (function(){
-        gw.turnOn('999999', 101, function() {});
-      }).should.throw('level must be between 0 and 100');
-    });
-  });
-
-
-  it('get the ramp rate', function(done) {
-    var gw = new Insteon();
-
-    mockData = {
-      '02629999991f2e0001000000000000000000000000d1':
-      [
-      '02629999991f2e0001000000000000000000000000d106',
-      '0250999999ffffff2f2e00',
-      '0251999999ffffff112e000101000020201cfe1f0000000000'
-      ]
-    };
-
-
-    gw.connect(host, function (){
-      gw.rampRate('999999', function(err, rate){
-        should.not.exist(err);
-        should.exist(rate);
-        rate.should.eql(500);
-        done();
-
+      gw.connect(host, function (){
+        gw.turnOn('999999', 50, 2000, done);
       });
     });
-  });
-
-  it('get the on level', function(done) {
-    var gw = new Insteon();
-
-    mockData = {
-      '02629999991f2e0001000000000000000000000000d1':
-      [
-      '02629999991f2e0001000000000000000000000000d106',
-      '0250999999ffffff2f2e00',
-      '0251999999ffffff112e000101000020201cfe1f0000000000'
-      ]
-    };
 
 
-    gw.connect(host, function (){
-      gw.onLevel('999999', function(err, level){
-        should.not.exist(err);
-        should.exist(level);
-        level.should.eql(99);
-        done();
+    it('turns on a light to level at ramp (min)', function(done) {
+      var gw = new Insteon();
 
+      mockData = {
+        '02629999990f2e7f': '02629999990f2e7f060250999999ffffff2f2e7f'
+      };
+
+      gw.connect(host, function (){
+        gw.turnOn('999999', 50, 0, done);
       });
     });
+
+
+    it('turns on a light to level at ramp (max)', function(done) {
+      var gw = new Insteon();
+
+      mockData = {
+        '02629999990f2e70': '02629999990f2e70060250999999ffffff2f2e70'
+      };
+
+      gw.connect(host, function (){
+        gw.turnOn('999999', 50, 10000000, done);
+      });
+    });
+
+    it('turns on a light to level at ramp (slow)', function(done) {
+      var gw = new Insteon();
+
+      mockData = {
+        '02629999990f2e76': '02629999990f2e76060250999999ffffff2f2e76'
+      };
+
+      gw.connect(host, function (){
+        gw.turnOn('999999', 50, 'slow', done);
+      });
+    });
+
+
+    it('turns on a light to level at ramp (fast)', function(done) {
+      var gw = new Insteon();
+
+      mockData = {
+        '02629999990f2e7f': '02629999990f2e7f060250999999ffffff2f2e7f'
+      };
+
+      gw.connect(host, function (){
+        gw.turnOn('999999', 50, 'fast', done);
+      });
+    });
+
+    it('turns off a light', function(done) {
+      var gw = new Insteon();
+
+      mockData = {
+        '02629999990f1300': '02629999990f1300060250999999ffffff2f1300'
+      };
+
+      gw.connect(host, function (){
+        gw.turnOff('999999', done);
+      });
+    });
+
+    it('turns off a light at ramp (slow)', function(done) {
+      var gw = new Insteon();
+
+      mockData = {
+        '02629999990f2f06': '02629999990f2f06060250999999ffffff2f2f06'
+      };
+
+      gw.connect(host, function (){
+        gw.turnOff('999999', 'slow', done);
+      });
+    });
+
+
+    it('turns off a light at ramp (fast)', function(done) {
+      var gw = new Insteon();
+
+      mockData = {
+        '02629999990f2f0f': '02629999990f2f0f060250999999ffffff2f2f0f'
+      };
+
+      gw.connect(host, function (){
+        gw.turnOff('999999', 'fast', done);
+      });
+    });
+
+    it('turns off a light fast', function(done) {
+      var gw = new Insteon();
+
+      mockData = {
+        '02629999990f1400': '02629999990f1400060250999999ffffff2f1400'
+      };
+
+      gw.connect(host, function (){
+        gw.turnOffFast('999999', done);
+      });
+    });
+
+    it('gets the light level', function(done) {
+      var gw = new Insteon();
+
+      mockData = {
+        '02629999990f1900': '02629999990f1900060250999999ffffff2f01ff'
+      };
+
+      gw.connect(host, function (){
+        gw.level('999999', function(err, level) {
+          should.not.exist(err);
+          level.should.eql(100);
+          done();
+        });
+      });
+    });
+
+    it('error when trying to turn light to invlaid level', function() {
+      var gw = new Insteon();
+
+      mockData = {};
+
+      gw.connect(host, function (){
+        (function(){
+          gw.turnOn('999999', 101, function() {});
+        }).should.throw('level must be between 0 and 100');
+      });
+    });
+
+
+    it('get the ramp rate', function(done) {
+      var gw = new Insteon();
+
+      mockData = {
+        '02629999991f2e0001000000000000000000000000d1':
+        [
+        '02629999991f2e0001000000000000000000000000d106',
+        '0250999999ffffff2f2e00',
+        '0251999999ffffff112e000101000020201cfe1f0000000000'
+        ]
+      };
+
+
+      gw.connect(host, function (){
+        gw.rampRate('999999', function(err, rate){
+          should.not.exist(err);
+          should.exist(rate);
+          rate.should.eql(500);
+          done();
+
+        });
+      });
+    });
+
+    it('get the on level', function(done) {
+      var gw = new Insteon();
+
+      mockData = {
+        '02629999991f2e0001000000000000000000000000d1':
+        [
+        '02629999991f2e0001000000000000000000000000d106',
+        '0250999999ffffff2f2e00',
+        '0251999999ffffff112e000101000020201cfe1f0000000000'
+        ]
+      };
+
+
+      gw.connect(host, function (){
+        gw.onLevel('999999', function(err, level){
+          should.not.exist(err);
+          should.exist(level);
+          level.should.eql(100);
+          done();
+
+        });
+      });
+    });
+
   });
 
   // Light Events
 
-  it('emits turnOn event', function (done) {
-    var plan = new Plan(2, done);
-    var gw = new Insteon();
-    var light = gw.light('19d41c');
+  describe('Light Events', function () {
+    it('emits turnOn event', function (done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+      var light = gw.light('19d41c');
 
-    light.on('command', function (group, cmd1, cmd2) {
-      group.should.equal(1);
-      cmd1.should.equal('11');
-      cmd2.should.equal('00');
-      plan.ok();
+      light.on('command', function (group, cmd1, cmd2) {
+        group.should.equal(1);
+        cmd1.should.equal('11');
+        cmd2.should.equal('00');
+        plan.ok();
+      });
+
+      light.on('turnOn', function (group) {
+        group.should.equal(1);
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '025019d41c000001cb1100',
+            '025019d41c1eb552451101',
+            '025019d41c110101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
     });
 
-    light.on('turnOn', function (group) {
-      group.should.equal(1);
-      plan.ok();
+    it('emits turnOff event', function (done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+      var light = gw.light('19d41c');
+
+      light.on('command', function (group, cmd1, cmd2) {
+        group.should.equal(1);
+        cmd1.should.equal('13');
+        cmd2.should.equal('00');
+        plan.ok();
+      });
+
+      light.on('turnOff', function (group) {
+        group.should.equal(1);
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '025019d41c000001cf1300',
+            '025019d41c1eb552451301',
+            '025019d41c130101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
     });
 
-    gw.connect(host, function (){
-      setTimeout(function () { // make sure server connection event fires first
-        mockHub.send([
-          '025019d41c000001cb1100',
-          '025019d41c1eb552451101',
-          '025019d41c110101cf0600'
-        ]);
-      }, 10);
+    it('emits turnOnFast event', function (done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+      var light = gw.light('19d41c');
+
+      light.on('command', function (group, cmd1, cmd2) {
+        group.should.equal(1);
+        cmd1.should.equal('12');
+        cmd2.should.equal('00');
+        plan.ok();
+      });
+
+      light.on('turnOnFast', function (group) {
+        group.should.equal(1);
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '025019d41c000001cf1200',
+            '025019d41c1eb552451201',
+            '025019d41c120101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+
+    it('emits turnOffFast event', function (done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+      var light = gw.light('19d41c');
+
+      light.on('command', function (group, cmd1, cmd2) {
+        group.should.equal(1);
+        cmd1.should.equal('14');
+        cmd2.should.equal('00');
+        plan.ok();
+      });
+
+      light.on('turnOffFast', function (group) {
+        group.should.equal(1);
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '025019d41c000001cf1400',
+            '025019d41c1eb552451401',
+            '025019d41c1eb5524a1401',
+            '025019d41c1eb5524f1401',
+            '025019d41c140101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+
+    it('emits dim events', function (done) {
+      var plan = new Plan(5, done);
+      var gw = new Insteon();
+      var light = gw.light('19d41c');
+
+      light.on('command', function (group, cmd1, cmd2) {
+        group.should.equal(1);
+        cmd1.should.match(/1[78]/);
+        cmd2.should.equal('00');
+        plan.ok();
+      });
+
+      light.on('dimming', function (group) {
+        group.should.equal(1);
+        plan.ok();
+      });
+
+      light.on('dimmed', function (group) {
+        group.should.equal(1);
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '025019d41c000001cf1700',
+            '025019d41c000001cb1800'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+
+    it('emits brighten events', function (done) {
+      var plan = new Plan(5, done);
+      var gw = new Insteon();
+      var light = gw.light('19d41c');
+
+      light.on('command', function (group, cmd1, cmd2) {
+        group.should.equal(1);
+        cmd1.should.match(/1[78]/);
+        cmd2.should.match(/0[01]/);
+        plan.ok();
+      });
+
+      light.on('brightening', function (group) {
+        group.should.equal(1);
+        plan.ok();
+      });
+
+      light.on('brightened', function (group) {
+        group.should.equal(1);
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '025019d41c000001cf1701',
+            '025019d41c000001cf1800'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+
+
+    it('emits turnOn event from command ACK', function (done) {
+      var plan = new Plan(2, done);
+      var gw = new Insteon();
+      var light = gw.light('999999');
+
+      light.on('command', function (group, cmd1, cmd2) {
+        group.should.equal(1);
+        cmd1.should.equal('11');
+        cmd2.should.equal('7f');
+        plan.ok();
+      });
+
+      light.on('turnOn', function (group, level) {
+        group.should.equal(1);
+        level.should.equal(50);
+        plan.ok();
+      });
+
+      mockData = {
+        '02629999990f117f': '02629999990f117f060250999999ffffff2f117f'
+      };
+
+      gw.connect(host, function (){
+        light.turnOn(50)
+        .then(function() {
+          plan.ok();
+        });
+      });
+    });
+
+
+    it('emits turnOnFast event from command ACK', function (done) {
+      var plan = new Plan(2, done);
+      var gw = new Insteon();
+      var light = gw.light('999999');
+
+      light.on('command', function (group, cmd1, cmd2) {
+        group.should.equal(1);
+        cmd1.should.equal('12');
+        cmd2.should.equal('00');
+        plan.ok();
+      });
+
+      light.on('turnOnFast', function (group, level) {
+        group.should.equal(1);
+        should.not.exist(level);
+        plan.ok();
+      });
+
+      mockData = {
+        '02629999990f1200': '02629999990f1200060250999999ffffff2f1200'
+      };
+
+      gw.connect(host, function (){
+        light.turnOnFast()
+        .then(function() {
+          plan.ok();
+        });
+      });
+    });
+
+
+    it('emits turnOff event from command ACK', function (done) {
+      var plan = new Plan(2, done);
+      var gw = new Insteon();
+      var light = gw.light('999999');
+
+      light.on('command', function (group, cmd1, cmd2) {
+        group.should.equal(1);
+        cmd1.should.equal('13');
+        cmd2.should.equal('00');
+        plan.ok();
+      });
+
+      light.on('turnOnFast', function (group) {
+        group.should.equal(1);
+        plan.ok();
+      });
+
+      mockData = {
+        '02629999990f1300': '02629999990f1300060250999999ffffff2f1300'
+      };
+
+      gw.connect(host, function (){
+        light.turnOff()
+        .then(function() {
+          plan.ok();
+        });
+      });
     });
   });
 
-  it('emits turnOff event', function (done) {
-    var plan = new Plan(2, done);
-    var gw = new Insteon();
-    var light = gw.light('19d41c');
-
-    light.on('command', function (group, cmd1, cmd2) {
-      group.should.equal(1);
-      cmd1.should.equal('13');
-      cmd2.should.equal('00');
-      plan.ok();
-    });
-
-    light.on('turnOff', function (group) {
-      group.should.equal(1);
-      plan.ok();
-    });
-
-    gw.connect(host, function (){
-      setTimeout(function () { // make sure server connection event fires first
-        mockHub.send([
-          '025019d41c000001cf1300',
-          '025019d41c1eb552451301',
-          '025019d41c130101cf0600'
-        ]);
-      }, 10);
-    });
-  });
-
-  it('emits turnOnFast event', function (done) {
-    var plan = new Plan(2, done);
-    var gw = new Insteon();
-    var light = gw.light('19d41c');
-
-    light.on('command', function (group, cmd1, cmd2) {
-      group.should.equal(1);
-      cmd1.should.equal('12');
-      cmd2.should.equal('00');
-      plan.ok();
-    });
-
-    light.on('turnOnFast', function (group) {
-      group.should.equal(1);
-      plan.ok();
-    });
-
-    gw.connect(host, function (){
-      setTimeout(function () { // make sure server connection event fires first
-        mockHub.send([
-          '025019d41c000001cf1200',
-          '025019d41c1eb552451201',
-          '025019d41c120101cf0600'
-        ]);
-      }, 10);
-    });
-  });
-
-  it('emits turnOffFast event', function (done) {
-    var plan = new Plan(2, done);
-    var gw = new Insteon();
-    var light = gw.light('19d41c');
-
-    light.on('command', function (group, cmd1, cmd2) {
-      group.should.equal(1);
-      cmd1.should.equal('14');
-      cmd2.should.equal('00');
-      plan.ok();
-    });
-
-    light.on('turnOffFast', function (group) {
-      group.should.equal(1);
-      plan.ok();
-    });
-
-    gw.connect(host, function (){
-      setTimeout(function () { // make sure server connection event fires first
-        mockHub.send([
-          '025019d41c000001cf1400',
-          '025019d41c1eb552451401',
-          '025019d41c1eb5524a1401',
-          '025019d41c1eb5524f1401',
-          '025019d41c140101cf0600'
-        ]);
-      }, 10);
-    });
-  });
-
-  it('emits dim events', function (done) {
-    var plan = new Plan(4, done);
-    var gw = new Insteon();
-    var light = gw.light('19d41c');
-
-    light.on('command', function (group, cmd1, cmd2) {
-      group.should.equal(1);
-      cmd1.should.match(/1[78]/);
-      cmd2.should.equal('00');
-      plan.ok();
-    });
-
-    light.on('dimming', function (group) {
-      group.should.equal(1);
-      plan.ok();
-    });
-
-    light.on('dimmed', function (group) {
-      group.should.equal(1);
-      plan.ok();
-    });
-
-    gw.connect(host, function (){
-      setTimeout(function () { // make sure server connection event fires first
-        mockHub.send([
-          '025019d41c000001cf1700',
-          '025019d41c000001cb1800'
-        ]);
-      }, 10);
-    });
-  });
-
-  it('emits brighten events', function (done) {
-    var plan = new Plan(4, done);
-    var gw = new Insteon();
-    var light = gw.light('19d41c');
-
-    light.on('command', function (group, cmd1, cmd2) {
-      group.should.equal(1);
-      cmd1.should.match(/1[78]/);
-      cmd2.should.match(/0[01]/);
-      plan.ok();
-    });
-
-    light.on('brightening', function (group) {
-      group.should.equal(1);
-      plan.ok();
-    });
-
-    light.on('brightened', function (group) {
-      group.should.equal(1);
-      plan.ok();
-    });
-
-    gw.connect(host, function (){
-      setTimeout(function () { // make sure server connection event fires first
-        mockHub.send([
-          '025019d41c000001cf1701',
-          '025019d41c000001cf1800'
-        ]);
-      }, 10);
-    });
-  });
 
   it('get the device info', function(done) {
     var gw = new Insteon();

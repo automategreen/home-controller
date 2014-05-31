@@ -503,6 +503,26 @@ function sendOnTxt() {
 hub.connect(...);
 ```
 
+#### light.emitOnAck
+
+By default events will be emitted for both device trigger (button presses) and hub triggered (used this package to controll a light or the Insteon App).  If you think that sounds crazy, disable it.
+
+
+**Example:**
+```js
+var hub = new Insteon();
+var light = hub.light('112233');
+
+hub.connect(...);
+
+light.turnOn(); // Emits 'turnOn' event
+
+light.emitOnAck = false; // Disables events on command ack
+
+light.turnOn(); // Does not emit event
+```
+
+
 #### Event: 'turnOn'
 
 Event emitted when a light's on button is tapped once.
@@ -510,6 +530,7 @@ Event emitted when a light's on button is tapped once.
 **Callback arguments**
 
 - `group` the group/button for which the command was sent
+- `level` if provided, the level to which the light was turned on. Not provided for device trigged events.
 
 #### Event: 'turnOnFast'
 
