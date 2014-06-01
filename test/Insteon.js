@@ -1839,4 +1839,194 @@ describe('Insteon Gateway', function() {
 
   }); //discribe Thermostat Commands
 
+  describe('Thermostat Events', function () {
+    it('emits cooling event', function (done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+      var thermostat = gw.thermostat('292638');
+
+      thermostat.on('command', function (group, cmd1, cmd2) {
+        group.should.equal(1);
+        cmd1.should.equal('11');
+        cmd2.should.equal('00');
+        plan.ok();
+      });
+
+      thermostat.on('cooling', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250292638000001cb1100',
+            '02502926381eb552401101',
+            '02502926381eb552451101',
+            '0250292638110101cf0600',
+            '0250292638110101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+
+
+    it('emits heating event', function (done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+      var thermostat = gw.thermostat('292638');
+
+      thermostat.on('command', function (group, cmd1, cmd2) {
+        group.should.equal(2);
+        cmd1.should.equal('11');
+        cmd2.should.equal('00');
+        plan.ok();
+      });
+
+      thermostat.on('heating', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250292638000002cb1100',
+            '02502926381eb552401102',
+            '02502926381eb552451102',
+            '0250292638110101cf0600',
+            '0250292638110101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+
+
+    it('emits off event', function (done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+      var thermostat = gw.thermostat('292638');
+
+      thermostat.on('command', function (group, cmd1, cmd2) {
+        group.should.equal(1);
+        cmd1.should.equal('13');
+        cmd2.should.equal('00');
+        plan.ok();
+      });
+
+      thermostat.on('off', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250292638000001cb1300',
+            '02502926381eb552401301',
+            '02502926381eb552451301',
+            '0250292638130101cf0600',
+            '0250292638130101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+
+    it('emits highHumidity event', function (done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+      var thermostat = gw.thermostat('292638');
+
+      thermostat.on('command', function (group, cmd1, cmd2) {
+        group.should.equal(3);
+        cmd1.should.equal('11');
+        cmd2.should.equal('00');
+        plan.ok();
+      });
+
+      thermostat.on('highHumidity', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250292638000003cb1100',
+            '02502926381eb552401103',
+            '02502926381eb552451103',
+            '0250292638110101cf0600',
+            '0250292638110101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+
+    it('emits lowHumidity event', function (done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+      var thermostat = gw.thermostat('292638');
+
+      thermostat.on('command', function (group, cmd1, cmd2) {
+        group.should.equal(4);
+        cmd1.should.equal('11');
+        cmd2.should.equal('00');
+        plan.ok();
+      });
+
+      thermostat.on('lowHumidity', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250292638000004cb1100',
+            '02502926381eb552401104',
+            '02502926381eb552451104',
+            '0250292638110101cf0600',
+            '0250292638110101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+
+    it('emits normalHumidity event', function (done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+      var thermostat = gw.thermostat('292638');
+
+      thermostat.on('command', function (group, cmd1, cmd2) {
+        group.should.equal(4);
+        cmd1.should.equal('13');
+        cmd2.should.equal('00');
+        plan.ok();
+      });
+
+      thermostat.on('normalHumidity', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250292638000004cb1300',
+            '02502926381eb552401304',
+            '02502926381eb552451304',
+            '0250292638130101cf0600',
+            '0250292638130101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+
+  }); // Thermostat Events
 });

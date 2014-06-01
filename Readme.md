@@ -749,6 +749,66 @@ Gets the status of the thermostat. This is a subset of `.details()`, but it only
 ```
 
 
+### Insteon Thermostat Events
+
+#### Events Overview
+
+The thermostat object allows you to trigger on events from the device. So if you want to know how many times a day your AC turns on, you can count the 'cooling' events.
+
+**Example:**
+```js
+var hub = new Insteon();
+var thermostat = hub.thermostat('112233');
+
+var count = 0;
+thermostat.on('cooling', function () {
+  console.log('AC turned count:' ++count);
+});
+
+hub.connect(...);
+```
+
+#### thermostat.monitor([enable,] [next])
+
+By default the thermostat will not send events to the hub.  You must enable this functionality.  This can be done with the `.monitor()` function.  This only need to be done once.
+
+`enable` is a boolean flag that can be used to controll if monitoring is enabled or disabled by the function.  Passing a value of `false` disables monitoring. The default value is `true`.
+
+**Example:**
+```js
+var hub = new Insteon();
+var thermostat = hub.thermostat('112233');
+
+hub.connect(host, function () {
+  thermostat.monitor();
+});
+```
+
+
+#### Event: 'cooling'
+
+Event emitted when the thermostat starts cooling.
+
+#### Event: 'heating'
+
+Event emitted when the thermostat starts heating.
+
+#### Event: 'off'
+
+Event emitted when the thermostat stops heating or cooling (i.e. system is off).
+
+#### Event: 'highHumidity'
+
+Event emitted when humidity goes above the high humidity setpoint.
+
+#### Event: 'lowHumidity'
+
+Event emitted when humidity goes below the low humidity setpoint.
+
+#### Event: 'normalHumidity'
+
+Event emitted when humidity returns to normal levels. Humidity is between high and low setpoints.
+
 ### Insteon Core Functions
 
 *For advanced users only.  These function are leveraged by the higher level functions.*
