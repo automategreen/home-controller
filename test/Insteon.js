@@ -323,6 +323,8 @@ describe('Insteon Gateway', function() {
       var light = gw.light('19d41c');
 
       light.on('command', function (group, cmd1, cmd2) {
+        this.id.should.equal('19D41C');
+        should.exist(this.turnOff);
         group.should.equal(1);
         cmd1.should.equal('11');
         cmd2.should.equal('00');
@@ -330,6 +332,8 @@ describe('Insteon Gateway', function() {
       });
 
       light.on('turnOn', function (group) {
+        this.id.should.equal('19D41C');
+        should.exist(this.turnOff);
         group.should.equal(1);
         plan.ok();
       });

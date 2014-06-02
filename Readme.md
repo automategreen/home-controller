@@ -265,7 +265,7 @@ Gets the link at a memory address on a device
 
 Creates scene controller with responder(s). All devices must be available and linked to the gateway.
 
-`controller` is the device to setup as controller.  It can either be a device id (6 digit hex String), the string 'insteon', or null.  If a device id is provided, the device will be configured as the controller.  If controller is `'insteon'` the gateway will be configured as the controller.
+`controller` is the device to setup as controller.  It can either be a device id (6 digit hex String), the string 'insteon', or null.  If a device id is provided, the device will be configured as the controller.  If controller is `'gw'` the gateway will be configured as the controller.
 
 `responder` is the device to setup as responder.  It can either be a responder object or an Array of responder objects. The responder object can also be the device id (6 digit hex String); default scene values will be used.
 
