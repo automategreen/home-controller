@@ -1,12 +1,37 @@
 home-controller [![Build Status](https://travis-ci.org/automategreen/home-controller.png)](https://travis-ci.org/automategreen/home-controller)
 ===============
+> a node package to control Insteon home automation devices.
+***
 
+Table of Contents
+-----------------
 
+- [Overview](#overview)
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [API](#api)
+  + [Insteon Gateway](#insteon-gateway)
+  + [Linking Functions](#linking-functions)
+  + [Scene Functions](#scene-functions)
+  + [Information Functions](#instoen-functions)
+  + [Lighting Functions](#lighting-functions)
+  + [Lighting Events](#lighting-events)
+  + [Thermostat Functions](#thermostat-functions)
+  + [Thermostat Events](#thermostat-events)
+  + [Motion Sensor Functions](#motion-sensor-functions)
+  + [Motion Sensor Events](#motion-sensor-events)
+  + [Door (Open/Close) Sensor Functions](#door-openclose-sensor-functions)
+  + [Door Sensor Events](#door-sensor-events)
+  + [Leak Sensor Functions](#leak-sensor-functions)
+  + [Leak Sensor Events](#leak-sensor-events)
+  + [Core Functions](#core-function)
+- [Testing](#testing)
+- [References](#references)
 
-Introduction
-------------
+Overview
+--------
 
-home-controller is a node package to control Insteon home automation devices.  The API uses the direct PLM connection over TCP.  To control the Insteon devices, either an [Insteon Hub](http://www.insteon.com/2242-222-insteon-hub.html) or an [Insteon SmartLinc](http://www.insteon.com/2412n-smartlinc-central-controller.html) must be accessible from the app.
+home-controller is a node package to control Insteon home automation devices.  The API uses the direct PLM connection over TCP or Serial connection.  To control the Insteon devices, either an [Insteon Hub](http://www.insteon.com/2242-222-insteon-hub.html), an [Insteon SmartLinc](http://www.insteon.com/2412n-smartlinc-central-controller.html), or an [Insteon PowerLinc Modem](http://www.insteon.com/2412s-powerlinc-modem-serial.html) is required.
 
 Features
 --------
@@ -16,6 +41,7 @@ Features
 - Scene Control
 - Lighting Control
 - Thermostat Control
+- Sensor Control
 
 Getting Started
 ---------------
@@ -61,6 +87,8 @@ API
 **0.5 Updates Hightlights:**
 
   - Add event for devices
+  - Add sensors support (motion, door, & leak)
+  - As always, a few bug fixes
 
 **0.4.3 Update Highlights:**
 
@@ -77,7 +105,7 @@ API
   - All functions return promises (via [Q](https://github.com/kriskowal/q)). The callback function is now optional.
   - The lighting function have been moved to the light class.  Old function are deprecated and will be removed with a later release.
   - Thermostat control is now available
-  - As always, several bug wer fixed (and probably several new one introduced).  Please open an issue if you find a bug.
+  - As always, several bug were fixed (and probably several new one introduced).  Please open an issue if you find a bug.
   - [Full releases notes](http://blog.automategreen.com/post/home-controller-0.4.0)
 
 ### Insteon Gateway
@@ -147,7 +175,7 @@ Emitted when an unsolicited command is received. The argument `command` will be 
 Emitted when an error occurs. The 'close' event will be called directly following this event.
 
 
-### Insteon Linking Functions
+### Linking Functions
 
 #### insteon.link([device,] [options,] [callback])
 
@@ -340,7 +368,7 @@ Brighten by one step a scene group.
 `group` is the controller group on the gateway for which to trigger the command.
 
 
-### Insteon Information Functions
+### Information Functions
 
 #### insteon.info([id,] [callback])
 
@@ -404,7 +432,7 @@ Gets the version information about a device. Version object is returned in callb
 }
 ```
 
-### Insteon Lighting Functions
+### Lighting Functions
 
 **NOTE:** Lighting function have been moved into their own class.
 
@@ -469,6 +497,8 @@ insteon.connect('my.home.com', function () {
 });
 ```
 
+### Lighting Events
+
 #### Events Overview
 
 The light object allows you to trigger on events from the device. This allows for functionality like, send me a text when my light is turned on. Why would you want this?  I don't know, but I'll just assume you're a little crazy.
@@ -485,7 +515,7 @@ light.on('turnOn', function () {
 hub.connect(...);
 ```
 
-There are several event's that could tell you your lights are own.  You may want the text for all of them (again crazy).
+There are several event's that could tell you your lights are on.  You may want the text for all of them (again crazy).
 
 **Example:**
 ```js
@@ -505,7 +535,7 @@ hub.connect(...);
 
 #### light.emitOnAck
 
-By default events will be emitted for both device trigger (button presses) and hub triggered (used this package to controll a light or the Insteon App).  If you think that sounds crazy, disable it.
+By default, events will be emitted for both device trigger (button presses) and hub triggered (used this package to controll a light or the Insteon App).  If you don't want that behavior then disable it.
 
 
 **Example:**
@@ -599,7 +629,7 @@ Generic event emitted when a device generates a command. Only needed if you want
 - `command2` the second command (the command options)
 
 
-### Insteon Thermostat Functions
+### Thermostat Functions
 
 #### insteon.thermostat(id)
 
@@ -749,7 +779,7 @@ Gets the status of the thermostat. This is a subset of `.details()`, but it only
 ```
 
 
-### Insteon Thermostat Events
+### Thermostat Events
 
 #### Events Overview
 
@@ -772,7 +802,7 @@ hub.connect(...);
 
 By default the thermostat will not send events to the hub.  You must enable this functionality.  This can be done with the `.monitor()` function.  This only need to be done once.
 
-`enable` is a boolean flag that can be used to controll if monitoring is enabled or disabled by the function.  Passing a value of `false` disables monitoring. The default value is `true`.
+`enable` is a boolean flag that can be used to control if monitoring is enabled or disabled by the function.  Passing a value of `false` disables monitoring. The default value is `true`.
 
 **Example:**
 ```js
@@ -799,17 +829,161 @@ Event emitted when the thermostat stops heating or cooling (i.e. system is off).
 
 #### Event: 'highHumidity'
 
-Event emitted when humidity goes above the high humidity setpoint.
+Event emitted when humidity goes above the high humidity set point.
 
 #### Event: 'lowHumidity'
 
-Event emitted when humidity goes below the low humidity setpoint.
+Event emitted when humidity goes below the low humidity set point.
 
 #### Event: 'normalHumidity'
 
-Event emitted when humidity returns to normal levels. Humidity is between high and low setpoints.
+Event emitted when humidity returns to normal levels. Humidity is between high and low set points.
 
-### Insteon Core Functions
+
+### Motion Sensor Functions
+
+#### insteon.motion(id)
+
+Creates a Motion object with the Insteon id.
+
+`id` is the id (6 digit hex String) of the motion sensor.
+
+#### `wait` parameter
+
+All function for the motion sensor have and optional `wait` parameter.  This parameter is used to control when the command is sent to the sensor.  The sensor is normally sleeping and cannot receive commands.  
+
+If `wait` is true, then the command will not be sent until activity is detected (i.e. the sensor is awake). **Default Behavior**
+
+If `wait` is false, the command will be send immediately and the sensor must be in an active state.  Typically, this is done by setting the sensor in to linking mode (Hold the set button until LED flashes. Then tap set button. The LED should be double blinking.)
+
+#### motion.status([wait], [callback])
+
+Gets the status of the motion sensor. The returned status object is described below:
+
+```js
+{
+  ledLevel: Number, // 0 to 100
+  clearTimer: Number, // seconds in 30 second increments
+  duskThreshold: Number, // 0 to 100 - light level at to trigger dawn/dusk 
+  options: {
+    occupancyMode: Boolean,
+    ledOn: Boolean,
+    nightMode: Boolean,
+    onMode: Boolean
+  },
+  jumpers: {
+    j1: Boolean,
+    j2: Boolean,
+    j3: Boolean,
+    j4: Boolean,
+    j5: Boolean
+  },
+  lightLevel: Number, // 0 to 100 - Current light level
+  batteryLevel: Number, // Approximate voltage
+}
+```
+
+#### motion.options(options, [wait], [callback])
+
+Sets the configurable motion sensor options.
+
+`options` is the options object.  Below are the defaults:
+
+```js
+{
+  occupancyMode: false,
+  ledOn: true,
+  nightMode: false,
+  onMode: false
+}
+```
+
+#### motion.clearTimer(timeout, [wait], [callback])
+
+Sets the clear timer timeout for the motion sensor.
+
+`timeout` is the timeout value in seconds (rounded up to nearest 30 second interval).  Defaults to 30 seconds (minimum value).
+
+
+#### motion.duskThreshold(threshold, [wait], [callback])
+
+Set the dusk light level threshold for the motion sensor.
+
+`threshold` is the light level (0 to 100) to trigger the dawn/dusk.
+
+### Motion Sensor Events
+
+#### Events Overview
+
+The motion object allows you to trigger on events from the device.
+
+#### Event: 'motion'
+
+Event emitted when motion is detected.
+
+#### Event: 'clear'
+
+Event emitted when clear timer expires after motion was detected.
+
+#### Event: 'dawn'
+
+Event emitted when the light level crosses the dusk threshold from night to day.
+
+#### Event: 'dusk'
+
+Event emitted when the light level crosses the dusk threshold from day to night.
+
+#### Event: 'battery'
+
+Event emitted when the battery is low.
+
+
+### Door (Open/Close) Sensor Functions
+
+#### insteon.door(id)
+
+Creates a Door object with the Insteon id.
+
+`id` is the id (6 digit hex String) of the door sensor.
+
+### Door Sensor Events
+
+#### Event: 'opened'
+
+Event emitted when the sensor is in the opened.
+
+#### Event: 'closed'
+
+Event emitted when the sensor is in the closed.
+
+#### Event: 'heartbeat'
+
+Event emitted every 24 hours by the sensor to inform you it is alive.
+
+### Leak Sensor Functions
+
+#### insteon.leak(id)
+
+Creates a Leak object with the Insteon id.
+
+`id` is the id (6 digit hex String) of the motion sensor.
+
+### Leak Sensor Events
+
+#### Event: 'dry'
+
+Event emitted when the sensor no longer detects moisture.
+
+#### Event: 'wet'
+
+Event emitted when the sensor detects moisture.
+
+#### Event: 'heartbeat'
+
+Event emitted every 24 hours by the sensor to inform you it is alive.
+
+
+### Core Functions
 
 *For advanced users only.  These function are leveraged by the higher level functions.*
 

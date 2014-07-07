@@ -2033,4 +2033,173 @@ describe('Insteon Gateway', function() {
     });
 
   }); // Thermostat Events
+
+
+  describe('Motion Commands', function () {
+    it('get status', function (done) {
+      done(new Error('TODO'));
+    });
+    it('set options', function (done) {
+      done(new Error('TODO'));
+    });
+    it('set clearTimer', function (done) {
+      done(new Error('TODO'));
+    });
+    it('set duskThreshold', function (done) {
+      done(new Error('TODO'));
+    });
+
+  });
+
+  describe('Motion Events', function () {
+    it('emits motion event', function (done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+      var motion = gw.motion('283e9e');
+
+      motion.on('command', function (group, cmd1, cmd2) {
+        group.should.equal(1);
+        cmd1.should.equal('11');
+        cmd2.should.equal('01');
+        plan.ok();
+      });
+
+      motion.on('motion', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250283e9e000001cf1101',
+            '0250283e9e1eb552411101',
+            '0250283e9e1eb5524a1101',
+            '0250283e9e110101cf0600',
+            '0250283e9e110101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+    it('emits clear event', function (done) {
+      var plan = new Plan(5, done);
+      var gw = new Insteon();
+      var motion = gw.motion('283e9e');
+
+      motion.on('command', function (group, cmd1, cmd2) {
+        group.should.equal(1);
+        cmd1.should.equal('13');
+        cmd2.should.equal('01');
+        plan.ok();
+      });
+
+      motion.on('clear', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250283e9e000001cf1301',
+            '0250283e9e000001cf1301',
+            '0250283e9e1eb552451301',
+            '0250283e9e130101cf0600',
+            '0250283e9e130101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+    it('emits dusk event', function (done) {
+      done(new Error('TODO'));
+    });
+    it('emits dawn event', function (done) {
+      done(new Error('TODO'));
+    });
+    it('emits battery event', function (done) {
+      done(new Error('TODO'));
+    });
+  }); // Motion Events
+
+  describe('Door Events', function () {
+    it('emits opened event', function (done) {
+      done(new Error('TODO'));
+    });
+    it('emits closed event', function (done) {
+      var plan = new Plan(5, done);
+      var gw = new Insteon();
+      var door = gw.door('284283');
+
+      door.on('command', function (group, cmd1, cmd2) {
+        group.should.equal(1);
+        cmd1.should.equal('13');
+        cmd2.should.equal('01');
+        plan.ok();
+      });
+
+      door.on('closed', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250284283000001cf1301',
+            '0250284283000001cf1301',
+            '02502842831eb552451301',
+            '0250284283130101cf0600',
+            '0250284283130101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+    it('emits closed event - group 2', function (done) {
+      done(new Error('TODO'));
+    });
+    it('emits heartbeat event', function (done) {
+      var plan = new Plan(5, done);
+      var gw = new Insteon();
+      var door = gw.door('284283');
+
+      door.on('command', function (group, cmd1, cmd2) {
+        group.should.equal(4);
+        cmd1.should.equal('11');
+        cmd2.should.equal('04');
+        plan.ok();
+      });
+
+      door.on('heartbeat', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250284283000004cf1104',
+            '0250284283000004cf1104',
+            '0250284283110004cf0600',
+            '0250284283110004cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+  }); // Door Events
+
+  describe('Leak Events', function () {
+    it('emits dry event', function (done) {
+      done(new Error('TODO'));
+    });
+    it('emits wet event', function (done) {
+      done(new Error('TODO'));
+    });
+    it('emits heartbeat event', function (done) {
+      done(new Error('TODO'));
+    });
+  }); // Leak Events
 });
