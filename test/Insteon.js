@@ -322,12 +322,11 @@ describe('Insteon Gateway', function() {
       var gw = new Insteon();
       var light = gw.light('19d41c');
 
-      light.on('command', function (group, cmd1, cmd2) {
+      light.on('command', function (group, cmd1) {
         this.id.should.equal('19D41C');
         should.exist(this.turnOff);
         group.should.equal(1);
         cmd1.should.equal('11');
-        cmd2.should.equal('00');
         plan.ok();
       });
 
@@ -356,10 +355,9 @@ describe('Insteon Gateway', function() {
       var gw = new Insteon();
       var light = gw.light('19d41c');
 
-      light.on('command', function (group, cmd1, cmd2) {
+      light.on('command', function (group, cmd1) {
         group.should.equal(1);
         cmd1.should.equal('13');
-        cmd2.should.equal('00');
         plan.ok();
       });
 
@@ -386,10 +384,9 @@ describe('Insteon Gateway', function() {
       var gw = new Insteon();
       var light = gw.light('19d41c');
 
-      light.on('command', function (group, cmd1, cmd2) {
+      light.on('command', function (group, cmd1) {
         group.should.equal(1);
         cmd1.should.equal('12');
-        cmd2.should.equal('00');
         plan.ok();
       });
 
@@ -416,10 +413,9 @@ describe('Insteon Gateway', function() {
       var gw = new Insteon();
       var light = gw.light('19d41c');
 
-      light.on('command', function (group, cmd1, cmd2) {
+      light.on('command', function (group, cmd1) {
         group.should.equal(1);
         cmd1.should.equal('14');
-        cmd2.should.equal('00');
         plan.ok();
       });
 
@@ -448,10 +444,9 @@ describe('Insteon Gateway', function() {
       var gw = new Insteon();
       var light = gw.light('19d41c');
 
-      light.on('command', function (group, cmd1, cmd2) {
+      light.on('command', function (group, cmd1) {
         group.should.equal(1);
         cmd1.should.match(/1[78]/);
-        cmd2.should.equal('00');
         plan.ok();
       });
 
@@ -517,10 +512,9 @@ describe('Insteon Gateway', function() {
       var gw = new Insteon();
       var light = gw.light('999999');
 
-      light.on('command', function (group, cmd1, cmd2) {
+      light.on('command', function (group, cmd1) {
         group.should.equal(1);
         cmd1.should.equal('11');
-        cmd2.should.equal('7f');
         plan.ok();
       });
 
@@ -548,10 +542,9 @@ describe('Insteon Gateway', function() {
       var gw = new Insteon();
       var light = gw.light('999999');
 
-      light.on('command', function (group, cmd1, cmd2) {
+      light.on('command', function (group, cmd1) {
         group.should.equal(1);
         cmd1.should.equal('12');
-        cmd2.should.equal('00');
         plan.ok();
       });
 
@@ -579,10 +572,9 @@ describe('Insteon Gateway', function() {
       var gw = new Insteon();
       var light = gw.light('999999');
 
-      light.on('command', function (group, cmd1, cmd2) {
+      light.on('command', function (group, cmd1) {
         group.should.equal(1);
         cmd1.should.equal('13');
-        cmd2.should.equal('00');
         plan.ok();
       });
 
@@ -1849,10 +1841,9 @@ describe('Insteon Gateway', function() {
       var gw = new Insteon();
       var thermostat = gw.thermostat('292638');
 
-      thermostat.on('command', function (group, cmd1, cmd2) {
+      thermostat.on('command', function (group, cmd1) {
         group.should.equal(1);
         cmd1.should.equal('11');
-        cmd2.should.equal('00');
         plan.ok();
       });
 
@@ -1881,10 +1872,9 @@ describe('Insteon Gateway', function() {
       var gw = new Insteon();
       var thermostat = gw.thermostat('292638');
 
-      thermostat.on('command', function (group, cmd1, cmd2) {
+      thermostat.on('command', function (group, cmd1) {
         group.should.equal(2);
         cmd1.should.equal('11');
-        cmd2.should.equal('00');
         plan.ok();
       });
 
@@ -1898,8 +1888,8 @@ describe('Insteon Gateway', function() {
             '0250292638000002cb1100',
             '02502926381eb552401102',
             '02502926381eb552451102',
-            '0250292638110101cf0600',
-            '0250292638110101cf0600'
+            '0250292638110202cf0600',
+            '0250292638110202cf0600'
           ], function () {
             plan.ok();
           });
@@ -1913,10 +1903,9 @@ describe('Insteon Gateway', function() {
       var gw = new Insteon();
       var thermostat = gw.thermostat('292638');
 
-      thermostat.on('command', function (group, cmd1, cmd2) {
+      thermostat.on('command', function (group, cmd1) {
         group.should.equal(1);
         cmd1.should.equal('13');
-        cmd2.should.equal('00');
         plan.ok();
       });
 
@@ -1944,10 +1933,9 @@ describe('Insteon Gateway', function() {
       var gw = new Insteon();
       var thermostat = gw.thermostat('292638');
 
-      thermostat.on('command', function (group, cmd1, cmd2) {
+      thermostat.on('command', function (group, cmd1) {
         group.should.equal(3);
         cmd1.should.equal('11');
-        cmd2.should.equal('00');
         plan.ok();
       });
 
@@ -1961,8 +1949,8 @@ describe('Insteon Gateway', function() {
             '0250292638000003cb1100',
             '02502926381eb552401103',
             '02502926381eb552451103',
-            '0250292638110101cf0600',
-            '0250292638110101cf0600'
+            '0250292638110303cf0600',
+            '0250292638110303cf0600'
           ], function () {
             plan.ok();
           });
@@ -1975,10 +1963,9 @@ describe('Insteon Gateway', function() {
       var gw = new Insteon();
       var thermostat = gw.thermostat('292638');
 
-      thermostat.on('command', function (group, cmd1, cmd2) {
+      thermostat.on('command', function (group, cmd1) {
         group.should.equal(4);
         cmd1.should.equal('11');
-        cmd2.should.equal('00');
         plan.ok();
       });
 
@@ -1992,8 +1979,8 @@ describe('Insteon Gateway', function() {
             '0250292638000004cb1100',
             '02502926381eb552401104',
             '02502926381eb552451104',
-            '0250292638110101cf0600',
-            '0250292638110101cf0600'
+            '0250292638110404cf0600',
+            '0250292638110404cf0600'
           ], function () {
             plan.ok();
           });
@@ -2006,10 +1993,9 @@ describe('Insteon Gateway', function() {
       var gw = new Insteon();
       var thermostat = gw.thermostat('292638');
 
-      thermostat.on('command', function (group, cmd1, cmd2) {
+      thermostat.on('command', function (group, cmd1) {
         group.should.equal(4);
         cmd1.should.equal('13');
-        cmd2.should.equal('00');
         plan.ok();
       });
 
@@ -2023,8 +2009,8 @@ describe('Insteon Gateway', function() {
             '0250292638000004cb1300',
             '02502926381eb552401304',
             '02502926381eb552451304',
-            '0250292638130101cf0600',
-            '0250292638130101cf0600'
+            '0250292638130404cf0600',
+            '0250292638130404cf0600'
           ], function () {
             plan.ok();
           });
@@ -2057,10 +2043,9 @@ describe('Insteon Gateway', function() {
       var gw = new Insteon();
       var motion = gw.motion('283e9e');
 
-      motion.on('command', function (group, cmd1, cmd2) {
+      motion.on('command', function (group, cmd1) {
         group.should.equal(1);
         cmd1.should.equal('11');
-        cmd2.should.equal('01');
         plan.ok();
       });
 
@@ -2083,14 +2068,13 @@ describe('Insteon Gateway', function() {
       });
     });
     it('emits clear event', function (done) {
-      var plan = new Plan(5, done);
+      var plan = new Plan(3, done);
       var gw = new Insteon();
       var motion = gw.motion('283e9e');
 
-      motion.on('command', function (group, cmd1, cmd2) {
+      motion.on('command', function (group, cmd1) {
         group.should.equal(1);
         cmd1.should.equal('13');
-        cmd2.should.equal('01');
         plan.ok();
       });
 
@@ -2128,14 +2112,13 @@ describe('Insteon Gateway', function() {
       done(new Error('TODO'));
     });
     it('emits closed event', function (done) {
-      var plan = new Plan(5, done);
+      var plan = new Plan(3, done);
       var gw = new Insteon();
       var door = gw.door('284283');
 
-      door.on('command', function (group, cmd1, cmd2) {
+      door.on('command', function (group, cmd1) {
         group.should.equal(1);
         cmd1.should.equal('13');
-        cmd2.should.equal('01');
         plan.ok();
       });
 
@@ -2157,18 +2140,123 @@ describe('Insteon Gateway', function() {
         }, 10);
       });
     });
-    it('emits closed event - group 2', function (done) {
-      done(new Error('TODO'));
+    it('emits closed event - with emitDuplicates', function (done) {
+      var plan = new Plan(11, done);
+      var gw = new Insteon();
+      gw.emitDuplicates = true;
+      var door = gw.door('284283');
+
+      door.on('command', function (group, cmd1) {
+        group.should.equal(1);
+        cmd1.should.equal('13');
+        plan.ok();
+      });
+
+      door.on('closed', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250284283000001cf1301',
+            '0250284283000001cf1301',
+            '02502842831eb552451301',
+            '0250284283130101cf0600',
+            '0250284283130101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
     });
-    it('emits heartbeat event', function (done) {
+    it('emits closed event - with duplicates 4 seconds apart', function (done) {
       var plan = new Plan(5, done);
       var gw = new Insteon();
       var door = gw.door('284283');
 
-      door.on('command', function (group, cmd1, cmd2) {
+      door.on('command', function (group, cmd1) {
+        group.should.equal(1);
+        cmd1.should.equal('13');
+        plan.ok();
+      });
+
+      door.on('closed', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250284283000001cf1301',
+            '0250284283000001cf1301',
+            '02502842831eb552451301',
+            '0250284283130101cf0600',
+            '0250284283130101cf0600'
+          ], function () {
+
+            setTimeout(function () { // make sure server connection event fires first
+              mockHub.send([
+                '0250284283000001cf1301',
+                '0250284283000001cf1301',
+                '02502842831eb552451301',
+                '0250284283130101cf0600',
+                '0250284283130101cf0600'
+              ], function () {
+                plan.ok();
+              });
+            }, 4000);
+          });
+        }, 10);
+      });
+    });
+    it('emits open/closed event - within 3 seconds', function (done) {
+      var plan = new Plan(5, done);
+      var gw = new Insteon();
+      var door = gw.door('284283');
+
+      door.on('command', function (group) {
+        group.should.equal(1);
+        plan.ok();
+      });
+
+      door.on('opened', function () {
+        plan.ok();
+      });
+      door.on('closed', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250284283000001cf1101',
+            '0250284283000001cf1101',
+            '02502842831eb552451101',
+            '0250284283110101cf0600',
+            '0250284283110101cf0600',
+            '0250284283000001cf1301',
+            '0250284283000001cf1301',
+            '02502842831eb552451301',
+            '0250284283130101cf0600',
+            '0250284283130101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+    it('emits closed event - group 2', function (done) {
+      done(new Error('TODO'));
+    });
+    it('emits heartbeat event', function (done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+      var door = gw.door('284283');
+
+      door.on('command', function (group, cmd1) {
         group.should.equal(4);
         cmd1.should.equal('11');
-        cmd2.should.equal('04');
         plan.ok();
       });
 

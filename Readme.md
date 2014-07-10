@@ -150,6 +150,40 @@ insteon.connect('192.168.10.10', function(){
 
 Closes the connection to the gateway.  The event `'close'` will be emitted once the connection is closed.
 
+
+#### insteon.emitOnAck
+
+By default, events will be emitted for both device trigger (button presses) and hub triggered.  If you don't want that behavior then disable it.
+
+
+**Example:**
+```js
+var hub = new Insteon();
+var light = hub.light('112233');
+
+hub.connect(...);
+
+light.turnOn(); // Emits 'turnOn' event
+
+hub.emitOnAck = false; // Disables events on command ack
+
+light.turnOn(); // Does not emit event
+```
+
+
+#### insteon.emitDuplicates
+
+By default, duplicate events for devices will be suppressed.  If you want to see the duplicate events, you must enable `emitDuplicates`.
+
+
+**Example:**
+```js
+var hub = new Insteon();
+
+hub.emitDuplicates = true; // Enabled duplicate events
+```
+
+
 #### Event: 'connect'
 
 Emitted when the connection to the gateway is successfully established.
