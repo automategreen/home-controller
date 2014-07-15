@@ -2023,16 +2023,157 @@ describe('Insteon Gateway', function() {
 
   describe('Motion Commands', function () {
     it('get status', function (done) {
-      done(new Error('TODO'));
+      var gw = new Insteon();
+      var motion = gw.motion('283e9e');
+      var plan = new Plan(2, done);
+
+      mockData = {
+        '0262283e9e1f2e0000000000000000000000000000d2':
+        [
+        '0262283e9e1f2e0000000000000000000000000000d206',
+        '0250283e9e1eb5522f2e00',
+        '0251283e9e1eb5521b2e0001016401800e00450e00d35f00d2'
+        ]
+      };
+
+
+      gw.connect(host, function (){
+        motion.status()
+        .then(function (status) {
+          should.exist(status);
+          status.should.eql({
+            'ledLevel': 100,
+            'clearTimer': 60,
+            'duskThreshold': 50,
+            'options': {
+              'occupancyMode': false,
+              'ledOn': true,
+              'nightMode': false,
+              'onOnlyMode': false
+            },
+            'jumpers': {
+              'j2': false,
+              'j3': false,
+              'j4': false,
+              'j5': true
+            },
+            'lightLevel': 82,
+            'batteryLevel': 9.5
+          });
+          plan.ok();
+        })
+        .catch(done);
+
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250283e9e000001cf1101'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
     });
     it('set options', function (done) {
-      done(new Error('TODO'));
+      var gw = new Insteon();
+      var motion = gw.motion('283e9e');
+
+      var plan = new Plan(2, done);
+
+      mockData = {
+        '0262283e9e1f2e0000050e00000000000000000000bf':
+        [
+        '0262283e9e1f2e0000050e00000000000000000000bf06',
+        '0250283e9e1eb5522f2e00'
+        ]
+      };
+
+
+      gw.connect(host, function (){
+        motion.options()
+        .then(function (rsp) {
+          should.exist(rsp);
+          rsp.success.should.be.true;
+          plan.ok();
+        })
+        .catch(done);
+
+
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250283e9e000001cf1101'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
     });
     it('set clearTimer', function (done) {
-      done(new Error('TODO'));
+      var gw = new Insteon();
+      var motion = gw.motion('283e9e');
+
+      var plan = new Plan(2, done);
+
+      mockData = {
+        '0262283e9e1f2e0000030300000000000000000000cc':
+        [
+        '0262283e9e1f2e0000030300000000000000000000cc06',
+        '0250283e9e1eb5522f2e00'
+        ]
+      };
+
+
+      gw.connect(host, function (){
+        motion.clearTimer(120)
+        .then(function (rsp) {
+          should.exist(rsp);
+          rsp.success.should.be.true;
+          plan.ok();
+        })
+        .catch(done);
+
+
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250283e9e000001cf1101'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
     });
     it('set duskThreshold', function (done) {
-      done(new Error('TODO'));
+      var gw = new Insteon();
+      var motion = gw.motion('283e9e');
+
+      var plan = new Plan(2, done);
+
+      mockData = {
+        '0262283e9e1f2e00000480000000000000000000004e':
+        [
+        '0262283e9e1f2e00000480000000000000000000004e06',
+        '0250283e9e1eb5522f2e00'
+        ]
+      };
+
+
+      gw.connect(host, function (){
+        motion.duskThreshold(50)
+        .then(function (rsp) {
+          should.exist(rsp);
+          rsp.success.should.be.true;
+          plan.ok();
+        })
+        .catch(done);
+
+
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250283e9e000001cf1101'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
     });
 
   });
@@ -2096,20 +2237,37 @@ describe('Insteon Gateway', function() {
         }, 10);
       });
     });
-    it('emits dusk event', function (done) {
-      done(new Error('TODO'));
-    });
-    it('emits dawn event', function (done) {
-      done(new Error('TODO'));
-    });
-    it('emits battery event', function (done) {
-      done(new Error('TODO'));
-    });
   }); // Motion Events
 
   describe('Door Events', function () {
     it('emits opened event', function (done) {
-      done(new Error('TODO'));
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+      var door = gw.door('284283');
+
+      door.on('command', function (group, cmd1) {
+        group.should.equal(1);
+        cmd1.should.equal('11');
+        plan.ok();
+      });
+
+      door.on('opened', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250284283000001cf1101',
+            '0250284283000001cf1101',
+            '02502842831eb552451101',
+            '0250284283110101cf0600',
+            '0250284283110101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
     });
     it('emits closed event', function (done) {
       var plan = new Plan(3, done);
@@ -2170,7 +2328,10 @@ describe('Insteon Gateway', function() {
         }, 10);
       });
     });
-    it('emits closed event - with duplicates 4 seconds apart', function (done) {
+    it('emits closed event - with duplicates 6 seconds apart', function (done) {
+
+      this.timeout(10000);
+
       var plan = new Plan(5, done);
       var gw = new Insteon();
       var door = gw.door('284283');
@@ -2205,7 +2366,7 @@ describe('Insteon Gateway', function() {
               ], function () {
                 plan.ok();
               });
-            }, 4000);
+            }, 6000);
           });
         }, 10);
       });
@@ -2219,7 +2380,6 @@ describe('Insteon Gateway', function() {
         group.should.equal(1);
         plan.ok();
       });
-
       door.on('opened', function () {
         plan.ok();
       });
@@ -2247,10 +2407,36 @@ describe('Insteon Gateway', function() {
       });
     });
     it('emits closed event - group 2', function (done) {
-      done(new Error('TODO'));
-    });
-    it('emits heartbeat event', function (done) {
       var plan = new Plan(3, done);
+      var gw = new Insteon();
+      var door = gw.door('284283');
+
+      door.on('command', function (group, cmd1) {
+        group.should.equal(2);
+        cmd1.should.equal('11');
+        plan.ok();
+      });
+
+      door.on('closed', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250284283000002cb1102',
+            '0250',
+            '284283000002cb1102',
+            '0250284283110002cf0600',
+            '0250284283110002cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+    it('emits heartbeat event - opened', function (done) {
+      var plan = new Plan(4, done);
       var gw = new Insteon();
       var door = gw.door('284283');
 
@@ -2261,6 +2447,10 @@ describe('Insteon Gateway', function() {
       });
 
       door.on('heartbeat', function () {
+        plan.ok();
+      });
+
+      door.on('opened', function () {
         plan.ok();
       });
 
@@ -2277,17 +2467,163 @@ describe('Insteon Gateway', function() {
         }, 10);
       });
     });
+    it('emits heartbeat event - closed', function (done) {
+      var plan = new Plan(4, done);
+      var gw = new Insteon();
+      var door = gw.door('284283');
+
+      door.on('command', function (group, cmd1) {
+        group.should.equal(4);
+        cmd1.should.equal('13');
+        plan.ok();
+      });
+
+      door.on('heartbeat', function () {
+        plan.ok();
+      });
+
+      door.on('closed', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250284283000004cf1304',
+            '0250284283000004cf1304',
+            '0250284283130004cf0600',
+            '0250284283130004cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
   }); // Door Events
 
   describe('Leak Events', function () {
     it('emits dry event', function (done) {
-      done(new Error('TODO'));
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+      var leak = gw.leak('2d2dd9');
+
+      leak.on('command', function (group, cmd1) {
+        group.should.equal(1);
+        cmd1.should.equal('11');
+        plan.ok();
+      });
+
+      leak.on('dry', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '02502d2dd9000001cb1101',
+            '02502d2dd9000001cf1101',
+            '02502d2dd91eb552451101',
+            '02502d2dd9110101cf0600',
+            '02502d2dd9110101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
     });
     it('emits wet event', function (done) {
-      done(new Error('TODO'));
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+      var leak = gw.leak('2d2dd9');
+
+      leak.on('command', function (group, cmd1) {
+        group.should.equal(2);
+        cmd1.should.equal('11');
+        plan.ok();
+      });
+
+      leak.on('wet', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '02502d2dd9000002cf1102',
+            '02502d2dd9000002cf1102',
+            '02502d2dd91eb552451102',
+            '02502d2dd9110102cf0600',
+            '02502d2dd9110102cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
     });
-    it('emits heartbeat event', function (done) {
-      done(new Error('TODO'));
+    it('emits heartbeat event - dry', function (done) {
+      var plan = new Plan(4, done);
+      var gw = new Insteon();
+      var leak = gw.leak('2d2dd9');
+
+      leak.on('command', function (group, cmd1) {
+        group.should.equal(4);
+        cmd1.should.equal('11');
+        plan.ok();
+      });
+
+      leak.on('heartbeat', function () {
+        plan.ok();
+      });
+
+      leak.on('dry', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '02502d2dd9000004cf1104',
+            '02502d2dd9000004cf1104',
+            '02502d2dd9110104cf0600',
+            '02502d2dd9110104cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+    it('emits heartbeat event - wet', function (done) {
+      var plan = new Plan(4, done);
+      var gw = new Insteon();
+      var leak = gw.leak('2d2dd9');
+
+      leak.on('command', function (group, cmd1) {
+        group.should.equal(4);
+        cmd1.should.equal('13');
+        plan.ok();
+      });
+
+      leak.on('heartbeat', function () {
+        plan.ok();
+      });
+
+      leak.on('wet', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '02502d2dd9000004cf1304',
+            '02502d2dd9000004cf1304',
+            '02502d2dd91eb552451304',
+            '02502d2dd9130104cf0600',
+            '02502d2dd9130104cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
     });
   }); // Leak Events
 });
