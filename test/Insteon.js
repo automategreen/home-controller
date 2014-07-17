@@ -2298,6 +2298,37 @@ describe('Insteon Gateway', function() {
         }, 10);
       });
     });
+    it('emits closed event - ignoring direct message from Insteon App', function (done) {
+      var plan = new Plan(11, done);
+      var gw = new Insteon();
+      gw.emitDuplicates = true;
+      var door = gw.door('284283');
+
+      door.on('command', function (group, cmd1) {
+        group.should.equal(1);
+        cmd1.should.equal('13');
+        plan.ok();
+      });
+
+      door.on('closed', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function (){
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0262aabbcc05190206',
+            '0250284283000001cf1301',
+            '0250284283000001cf1301',
+            '02502842831eb552451301',
+            '0250284283130101cf0600',
+            '0250284283130101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
     it('emits closed event - with emitDuplicates', function (done) {
       var plan = new Plan(11, done);
       var gw = new Insteon();
