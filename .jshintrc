@@ -14,5 +14,7 @@
   "jquery": true,
   "browser": true,
   "node": true,
-  "-W065": true
+  "-W065": true,
+  "strict": false
+
 }
