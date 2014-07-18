@@ -24,6 +24,7 @@ Table of Contents
   + [Door Sensor Events](#door-sensor-events)
   + [Leak Sensor Functions](#leak-sensor-functions)
   + [Leak Sensor Events](#leak-sensor-events)
+  + [Meter Functions](#meter-functions)
   + [Core Functions](#core-function)
 - [Testing](#testing)
 - [References](#references)
@@ -1035,6 +1036,38 @@ Event emitted every 24 hours by the sensor to inform you it is alive
 
 A 'wet' or 'dry' event is also emitted depending on the state provided by the heartbeat event.
 
+
+
+### Meter Functions
+
+Functions to control Insteon's iMeter.
+
+#### insteon.meter(id)
+
+Creates a Meter object with the Insteon id
+
+`id` is the id (6 digit hex String) of the meter.
+
+#### meter.status([callback])
+
+Gets the status of the meter
+
+The returned status object is described below:
+
+```js
+{
+  energy: Number, // Accumulated energy in kW-hours
+  power: Number // Current power in watts
+}
+```
+
+#### meter.reset([callback])
+
+Resets the energy accumulation
+
+#### meter.statusAndReset([callback])
+
+Combines the status and reset commands
 
 ### Core Functions
 
