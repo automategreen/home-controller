@@ -85,6 +85,10 @@ hub.connect(process.env.HUB_IP, function () {
 API
 ---
 
+**0.5.2 Update Hightlights:**
+
+  - Add support for iMeter (meter)
+
 **0.5 Update Hightlights:**
 
   - Add events for devices
