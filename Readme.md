@@ -25,7 +25,7 @@ Table of Contents
   + [Leak Sensor Functions](#leak-sensor-functions)
   + [Leak Sensor Events](#leak-sensor-events)
   + [Meter Functions](#meter-functions)
-  + [Core Functions](#core-function)
+  + [Core Functions](#core-functions)
 - [Testing](#testing)
 - [References](#references)
 
@@ -362,13 +362,13 @@ All devices must be available and linked to the gateway.
 ```js
 {
 	group: Number, // controller group/button (default: 1)
-	remove: boolean // remove existing responders if not passed in responder (default: false)
+	remove: boolean // remove existing responders (default: false)
 }
 ```
 
 `group` is the controller group to link the responders to.  Valid group numbers vary by device type.  The hub supports group numbers 0-255. Default is 1.
 
-`timeout` is the number of milliseconds to wait for linking to complete. (Remember you have to hold the set button for at least 10 seconds.) Default is 30,000 ms.
+`remove` is the boolean flag used to delete a responder(s) from the scene.
 
 #### insteon.sendAllLinkCmd (group, command, [callback])
 
