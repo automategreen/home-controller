@@ -1771,6 +1771,67 @@ describe('Insteon Gateway', function() {
       });
     });
 
+    it('get status - invalid crc', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f2e020000000000000000000000009296':
+        [
+          '02622926381f2e02000000000000000000000000929606',
+          '02502926381eb5522f2e02',
+          '02512926381eb552112e0201000d0810503b00b9803c331202'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .status()
+        .then(function (details) {
+          should.not.exist(details);
+        })
+        .then(done, done);
+      });
+    });
+
+    it('get status - valid crc', function(done) {
+      var gw = new Insteon();
+
+      mockData = [
+      {
+        '02622926381f2e020000000000000000000000009296':
+        [
+          '02622926381f2e02000000000000000000000000929606',
+          '02502926381eb5522f2e02',
+          '02512926381eb552112e0201000c262c10503b00b9803c4674'
+        ]
+      }];
+
+      gw.connect(host, function (){
+        gw.thermostat('292638')
+        .status()
+        .then(function (details) {
+          details.mode.should.eql('auto');
+          details.fan.should.be.false;
+          details.date.should.eql({day:0, hour:12, minute:38, seconds:44});
+          details.setpoints.should.eql({
+            cool: 80,
+            heat: 60
+          });
+
+          details.humidity.should.eql(59);
+          details.temperature.should.eql(65.3);
+          details.cooling.should.be.false;
+          details.heating.should.be.false;
+          details.energySaving.should.be.false;
+          details.hold.should.be.false;
+          details.unit.should.eql('F');
+        })
+        .then(done, done);
+      });
+    });
+
+
     it('get details', function(done) {
       var gw = new Insteon();
 
@@ -1831,7 +1892,6 @@ describe('Insteon Gateway', function() {
         .then(done, done);
       });
     });
-
 
   }); //discribe Thermostat Commands
 
