@@ -513,13 +513,13 @@ describe('Insteon Gateway', function() {
       var light = gw.light('999999');
 
       light.on('command', function (group, cmd1) {
-        group.should.equal(1);
+        should.not.exist(group);
         cmd1.should.equal('11');
         plan.ok();
       });
 
       light.on('turnOn', function (group, level) {
-        group.should.equal(1);
+        should.not.exist(group);
         level.should.equal(50);
         plan.ok();
       });
@@ -543,13 +543,13 @@ describe('Insteon Gateway', function() {
       var light = gw.light('999999');
 
       light.on('command', function (group, cmd1) {
-        group.should.equal(1);
+        should.not.exist(group);
         cmd1.should.equal('12');
         plan.ok();
       });
 
       light.on('turnOnFast', function (group, level) {
-        group.should.equal(1);
+        should.not.exist(group);
         should.not.exist(level);
         plan.ok();
       });
@@ -573,13 +573,13 @@ describe('Insteon Gateway', function() {
       var light = gw.light('999999');
 
       light.on('command', function (group, cmd1) {
-        group.should.equal(1);
+        should.not.exist(group);
         cmd1.should.equal('13');
         plan.ok();
       });
 
       light.on('turnOnFast', function (group) {
-        group.should.equal(1);
+        should.not.exist(group);
         plan.ok();
       });
 
