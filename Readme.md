@@ -1,6 +1,8 @@
 home-controller [![Build Status](https://travis-ci.org/automategreen/home-controller.png)](https://travis-ci.org/automategreen/home-controller)
 ===============
 > a node package to control Insteon home automation devices
+> 
+> **WARNING** The new Insteon Hub 2 does NOT have the required PLM over TCP interface.
 ***
 
 Table of Contents
@@ -33,6 +35,8 @@ Overview
 --------
 
 home-controller is a node package to control Insteon home automation devices.  The API uses the direct PLM connection over TCP or Serial connection.  To control the Insteon devices, either an [Insteon Hub](http://www.insteon.com/2242-222-insteon-hub.html), an [Insteon SmartLinc](http://www.insteon.com/2412n-smartlinc-central-controller.html), or an [Insteon PowerLinc Modem](http://www.insteon.com/2412s-powerlinc-modem-serial.html) is required.
+
+**The new Insteon Hub 2 is not current supported.  Insteon has removed the PLM over TCP interface.**
 
 Features
 --------
