@@ -17,6 +17,7 @@ Table of Contents
   + [Scene Functions](#scene-functions)
   + [Information Functions](#instoen-functions)
   + [Lighting Functions](#lighting-functions)
+  + [Fan Functions](#fan-functions)
   + [Lighting Events](#lighting-events)
   + [Thermostat Functions](#thermostat-functions)
   + [Thermostat Events](#thermostat-events)
@@ -555,6 +556,27 @@ insteon.connect('my.home.com', function () {
   });
 });
 ```
+
+### Fan Functions
+
+Fan functions are part of the light class.  The FanLinc is more or less a dimmer with fan control.  All the normal dimmer controls work the same.
+
+#### light.fanOn([callback]), light.fanMedium([callback]), light.fan('medium', [callback])
+
+Turn the fan on to medium speed
+
+#### light.fanOff([callback]), light.fan('off', [callback])
+
+Turn the fan off
+
+#### light.fanLow([callback]), light.fan('low', [callback])
+
+Turn the fan on to low speed
+
+#### light.fanHigh([callback]), light.fan('high', [callback])
+
+Turn the fan on to high speed
+
 
 ### Lighting Events
 

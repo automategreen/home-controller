@@ -26,7 +26,8 @@
     "q": "1.0.*"
   },
   "optionalDependencies": {
-    "serialport": "~1.4.0"
+    "serialport": "~1.4.0",
+    "spark": "~0.2.4"
   },
   "devDependencies": {
     "mocha": "*",

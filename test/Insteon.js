@@ -312,6 +312,116 @@ describe('Insteon Gateway', function() {
       });
     });
 
+    it('fan on', function(done) {
+      var gw = new Insteon();
+
+      mockData = {
+        '02629999991f1180020000000000000000000000006d':
+        [
+        '02629999991f1180020000000000000000000000006d06',
+        '0250999999ffffff2f1180',
+        '0251999999ffffff1111800200000000000000000000000000'
+        ]
+      };
+
+
+      gw.connect(host, function (){
+        gw.light('999999').fanOn(function(err){
+          should.not.exist(err);
+          done();
+        });
+      });
+    });
+
+    it('fan off', function(done) {
+      var gw = new Insteon();
+
+      mockData = {
+        '02629999991f110002000000000000000000000000ed':
+        [
+        '02629999991f110002000000000000000000000000ed06',
+        '0250999999ffffff2f1100',
+        '0251999999ffffff1111000200000000000000000000000000'
+        ]
+      };
+
+
+      gw.connect(host, function (){
+        gw.light('999999').fanOff(function(err){
+          should.not.exist(err);
+          done();
+        });
+      });
+    });
+
+
+    it('fan low', function(done) {
+      var gw = new Insteon();
+
+      mockData = {
+        '02629999991f111002000000000000000000000000dd':
+        [
+        '02629999991f111002000000000000000000000000dd06',
+        '0250999999ffffff2f1110',
+        '0251999999ffffff1111100200000000000000000000000000'
+        ]
+      };
+
+
+      gw.connect(host, function (){
+        gw.light('999999').fanLow(function(err){
+          should.not.exist(err);
+          done();
+        });
+      });
+    });
+
+
+
+    it('fan medium', function(done) {
+      var gw = new Insteon();
+
+      mockData = {
+        '02629999991f1180020000000000000000000000006d':
+        [
+        '02629999991f1180020000000000000000000000006d06',
+        '0250999999ffffff2f1180',
+        '0251999999ffffff1111800200000000000000000000000000'
+        ]
+      };
+
+
+      gw.connect(host, function (){
+        gw.light('999999').fanMedium(function(err){
+          should.not.exist(err);
+          done();
+        });
+      });
+    });
+
+
+
+    it('fan high', function(done) {
+      var gw = new Insteon();
+
+      mockData = {
+        '02629999991f11ff02000000000000000000000000ee':
+        [
+        '02629999991f11ff02000000000000000000000000ee06',
+        '0250999999ffffff2f11ff',
+        '0251999999ffffff1111ff0200000000000000000000000000'
+        ]
+      };
+
+
+      gw.connect(host, function (){
+        gw.light('999999').fanHigh(function(err){
+          should.not.exist(err);
+          done();
+        });
+      });
+    });
+
   });
 
   // Light Events
