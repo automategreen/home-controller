@@ -319,8 +319,7 @@ describe('Insteon Gateway', function() {
         '02629999991f11bf020000000000000000000000002e':
         [
         '02629999991f11bf020000000000000000000000002e06',
-        '0250999999ffffff2f11bf',
-        '0251999999ffffff1111bf0200000000000000000000000000'
+        '0250999999ffffff2f11bf'
         ]
       };
 
@@ -339,8 +338,7 @@ describe('Insteon Gateway', function() {
         '02629999991f110002000000000000000000000000ed':
         [
         '02629999991f110002000000000000000000000000ed06',
-        '0250999999ffffff2f1100',
-        '0251999999ffffff1111000200000000000000000000000000'
+        '0250999999ffffff2f1100'
         ]
       };
 
@@ -361,8 +359,7 @@ describe('Insteon Gateway', function() {
         '02629999991f113f02000000000000000000000000ae':
         [
         '02629999991f113f02000000000000000000000000ae06',
-        '0250999999ffffff2f113f',
-        '0251999999ffffff11113f0200000000000000000000000000'
+        '0250999999ffffff2f113f'
         ]
       };
 
@@ -384,8 +381,7 @@ describe('Insteon Gateway', function() {
         '02629999991f11bf020000000000000000000000002e':
         [
         '02629999991f11bf020000000000000000000000002e06',
-        '0250999999ffffff2f11bf',
-        '0251999999ffffff1111bf0200000000000000000000000000'
+        '0250999999ffffff2f11bf'
         ]
       };
 
@@ -407,8 +403,7 @@ describe('Insteon Gateway', function() {
         '02629999991f11ff02000000000000000000000000ee':
         [
         '02629999991f11ff02000000000000000000000000ee06',
-        '0250999999ffffff2f11ff',
-        '0251999999ffffff1111ff0200000000000000000000000000'
+        '0250999999ffffff2f11ff'
         ]
       };
 
@@ -416,6 +411,25 @@ describe('Insteon Gateway', function() {
       gw.connect(host, function (){
         gw.light('999999').fanHigh(function(err){
           should.not.exist(err);
+          done();
+        });
+      });
+    });
+
+    it('fan speed', function(done) {
+      var gw = new Insteon();
+
+      mockData = {
+        '02629999990f1903': '02629999990f1903060250999999ffffff2f19bf'
+      };
+
+
+      gw.connect(host, function (){
+        gw.light('999999').fan(function(err, speed){
+          should.not.exist(err);
+
+          speed.should.eql('medium');
+
           done();
         });
       });
