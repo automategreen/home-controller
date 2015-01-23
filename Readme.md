@@ -5,6 +5,18 @@ home-controller [![Build Status](https://travis-ci.org/automategreen/home-contro
 > **WARNING** The new Insteon Hub (2245) does NOT have the required PLM over TCP interface.
 ***
 
+Overview
+--------
+
+home-controller is a node package to control Insteon home automation devices.  The API uses the direct PLM connection over TCP, Serial connection or the cloud.  To control the Insteon devices on of the following is needed
+
+  - [Automate Green PLM WiFi Adapter](http://blog.automategreen.com/post/plm-wifi-adapter)
+  - [Insteon Hub 2242](http://www.insteon.com/2242-222-insteon-hub.html)
+  - [Insteon SmartLinc](http://www.insteon.com/2412n-smartlinc-central-controller.html)
+  - [Insteon PowerLinc Modem](http://www.insteon.com/2412s-powerlinc-modem-serial.html) is required.
+
+**The new Insteon Hub 2245 is not supported.  Insteon has removed the PLM over TCP interface.**
+
 Table of Contents
 -----------------
 
@@ -31,18 +43,6 @@ Table of Contents
   + [Core Functions](#core-functions)
 - [Testing](#testing)
 - [References](#references)
-
-Overview
---------
-
-home-controller is a node package to control Insteon home automation devices.  The API uses the direct PLM connection over TCP, Serial connection or the cloud.  To control the Insteon devices on of the following is needed
-
-  - [Automate Green PLM WiFi Adapter](http://blog.automategreen.com/post/plm-wifi-adapter)
-  - [Insteon Hub 2242](http://www.insteon.com/2242-222-insteon-hub.html)
-  - [Insteon SmartLinc](http://www.insteon.com/2412n-smartlinc-central-controller.html)
-  - [Insteon PowerLinc Modem](http://www.insteon.com/2412s-powerlinc-modem-serial.html) is required.
-
-**The new Insteon Hub 2245 is not supported.  Insteon has removed the PLM over TCP interface.**
 
 Features
 --------
