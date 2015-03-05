@@ -23,7 +23,7 @@
   "dependencies": {
     "commander": "2.2.*",
     "debug": "0.8.*",
-    "eventsource": "0.1.*",
+    "eventsource": "git://github.com/brandongoode/eventsource-node.git",
     "q": "1.0.*"
   },
   "optionalDependencies": {
