@@ -40,6 +40,7 @@ Table of Contents
   + [Leak Sensor Functions](#leak-sensor-functions)
   + [Leak Sensor Events](#leak-sensor-events)
   + [Meter Functions](#meter-functions)
+  + [IO Sensor/Actuator Functions](#io-sensor/actuator-functions)
   + [Core Functions](#core-functions)
 - [Testing](#testing)
 - [References](#references)
@@ -1103,6 +1104,32 @@ Resets the energy accumulation
 #### meter.statusAndReset([callback])
 
 Combines the status and reset commands
+
+
+### IO Sensor/Actuator Functions
+
+#### insteon.IO(id)
+
+Creates an IO object with the Insteon id
+
+`id` is the id (6 digit hex String) of the IO sensor/actuator.
+
+### IO Sensor Events
+
+Not implemented yet.
+
+#### insteon.on(port)
+
+Turns on the actuator port.  For a relay device like the EZIO4O, this command activates the relay numbered `port`.
+
+#### insteon.off(port)
+
+Turns off the actuator port.  For a relay device like the EZIO4O, this command resets the relay numbered `port`.
+
+#### insteon.set(data)
+
+Sets all actuator ports based on the data number. Each port is represented by one bit in the data.  E.G. the data value `13` will clear all ports except ports 0, 1, and 4, which will be set.
+
 
 ### Core Functions
 
