@@ -1106,9 +1106,9 @@ Resets the energy accumulation
 Combines the status and reset commands
 
 
-### IO Sensor/Actuator Functions
+### IO Sensor and Actuator Functions
 
-#### insteon.IO(id)
+#### insteon.io(id)
 
 Creates an IO object with the Insteon id
 
