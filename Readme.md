@@ -10,8 +10,8 @@ Overview
 
 home-controller is a node package to control Insteon home automation devices.  The API uses the direct PLM connection over TCP, Serial connection or the cloud.  To control the Insteon devices on of the following is needed
 
-  - [Automate Green PLM WiFi Adapter](http://blog.automategreen.com/post/plm-wifi-adapter)
-  - [Insteon Hub 2242](http://www.insteon.com/2242-222-insteon-hub.html)
+  - [Automate Green WiFi Hub i](https://github.com/automategreen/hub-i)
+  - [Automate Green PLM WiFi Adapter](http://blog.automategreen.com/post/plm-wifi-adapter)  - [Insteon Hub 2242](http://www.insteon.com/2242-222-insteon-hub.html)
   - [Insteon SmartLinc](http://www.insteon.com/2412n-smartlinc-central-controller.html)
   - [Insteon PowerLinc Modem](http://www.insteon.com/2412s-powerlinc-modem-serial.html) is required.
 
@@ -40,7 +40,7 @@ Table of Contents
   + [Leak Sensor Functions](#leak-sensor-functions)
   + [Leak Sensor Events](#leak-sensor-events)
   + [Meter Functions](#meter-functions)
-  + [IO Sensor/Actuator Functions](#io-sensor/actuator-functions)
+  + [IO Sensor and Actuator Functions](#io-sensor-and-actuator-functions)
   + [Core Functions](#core-functions)
 - [Testing](#testing)
 - [References](#references)
