@@ -96,6 +96,14 @@ hub.connect(process.env.HUB_IP, function () {
 API
 ---
 
+**0.6.0 Update Hightlights:**
+
+  - Add support for IO
+  - Add support for FanLinc (light)
+  - Add support for Node 0.12
+  - Add support for Spark based devices
+  - Bug fixes
+
 **0.5.2 Update Hightlights:**
 
   - Add support for iMeter (meter)
