@@ -1118,15 +1118,17 @@ Creates an IO object with the Insteon id
 
 Not implemented yet.
 
-#### insteon.on(port)
+### IO Functions
+
+#### io.on(port)
 
 Turns on the actuator port.  For a relay device like the EZIO4O, this command activates the relay numbered `port`.
 
-#### insteon.off(port)
+#### io.off(port)
 
 Turns off the actuator port.  For a relay device like the EZIO4O, this command resets the relay numbered `port`.
 
-#### insteon.set(data)
+#### io.set(data)
 
 Sets all actuator ports based on the data number. Each port is represented by one bit in the data.  E.G. the data value `13` will clear all ports except ports 0, 1, and 4, which will be set.
 
