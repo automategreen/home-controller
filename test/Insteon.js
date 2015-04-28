@@ -1582,6 +1582,51 @@ describe('Insteon Gateway', function() {
       });
     });
 
+    it('multiple commands with cancel', function(done) {
+      var plan = new Plan(5, done);
+      var gw = new Insteon();
+
+      mockData = [{
+        '026226ace10f1600':
+        [
+          '026226ace10f160006',
+          '025026ace11eb5522f1600'
+        ]
+      },
+      {
+        '026226b1cc0f1500':
+        [
+          '026226b1cc0f150006',
+          '025026b1cc1eb5522f1500'
+        ]
+      }];
+
+
+      gw.connect(host, function (){
+        gw.dim('26ace1', function (err) {
+          should.not.exist(err);
+          plan.ok();
+        });
+        gw.dim('26ace1', function (err) {
+          should.exist(err);
+          plan.ok();
+        });
+        gw.brighten('26b1cc', function (err) {
+          should.not.exist(err);
+          plan.ok();
+        });
+        gw.dim('26ace1', function (err) {
+          should.exist(err);
+          plan.ok();
+        });
+        gw.dim('26ace1', function (err) {
+          should.exist(err);
+          plan.ok();
+        });
+        gw.cancelPending('26ACE1');
+      });
+    });
+
 
   }); // describe Queueing
 
