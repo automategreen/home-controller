@@ -27,7 +27,7 @@ Table of Contents
   + [Insteon Gateway](#insteon-gateway)
   + [Linking Functions](#linking-functions)
   + [Scene Functions](#scene-functions)
-  + [Information Functions](#instoen-functions)
+  + [Information Functions](#information-functions)
   + [Lighting Functions](#lighting-functions)
   + [Fan Functions](#fan-functions)
   + [Lighting Events](#lighting-events)
