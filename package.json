@@ -21,14 +21,14 @@
     "node": ">= 0.10"
   },
   "dependencies": {
-    "commander": "2.2.*",
-    "debug": "0.8.*",
-    "eventsource": "0.1.*",
-    "q": "1.0.*"
+    "commander": "^2.7.0",
+    "debug": "^2.1.0",
+    "eventsource": "^0.1.0",
+    "q": "^1.4.1"
   },
   "optionalDependencies": {
-    "serialport": "~1.4.0",
-    "spark": "~0.2.4"
+    "serialport": "^2.0.0",
+    "spark": "^1.0.0"
   },
   "devDependencies": {
     "mocha": "*",
