@@ -77,8 +77,11 @@ gw.on('error', function(err) {
   console.log(err.stack);
 });
 
-gw.connect(host, port);
-
+if(host.substring(0, 5) === '/dev/') {
+  gw.serial(host);
+} else {
+  gw.connect(host, port);
+}
 
 function foundLinks(links) {
   if(links.length === 0) {
