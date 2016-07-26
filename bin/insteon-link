@@ -21,11 +21,11 @@ program
   .parse(process.argv);
 
 function list(val) {
-  if(val.indexOf(',') > -1)
+  if(val.indexOf(';') > -1)
   {
-    return [val.substr(0, val.indexOf(',')), JSON.parse(val.substr(val.indexOf(',')+1))];
+    return [val.substr(0, val.indexOf(';')), JSON.parse(val.substr(val.indexOf(';')+1))];
   }
-  return [val];
+  return [JSON.parse(val)];
 }
 
 if(program.args.length < 1) {
@@ -92,8 +92,9 @@ gw.on('connect', function () {
       return gw.close();
     });
   } else {
-    console.log('Polling device: '+devices[0]);
-    gw.info(devices[0], function onInfo(err, info) {
+    var id = !!devices[0] ? devices[0] : null;
+    console.log('Polling device: '+id);
+    gw.info(id, function onInfo(err, info) {
       if(err) {
         return console.log('Failed to connect to device, ' + err);
       }
@@ -101,7 +102,7 @@ gw.on('connect', function () {
       console.log('Device found: ' + info.id + ' - ' + info.deviceCategory.name);
       console.log('Getting links for device: ' + info.id);
 
-      gw.links(info.id, function onLinksFound(err, links){
+      gw.links(id, function onLinksFound(err, links){
         if(err) {
           return console.log('Failed to find any links because of an error, ' + err);
         }
