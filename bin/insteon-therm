@@ -1,0 +1,50 @@
+#!/usr/bin/env node
+
+'use strict';
+
+var Insteon = require('../').Insteon;
+var host = '/dev/ttyUSB0';
+
+console.log('Connecting to ' + host);
+var gw = new Insteon();
+
+  var cmdDataSet00 = {
+    cmd1: '2E',
+    cmd2: '00',
+    extended: true,
+    crc: true,
+    userData: ['00','08']
+  };
+
+
+gw.on('connect', function () {
+  //var thermostat = gw.thermostat('32f52b');
+  //thermostat.monitor();
+
+  setTimeout(function() {
+    console.log('checking ...');
+    
+    gw.directCommand('32f52b', cmdDataSet00)
+    .then(function (status) {
+      var response = ((status || {}).response || {}).extended || {};
+      //var data = response.userData;
+      console.log('done', status);
+      //if(!data) {
+	//console.log('null');
+        //return null;
+      //}
+
+      /*console.log(data);
+      console.log('backlight', parseInt(data[9], 16));
+      console.log('delay', parseInt(data[10], 16));
+      console.log('energyOffset', parseInt(data[11], 16));*/
+    });
+
+  }, 2000);
+});
+
+gw.on('close', function() {
+  console.log('Connection closed');
+});
+
+gw.serial(host);
