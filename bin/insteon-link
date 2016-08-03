@@ -125,7 +125,7 @@ gw.on('close', function() {
   console.log('Connection closed');
 });
 
-if(host.substring(0, 5) === '/dev/') {
+if(host.substring(0, 5) === '/dev/' || host.substring(0, 3) === 'COM') {
   gw.serial(host);
 } else {
   gw.connect(host, port);
