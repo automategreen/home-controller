@@ -251,7 +251,7 @@ describe('Insteon Gateway', function() {
       });
     });
 
-    it('error when trying to turn light to invlaid level', function() {
+    it('error when trying to turn light to invalid level', function() {
       var gw = new Insteon();
 
       mockData = {};
@@ -1720,47 +1720,98 @@ describe('Insteon Gateway', function() {
     });
 
     it('turn temp up', function(done) {
+      var plan = new Plan(3, done);
       var gw = new Insteon();
 
       mockData = [
       {
+        '02622926381f68020000000000000000000000000096':
+        [
+          '02622926381f6802000000000000000000000000009606',
+          '02502926381eb5522f6802'
+        ]
+      },
+      {
         '02622926381f68040000000000000000000000000094':
         [
-          '02',
-          '622926381f6804000000000000000000000000009406',
+          '02622926381f6804000000000000000000000000009406',
           '02502926381eb5522f6804'
+        ]
+      },
+      {
+        '02622926381f68020000000000000000000000000096':
+        [
+          '02622926381f6802000000000000000000000000009606',
+          '02502926381eb5522f6802'
         ]
       }];
 
       gw.connect(host, function (){
-        gw.thermostat('292638')
-        .tempUp(2)
-        .then(function (status) {
+        var thermostat = gw.thermostat('292638');
+        thermostat.tempUp()
+          .then(function (status) {
+            should.exist(status.response.standard);
+            plan.ok();
+          });
+        thermostat.tempUp(2)
+          .then(function (status) {
+            should.exist(status.response.standard);
+            plan.ok();
+          });
+        thermostat.tempUp(function (err, status) {
+          should.not.exist(err);
           should.exist(status.response.standard);
-        })
-        .then(done, done);
+          plan.ok();
+        });
       });
     });
 
     it('turn temp down', function(done) {
       var gw = new Insteon();
+      var plan = new Plan(3, done);
 
       mockData = [
+      {
+        '02622926381f69020000000000000000000000000095':
+        [
+          '02622926381f6902000000000000000000000000009506',
+          '02502926381eb5522f6902'
+        ]
+      },
       {
         '02622926381f69040000000000000000000000000093':
         [
           '02622926381f6904000000000000000000000000009306',
           '02502926381eb5522f6904'
         ]
+      },
+      {
+        '02622926381f69020000000000000000000000000095':
+        [
+          '02622926381f6902000000000000000000000000009506',
+          '02502926381eb5522f6902'
+        ]
       }];
 
       gw.connect(host, function (){
-        gw.thermostat('292638')
-        .tempDown(2)
+        var thermostat = gw.thermostat('292638');
+
+        thermostat.tempDown()
         .then(function (status) {
           should.exist(status.response.standard);
-        })
-        .then(done, done);
+          plan.ok();
+        });
+        thermostat.tempDown(2)
+        .then(function (status) {
+          should.exist(status.response.standard);
+          plan.ok();
+        });
+        thermostat.tempDown(function (err, status) {
+          should.not.exist(err);
+          should.exist(status.response.standard);
+          plan.ok();
+        });
+
       });
     });
 
@@ -2058,6 +2109,106 @@ describe('Insteon Gateway', function() {
 
         })
         .then(done, done);
+      });
+    });
+
+    it('enables monitoring mode and recieves events', function(done) {
+      var gw = new Insteon();
+      var plan = new Plan(5, done);
+
+      // 239acf - ffffff
+      // 32f52b - aaaaaa
+      mockData = [
+        {
+          '0260': '0260ffffff03159b06'
+        },
+        {
+          '0262aaaaaa1f2f0000000fff010000000000000000c2':
+          [
+            '0262aaaaaa1f2f0000000fff010000000000000000c206',
+            '0250aaaaaaffffff2b2f00',
+            '0251aaaaaaffffff112f0000010fff0142efcccccc0100efb9'
+          ]
+        },
+        {
+          '0262aaaaaa1f2f0000000ff7010000000000000000ca':
+          [
+            '0262aaaaaa1f2f0000000ff7010000000000000000ca06',
+            '0250aaaaaaffffff2b2f00',
+            '0251aaaaaaffffff112f0000010ff701c2efffffff0000008c'
+          ]
+        },
+        {
+          '0262aaaaaa1f2f0000000fef010000000000000000d2':
+          [
+            '0262aaaaaa1f2f0000000fef010000000000000000d206',
+            '0250aaaaaaffffff2b2f00',
+            '0251aaaaaaffffff112f0000010fef01c2feffffff00000085'
+          ]
+        },
+        {
+          '0262aaaaaa1f2f0000000fe7010000000000000000da':
+          [
+            '0262aaaaaa1f2f0000000fe7010000000000000000da06',
+            '0250aaaaaaffffff2b2f00',
+            '0251aaaaaaffffff112f0000010fe701e201ffffff03159bb7'
+          ]
+        },
+        {
+          '0262aaaaaa1f2f0000000fdf010000000000000000e2':
+          [
+            '0262aaaaaa1f2f0000000fdf010000000000000000e206',
+            '0250aaaaaaffffff2b2f00',
+            '0251aaaaaaffffff112f0000010fdf01a201ffffff3c4b43e8'
+          ]
+        },
+        {
+          '0262aaaaaa1f2f0000000fd7010000000000000000ea':
+          [
+            '0262aaaaaa1f2f0000000fd7010000000000000000ea06',
+            '0250aaaaaaffffff2b2f00',
+            '0251aaaaaaffffff112f0000010fd7010000000000000000e9'
+          ]
+        },
+        {
+          '0269': '026915'
+        },
+        {
+          '026f2082efaaaaaa000000': 
+          [
+            '026f2082efaaaaaa00000015',
+            '0250aaaaaaffffff016f29', // humidity
+            '0250aaaaaaffffff017003', // mode
+            '0250aaaaaaffffff01714b', // coolSetpoint
+            '0250aaaaaaffffff017246' // heatSetpoint
+          ] 
+        }
+      ];
+
+      gw.connect(host, function (){
+        var thermostat = gw.thermostat('aaaaaa');
+        
+        thermostat.on('status', function(status) {
+          should.exist(status);
+          if(status.humidity && status.humidity === 41) {
+            plan.ok();
+          }
+          if(status.mode && status.mode === 3) {
+            plan.ok();
+          }
+          if(status.coolSetpoint && status.coolSetpoint === 75) {
+            plan.ok();
+          }
+          if(status.heatSetpoint && status.heatSetpoint === 70) {
+            plan.ok();
+          }
+        });
+        
+        thermostat.monitor(function(err, status) {
+          should.not.exist(err);
+          (status === null).should.be.true;
+          plan.ok();
+        });
       });
     });
 
