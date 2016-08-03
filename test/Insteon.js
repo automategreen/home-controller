@@ -2203,7 +2203,7 @@ describe('Insteon Gateway', function() {
             status.heatSetpoint.should.equal(70);
             plan.ok();
           } else {
-            throw new Error("Uknown status report.");
+            throw new Error('Uknown status report.');
           }
         });
         
