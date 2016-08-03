@@ -2190,16 +2190,20 @@ describe('Insteon Gateway', function() {
         
         thermostat.on('status', function(status) {
           should.exist(status);
-          if(status.humidity && status.humidity === 41) {
+          if(status.humidity) {
+            status.humidity.should.equal(41);
             plan.ok();
           }
-          if(status.mode && status.mode === 3) {
+          if(status.mode) {
+            status.mode.should.equal(3);
             plan.ok();
           }
-          if(status.coolSetpoint && status.coolSetpoint === 75) {
+          if(status.coolSetpoint) {
+            status.coolSetpoint.should.equal(75);
             plan.ok();
           }
-          if(status.heatSetpoint && status.heatSetpoint === 70) {
+          if(status.heatSetpoint) {
+            status.heatSetpoint.should.equal(70);
             plan.ok();
           }
         });
