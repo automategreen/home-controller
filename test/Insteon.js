@@ -2114,7 +2114,7 @@ describe('Insteon Gateway', function() {
 
     it('enables monitoring mode and recieves events', function(done) {
       var gw = new Insteon();
-      var plan = new Plan(5, done);
+      var plan = new Plan(6, done);
 
       // 239acf - ffffff
       // 32f52b - aaaaaa
@@ -2176,11 +2176,7 @@ describe('Insteon Gateway', function() {
         {
           '026f2082efaaaaaa000000': 
           [
-            '026f2082efaaaaaa00000015',
-            '0250aaaaaaffffff016f29', // humidity
-            '0250aaaaaaffffff017003', // mode
-            '0250aaaaaaffffff01714b', // coolSetpoint
-            '0250aaaaaaffffff017246' // heatSetpoint
+            '026f2082efaaaaaa00000015'
           ] 
         }
       ];
@@ -2213,6 +2209,15 @@ describe('Insteon Gateway', function() {
           should.not.exist(err);
           (status === null).should.be.true;
           plan.ok();
+
+          mockHub.send([
+            '0250aaaaaaffffff016f29', // humidity
+            '0250aaaaaaffffff017003', // mode
+            '0250aaaaaaffffff01714b', // coolSetpoint
+            '0250aaaaaaffffff017246' // heatSetpoint
+          ], function () {
+            plan.ok();
+          });
         });
       });
     });
