@@ -2114,10 +2114,7 @@ describe('Insteon Gateway', function() {
 
     it('enables monitoring mode and recieves events', function(done) {
       var gw = new Insteon();
-      var plan = new Plan(6, done);
 
-      // 239acf - ffffff
-      // 32f52b - aaaaaa
       mockData = [
         {
           '0260': '0260ffffff03159b06'
@@ -2184,6 +2181,26 @@ describe('Insteon Gateway', function() {
       gw.connect(host, function (){
         var thermostat = gw.thermostat('aaaaaa');
         
+        thermostat.monitor(function(err, status) {
+          console.log('monitor callback');
+          should.not.exist(err);
+          (status === null).should.be.true;
+          done();
+        });
+      });
+    });
+
+  }); //discribe Thermostat Commands
+
+  describe('Thermostat Events', function () {
+    
+    it('emits monitoring events', function(done) {
+      var gw = new Insteon();
+      var plan = new Plan(5, done);
+
+      gw.connect(host, function (){
+        var thermostat = gw.thermostat('aaaaaa');
+        
         thermostat.on('status', function(status) {
           should.exist(status);
           console.log('status callback', status);
@@ -2204,12 +2221,7 @@ describe('Insteon Gateway', function() {
           }
         });
         
-        thermostat.monitor(function(err, status) {
-          console.log('monitor callback');
-          should.not.exist(err);
-          (status === null).should.be.true;
-          plan.ok();
-
+        setTimeout(function () { // make sure server connection event fires first
           mockHub.send([
             '0250aaaaaaffffff016f29', // humidity
             '0250aaaaaaffffff017003', // mode
@@ -2218,13 +2230,10 @@ describe('Insteon Gateway', function() {
           ], function () {
             plan.ok();
           });
-        });
+        }, 10);
       });
     });
 
-  }); //discribe Thermostat Commands
-
-  describe('Thermostat Events', function () {
     it('emits cooling event', function (done) {
       var plan = new Plan(3, done);
       var gw = new Insteon();
