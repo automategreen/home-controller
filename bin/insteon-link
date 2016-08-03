@@ -57,10 +57,10 @@ var gw = new Insteon();
 
 gw.on('connect', function () {
   if(program.remove) {
-    if(program.remove.length == 2) {
+    if(program.remove.length === 2) {
       console.log('Remove link from '+program.remove[0]);
       gw.removeLink(program.remove[0], program.remove[1]);
-    } else if(program.remove.length == 1) {
+    } else if(program.remove.length === 1) {
       console.log('Removing link from gateway');
       gw.removeLink(program.remove[0]);
     }
