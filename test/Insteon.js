@@ -2112,7 +2112,7 @@ describe('Insteon Gateway', function() {
       });
     });
 
-    it('enables monitoring mode and recieves events', function(done) {
+    it('enables monitoring mode', function(done) {
       var gw = new Insteon();
 
       mockData = [
@@ -2182,7 +2182,6 @@ describe('Insteon Gateway', function() {
         var thermostat = gw.thermostat('aaaaaa');
         
         thermostat.monitor(function(err, status) {
-          console.log('monitor callback');
           should.not.exist(err);
           (status === null).should.be.true;
           done();
@@ -2203,7 +2202,6 @@ describe('Insteon Gateway', function() {
         
         thermostat.on('status', function(status) {
           should.exist(status);
-          console.log('status callback', status);
           if(status.humidity) {
             status.humidity.should.equal(41);
             plan.ok();
@@ -2221,7 +2219,7 @@ describe('Insteon Gateway', function() {
           }
         });
         
-        setTimeout(function () { // make sure server connection event fires first
+        setTimeout(function () {
           mockHub.send([
             '0250aaaaaaffffff016f29', // humidity
             '0250aaaaaaffffff017003', // mode
