@@ -2189,6 +2189,7 @@ describe('Insteon Gateway', function() {
         var thermostat = gw.thermostat('aaaaaa');
         
         thermostat.on('status', function(status) {
+          console.log('status callback');
           should.exist(status);
           if(status.humidity) {
             status.humidity.should.equal(41);
@@ -2208,6 +2209,7 @@ describe('Insteon Gateway', function() {
         });
         
         thermostat.monitor(function(err, status) {
+          console.log('monitor callback');
           should.not.exist(err);
           (status === null).should.be.true;
           plan.ok();
