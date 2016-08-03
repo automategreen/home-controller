@@ -2193,18 +2193,17 @@ describe('Insteon Gateway', function() {
           if(status.humidity) {
             status.humidity.should.equal(41);
             plan.ok();
-          }
-          if(status.mode) {
+          } else if(status.mode) {
             status.mode.should.equal(3);
             plan.ok();
-          }
-          if(status.coolSetpoint) {
+          } else if(status.coolSetpoint) {
             status.coolSetpoint.should.equal(75);
             plan.ok();
-          }
-          if(status.heatSetpoint) {
+          } else if(status.heatSetpoint) {
             status.heatSetpoint.should.equal(70);
             plan.ok();
+          } else {
+            throw new Error("Uknown status report.");
           }
         });
         
