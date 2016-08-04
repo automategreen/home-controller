@@ -2175,7 +2175,14 @@ describe('Insteon Gateway', function() {
           [
             '026f2082efaaaaaa00000015'
           ] 
-        }
+        },
+        {
+          '0262aaaaaa1f2e0008000000000000000000000000ca':
+          [
+            '0262aaaaaa1f2e0008000000000000000000000000ca06',
+            '0250aaaaaa239acf2b2e00'
+          ]
+        }       
       ];
 
       gw.connect(host, function (){
@@ -2195,34 +2202,39 @@ describe('Insteon Gateway', function() {
     
     it('emits monitoring events', function(done) {
       var gw = new Insteon();
-      var plan = new Plan(5, done);
+      var plan = new Plan(6, done);
 
       gw.connect(host, function (){
         var thermostat = gw.thermostat('aaaaaa');
         
         thermostat.on('status', function(status) {
           should.exist(status);
-          if(status.humidity) {
+          if(!!status.temperature) {
+            status.temperature.should.equal(88);
+            plan.ok();
+          } else if(!!status.humidity) {
             status.humidity.should.equal(41);
             plan.ok();
-          } else if(status.mode) {
-            status.mode.should.equal(3);
+          } else if(!!status.mode) {
+            status.mode.should.equal('heat');
+            status.fan.should.equal(true);
             plan.ok();
-          } else if(status.coolSetpoint) {
+          } else if(!!status.coolSetpoint) {
             status.coolSetpoint.should.equal(75);
             plan.ok();
-          } else if(status.heatSetpoint) {
+          } else if(!!status.heatSetpoint) {
             status.heatSetpoint.should.equal(70);
             plan.ok();
           } else {
-            throw new Error('Uknown status report.');
+            throw new Error('Uknown status report.', status);
           }
         });
         
         setTimeout(function () {
           mockHub.send([
+            '0250aaaaaaffffff016eb0', // temperature
             '0250aaaaaaffffff016f29', // humidity
-            '0250aaaaaaffffff017003', // mode
+            '0250aaaaaaffffff017011', // mode
             '0250aaaaaaffffff01714b', // coolSetpoint
             '0250aaaaaaffffff017246' // heatSetpoint
           ], function () {
