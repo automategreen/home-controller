@@ -1,0 +1,28 @@
+#!/usr/bin/env node
+
+'use strict';
+
+var Insteon = require('../').Insteon;
+var host = 'COM3';
+
+console.log('Connecting to ' + host);
+var gw = new Insteon();
+
+gw.on('connect', function () {
+  var thermostat = gw.thermostat('32f52b');
+
+  thermostat.on('status', function(status) {
+    console.log('Thermostat sent status update', status);
+  });
+
+  console.log('Listening ...');
+  thermostat.monitor(true, function() {
+    console.log('done');
+  });
+});
+
+gw.on('close', function() {
+  console.log('Connection closed');
+});
+
+gw.serial(host);
