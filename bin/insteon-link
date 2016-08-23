@@ -12,8 +12,8 @@ program
   .version(version)
   .usage('[options] <host:port> <device ...>')
   .option('-c, --controller', 'devices are the controller')
-  .option('-l, --link', 'view links of a specific device')
-  .option('-u, --unlink', 'unlink devices from gateway')
+  .option('-l, --link', 'link devices')
+  .option('-u, --unlink', 'unlink devices')
   .option('--remove [<device>,]<link>', 'remove link from device', list)
   .option('--cancel', 'cancel linking')
   .option('-g, --group <type>', 'group number to use for links', parseInt)
@@ -83,6 +83,8 @@ gw.on('connect', function () {
       return gw.close();
     });
   } else if(program.link) {
+    if(devices.length == 0)
+      devices = null;
     gw.link(devices, program, function (err, links) {
       if (err) {
         console.log('linking failed: ' + err);
