@@ -31,7 +31,7 @@
     "spark": "^1.0.0"
   },
   "devDependencies": {
-    "mocha": "*",
+    "mocha": "^2.x",
     "should": "*",
     "grunt": "*",
     "grunt-contrib-jshint": "*",
