@@ -660,6 +660,40 @@ describe('Insteon Gateway', function() {
     });
 
 
+    it('emits turnOn event from command All-Link ACK', function (done) {
+      var plan = new Plan(2, done);
+      var gw = new Insteon();
+      var light = gw.light('aabbcc');
+
+      light.on('command', function (group, cmd1) {
+        should.exist(group);
+        group.should.equal(25);
+        cmd1.should.equal('11');
+        plan.ok();
+      });
+
+      light.on('turnOn', function (group) {
+        should.exist(group);
+        group.should.equal(25);
+        plan.ok();
+      });
+
+      mockData = {
+        '0261191100': [
+			'026119110006',
+			'0250aabbccffffff611119'
+		]
+      };
+
+      gw.connect(host, function (){
+        gw.sceneOn(25)
+        .then(function() {
+          plan.ok();
+        });
+      });
+    });
+
+
     it('emits turnOnFast event from command ACK', function (done) {
       var plan = new Plan(2, done);
       var gw = new Insteon();
