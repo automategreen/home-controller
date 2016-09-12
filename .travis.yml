@@ -7,3 +7,5 @@ node_js:
   - "4.4"
 before_script:
   - npm install -g grunt-cli
+after_success:
+  - coveralls
