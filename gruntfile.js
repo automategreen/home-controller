@@ -30,11 +30,11 @@ module.exports = function(grunt) {
         src: 'test',
         options: {
           root: './lib/Insteon/',
-          reportFormats: ['html']
+          reportFormats: ['html', 'lcovonly']
         },
         check: {
-          lines: 80,
-          statements: 80
+          lines: 60,
+          statements: 60
         },
       },
       coveralls: {
@@ -45,8 +45,8 @@ module.exports = function(grunt) {
           coverage:true
         },
         check: {
-          lines: 80,
-          statements: 80
+          lines: 60,
+          statements: 60
         },
       }
     },
