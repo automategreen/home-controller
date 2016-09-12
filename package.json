@@ -31,23 +31,17 @@
     "spark": "^1.0.0"
   },
   "devDependencies": {
-    "mocha": "^2.x",
-    "should": "*",
+    "coveralls": "*",
     "grunt": "*",
     "grunt-contrib-jshint": "*",
-    "grunt-contrib-uglify": "*",
-    "grunt-contrib-concat": "*",
+    "grunt-mocha-istanbul": "*",
     "grunt-mocha-test": "*",
-    "blanket": "*",
-    "travis-cov": "*"
+    "istanbul": "*",
+    "mocha": "*",
+    "should": "*"
   },
   "scripts": {
     "test": "grunt test"
-  },
-  "config": {
-    "travis-cov": {
-      "threshold": 80
-    }
   },
   "license": "MIT"
 }
