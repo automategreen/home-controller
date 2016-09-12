@@ -3,7 +3,6 @@
 'use strict';
 
 var Insteon = require('../').Insteon;
-var util = require('util');
 var program = require('commander');
 var pkg = require('../package.json');
 var version = pkg.version;
@@ -12,10 +11,11 @@ program
   .version(version)
   .usage('[options] <host:port>')
   .option('-v, --verbose', 'more output')
+  .option('-a, --all', 'include all links')
   .parse(process.argv);
 
 if(program.args.length !== 1) {
-  return program.help();
+  program.help();
 }
 
 var host, port;
@@ -32,6 +32,7 @@ console.log('Connecting to ' + uri);
 var gw = new Insteon();
 
 var network = {};
+var to_scan = [];
 
 gw.on('connect', function () {
   console.log('Connected');
@@ -51,19 +52,18 @@ gw.on('connect', function () {
       }
 
       if(links && links.length > 0){
-        network[info.id].links = links.slice(); // copy array
-        program.verbose && console.log('Found links: \n' + util.inspect(links));
+        console.log('Found links: ' + links.length);
+        network[info.id].links = links;
 
-        foundLinks(links);
-      } else {
-        console.log('No links found.  Entering linking mode for 3 minutes.\n\nHold set button on device.');
-        gw.link({timeout: 180}, function(err, link) {
-          if(err) {
-            return console.log('Failed to link, ' + err);
+        for(var link in links) {
+          if(!!links[link].isInUse && to_scan.indexOf(links[link].id) === -1 && network[links[link].id] === undefined) {
+            to_scan.push(links[link].id);
           }
+        }
 
-          foundLinks([link]);
-        });
+        scanLinks();
+      } else {
+        console.log('Gateway returned no links.');
       }
     });
   });
@@ -83,41 +83,43 @@ if(host.substring(0, 5) === '/dev/' || host.substring(0, 3) === 'COM') {
   gw.connect(host, port);
 }
 
-function foundLinks(links) {
-  if(links.length === 0) {
-    // All Donefor(var id in network)
-    return printNetwork();
-  }
-  var link = links.shift();
+function scanLinks() {
 
-  if(network[link.id] !== undefined){
-    return foundLinks(links); // already found this link
+  if(to_scan.length === 0) {
+    console.log('Done');
+    console.log();
+    
+    printNetwork();
+    gw.close();
   }
 
-  gw.info(link.id, function onProfile(err, profile) {
+  var id = to_scan.pop();
+
+  network[id] = null;
+
+  gw.info(id, function(err, link) {
     if(err){
-      return console.log(err.stack);
+      console.log('Error: ', err);
+      return scanLinks();
     }
 
-    if(!profile){
-      console.log('Found new link: ' + link.id + ' - Unresponsive!');
-      network[link.id] = null;
-      return foundLinks(links);
+    if(!link){
+      console.log('Found new link: ' + id + ' - Unresponsive!');
+      return scanLinks();
+    } else {
+      console.log('Found new device: ' + id + ' - ' + link.deviceCategory.name);
+      network[id] = link;
+
+      gw.links(link.id, function(err, moreLinks) {
+        if(err) {
+          console.log('Error getting links for devcie ' + link.id + ' - skipping');
+        }
+        console.log('Found links: ' + moreLinks.length);
+        network[link.id].links = moreLinks;
+
+        return scanLinks();
+      });
     }
-
-    console.log('Found new link: ' + link.id + (profile.deviceCategory ? ' - ' + profile.deviceCategory.name : ''));
-    network[link.id] = profile;
-
-    console.log('Getting links for  device ' + link.id);
-    gw.links(link.id, function onDeviceLinksFound(err, moreLinks) {
-      if(err) {
-        console.log('Error getting links for devcie ' + link.id + ' - skipping');
-        return foundLinks(links);
-      }
-      program.verbose && console.log('Found links: \n' + util.inspect(moreLinks));
-      network[link.id].links = moreLinks;
-      foundLinks(links.concat(moreLinks));
-    });
   });
 }
 

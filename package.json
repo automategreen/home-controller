@@ -27,18 +27,18 @@
     "q": "^1.4.1"
   },
   "optionalDependencies": {
-    "serialport": "^2.0.0",
+    "serialport": "^4.0",
     "spark": "^1.0.0"
   },
   "devDependencies": {
-    "mocha": "^2.x",
-    "should": "*",
+    "coveralls": "*",
     "grunt": "*",
     "grunt-contrib-jshint": "*",
-    "grunt-contrib-uglify": "*",
-    "grunt-contrib-concat": "*",
+    "grunt-mocha-istanbul": "*",
     "grunt-mocha-test": "*",
-    "blanket": "*",
+    "istanbul": "*",
+    "mocha": "*",
+    "should": "*",
     "travis-cov": "*"
   },
   "scripts": {

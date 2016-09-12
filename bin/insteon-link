@@ -12,8 +12,8 @@ program
   .version(version)
   .usage('[options] <host:port> <device ...>')
   .option('-c, --controller', 'devices are the controller')
-  .option('-l, --link', 'view links of a specific device')
-  .option('-u, --unlink', 'unlink devices from gateway')
+  .option('-l, --link', 'link devices')
+  .option('-u, --unlink', 'unlink devices')
   .option('--remove [<device>,]<link>', 'remove link from device', list)
   .option('--cancel', 'cancel linking')
   .option('-g, --group <type>', 'group number to use for links', parseInt)
@@ -59,10 +59,14 @@ gw.on('connect', function () {
   if(program.remove) {
     if(program.remove.length === 2) {
       console.log('Remove link from '+program.remove[0]);
-      gw.removeLink(program.remove[0], program.remove[1]);
+      gw.removeLink(program.remove[0], program.remove[1], function() {
+        return gw.close();
+      });
     } else if(program.remove.length === 1) {
       console.log('Removing link from gateway');
-      gw.removeLink(program.remove[0]);
+      gw.removeLink(program.remove[0], function() {
+        return gw.close();
+      });
     }
   } else if(program.cancel) {
     console.log('Canceling linking mode');
@@ -83,6 +87,9 @@ gw.on('connect', function () {
       return gw.close();
     });
   } else if(program.link) {
+    if(devices.length === 0) {
+      devices = null;
+    }
     gw.link(devices, program, function (err, links) {
       if (err) {
         console.log('linking failed: ' + err);

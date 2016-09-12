@@ -24,48 +24,48 @@ module.exports = function(grunt) {
         }
       }
     },
-    mochaTest: {
-      test: {
-        options: {
-          reporter: 'spec'
-        },
-        src: ['test/**/*.js']
-      },
-      testCoverage: {
-        options: {
-          reporter: 'spec',
-          require: 'test/coverage/blanket'
-        },
-        src: ['test/**/*.js']
-      },
+
+    mocha_istanbul: {
       coverage: {
+        src: 'test',
         options: {
-          reporter: 'html-cov',
-          // use the quiet flag to suppress the mocha console output
-          quiet: true,
-          // specify a destination file to capture the mocha
-          // output (the quiet option does not suppress this)
-          captureFile: 'coverage.html'
-        },
-        src: ['test/**/*.js']
+          root: './lib/Insteon/',
+          reportFormats: ['html', 'lcovonly'],
+          check: {
+            lines: 80,
+            statements: 80
+          }
+        }
       },
-      'travis-cov': {
+      coveralls: {
+        src: 'test',
         options: {
-          reporter: 'travis-cov'
+          root: './lib/Insteon/',
+          reportFormats: ['lcovonly'],
+          coverage:true,
+          check: {
+            lines: 80,
+            statements: 80
+          }
         },
-        src: ['test/**/*.js']
       }
-    }
+    },
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-mocha-test');
+  grunt.loadNpmTasks('grunt-mocha-istanbul');
 
+  grunt.event.on('coverage', function(lcov, done){
+      require('coveralls').handleInput(lcov, function(err){
+          if (err) {
+              return done(err);
+          }
+          done();
+      });
+  });
 
-  grunt.registerTask('default', ['jshint', 'mochaTest']);
-
-  grunt.registerTask('test', ['jshint', 'mochaTest:test']);
-
-  grunt.registerTask('coverage', ['jshint', 'mochaTest:testCoverage', 'mochaTest:coverage', 'mochaTest:travis-cov']);
-
+  grunt.registerTask('default', ['jshint', 'mocha_istanbul:coverage']);
+  grunt.registerTask('coverage', ['jshint', 'mocha_istanbul:coverage']);
+  grunt.registerTask('test', ['jshint', 'mocha_istanbul:coveralls']);
 };

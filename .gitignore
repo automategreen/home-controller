@@ -10,3 +10,4 @@ lib-cov/
 *.sublime-project
 tmp/
 /.vscode
+/coverage
