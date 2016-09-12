@@ -50,21 +50,6 @@ module.exports = function(grunt) {
         },
       }
     },
-    
-    mochaTest: {
-      test: {
-        options: {
-          reporter: 'spec'
-        },
-        src: ['test/**/*.js']
-      },
-      'travis-cov': {
-        options: {
-          reporter: 'travis-cov'
-        },
-        src: ['test/**/*.js']
-      }
-    }
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -81,7 +66,7 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('default', ['jshint', 'mocha_istanbul:coverage']);
-  grunt.registerTask('test', ['jshint', 'mochaTest:test', 'mochaTest:travis-cov']);
+  grunt.registerTask('test', ['jshint', 'mocha_istanbul:coverage']);
   grunt.registerTask('coverage', ['jshint', 'mocha_istanbul:coverage']);
   grunt.registerTask('coveralls', ['mocha_istanbul:coveralls']);
 };
