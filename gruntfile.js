@@ -66,7 +66,6 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('default', ['jshint', 'mocha_istanbul:coverage']);
-  grunt.registerTask('test', ['jshint', 'mocha_istanbul:coverage']);
   grunt.registerTask('coverage', ['jshint', 'mocha_istanbul:coverage']);
-  grunt.registerTask('coveralls', ['mocha_istanbul:coveralls']);
+  grunt.registerTask('test', ['jshint', 'mocha_istanbul:coveralls']);
 };
