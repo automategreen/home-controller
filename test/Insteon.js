@@ -114,7 +114,7 @@ describe('Insteon Gateway', function() {
     it('gets light\' informaion', function(done) {
       var gw = new Insteon();
       var light = gw.light('112233');
-      var plan = new Plan(2, done);
+      var plan = new Plan(3, done);
 
       mockData = [
         {
@@ -140,8 +140,7 @@ describe('Insteon Gateway', function() {
       ];
 
       gw.connect(host, function () {
-        light.info().then(function(err, info) {
-          should.not.exist(err);
+        light.info().then(function(info) {
           should.exist(info);
 
           plan.ok();    
@@ -161,6 +160,7 @@ describe('Insteon Gateway', function() {
         light.info(function(err, info) {
           should.not.exist(err);
           should.not.exist(info);
+          plan.ok();
         });
       });
     });
