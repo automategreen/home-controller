@@ -38,6 +38,7 @@ module.exports = function (grunt) {
       coverage: {
         src: 'test',
         options: {
+          coverage: true,
           root: './lib/Insteon/',
           reportFormats: ['html', 'lcovonly'],
           check: {
