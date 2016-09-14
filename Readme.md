@@ -1,4 +1,4 @@
-home-controller [![Build Status](https://travis-ci.org/automategreen/home-controller.png)](https://travis-ci.org/automategreen/home-controller)
+home-controller [![Build Status](https://travis-ci.org/automategreen/home-controller.png)](https://travis-ci.org/automategreen/home-controller) [![Coverage Status](https://coveralls.io/repos/github/automategreen/home-controller/badge.svg?branch=feature-add-coveralls-io)](https://coveralls.io/github/automategreen/home-controller?branch=feature-add-coveralls-io)
 ===============
 > a node package to control Insteon home automation devices
 > 
