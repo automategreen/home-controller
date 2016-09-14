@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -33,11 +33,12 @@ module.exports = function(grunt) {
         src: ['test/**/*.js']
       },
     },
-      
+
     mocha_istanbul: {
       coverage: {
         src: 'test',
         options: {
+          coverage: true,
           root: './lib/Insteon/',
           reportFormats: ['html', 'lcovonly'],
           check: {
@@ -46,18 +47,6 @@ module.exports = function(grunt) {
           }
         }
       },
-      coveralls: {
-        src: 'test',
-        options: {
-          root: './lib/Insteon/',
-          reportFormats: ['lcovonly'],
-          coverage:true,
-          check: {
-            lines: 80,
-            statements: 80
-          }
-        },
-      }
     },
   });
 
@@ -65,16 +54,16 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-mocha-istanbul');
 
-  grunt.event.on('coverage', function(lcov, done){
-      require('coveralls').handleInput(lcov, function(err){
-          if (err) {
-              return done(err);
-          }
-          done();
-      });
+  grunt.event.on('coverage', function (lcov, done) {
+    require('coveralls').handleInput(lcov, function (err) {
+      if (err) {
+        return done(err);
+      }
+      done();
+    });
   });
 
-  grunt.registerTask('default', ['jshint', 'mocha_istanbul:coverage']);
-  grunt.registerTask('coverage', ['jshint', 'mocha_istanbul:coverage']);
+  grunt.registerTask('default', ['jshint', 'mocha_istanbul']);
+  grunt.registerTask('coverage', ['jshint', 'mocha_istanbul']);
   grunt.registerTask('test', ['jshint', 'mochaTest']);
 };
