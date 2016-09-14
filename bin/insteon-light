@@ -1,0 +1,57 @@
+#!/usr/bin/env node
+
+'use strict';
+
+var Insteon = require('../').Insteon;
+var host = 'COM10';
+
+console.log('Connecting to ' + host);
+var gw = new Insteon();
+
+gw.on('connect', function () {
+  console.log('Connected!');
+
+  /*setTimeout(function() {
+    gw.info('2d37ce', function(err, info) {
+      console.log('info', info)
+    });
+  }, 100);*/
+
+  var light = gw.light('2d37ce');
+  light.on('turnOn', function() {
+    console.log('Turned on');
+  });
+  light.on('turnOnFast', function() {
+    console.log('Turned on Fast');
+  });
+  light.on('turnOff', function() {
+    console.log('Turned off');
+  });
+  light.on('turnOffFast', function() {
+    console.log('Turned off Fast');
+  });
+
+  setTimeout(function() {
+    console.log('Scene command on');
+    gw.sceneOn(1, function() {
+      console.log('Scene command done');
+    });
+  }, 1000);
+  setTimeout(function() {
+    console.log('Scene command off');
+    gw.sceneOff(1, function() {
+      console.log('Scene command done');
+	  gw.close();
+    });
+  }, 3000);
+});
+
+gw.on('recvCommand', function() {
+  //console.log('command received:', cmd)
+});
+
+gw.on('close', function() {
+  console.log('Connection closed');
+});
+
+gw.serial(host);
