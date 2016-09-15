@@ -370,24 +370,101 @@ describe('Insteon Gateway', function() {
 
     it('get the ramp rate', function(done) {
       var gw = new Insteon();
+      var light = gw.light('999999');
 
-      mockData = {
-        '02629999991f2e0001000000000000000000000000d1':
+      mockData =
         [
-        '02629999991f2e0001000000000000000000000000d106',
-        '0250999999ffffff2f2e00',
-        '0251999999ffffff112e000101000020201cfe1f0000000000'
-        ]
-      };
+          {
+            '02629999991f2e0001000000000000000000000000d1':
+            [
+              '02629999991f2e0001000000000000000000000000d106',
+              '0250999999ffffff2f2e00',
+              '0251999999ffffff112e000101000020201cfe1f0000000000'
+            ]
+          },
+          {
+            '02629999991f2e0001000000000000000000000000d1':
+            [
+              '02629999991f2e0001000000000000000000000000d106',
+              '0250999999ffffff2f2e00',
+              '0251999999ffffff112e000101000020201cfe1f0000000000'
+            ]
+          }
+        ];
 
-
-      gw.connect(host, function (){
-        gw.rampRate('999999', function(err, rate){
+      gw.connect(host, function () {
+        light.rampRate(function (err, rate) {
           should.not.exist(err);
           should.exist(rate);
           rate.should.eql(500);
           done();
+        });
+        light.rampRate().then(function (rate) {
+          should.exist(rate);
+          rate.should.eql(500);
+          done();
+        });
+      });
+    });
 
+    it('error when trying to get a ramp rate', function(done) {
+      var gw = new Insteon();
+      var light = gw.light('999999');
+
+      mockData = {
+        '02629999991f2e0001000000000000000000000000d1':
+        [
+          '02629999991f2e0001000000000000000000000000d115'
+        ]
+      };
+
+      gw.connect(host, function () {
+        light.rampRate(function (err, rate) {
+          should.not.exist(err);
+          should.not.exist(rate);
+          done();
+        });
+      });
+    });
+
+    it('set the ramp rate', function(done) {
+      var gw = new Insteon();
+      var light = gw.light('999999');
+
+      mockData = {
+        '02629999991f2e0001051c00000000000000000000b0':
+        [
+          '02629999991f2e0001051c00000000000000000000b006',
+          '0251999999ffffff112e000101000020201cfe1f0000000000'
+        ]
+      };
+
+      gw.connect(host, function (){
+        light.rampRate(500, function(err, rate){
+          should.not.exist(err);
+          should.exist(rate);
+          rate.should.eql(500);
+          done();
+        });
+      });
+    });
+
+    it('error when trying to set a ramp rate', function(done) {
+      var gw = new Insteon();
+      var light = gw.light('999999');
+
+      mockData = {
+        '02629999991f2e0001051c00000000000000000000b0':
+        [
+          '02629999991f2e0001051c00000000000000000000b015'
+        ]
+      };
+
+      gw.connect(host, function () {
+        light.rampRate(500, function (err, rate) {
+          should.not.exist(err);
+          should.not.exist(rate);
+          done();
         });
       });
     });
@@ -418,24 +495,64 @@ describe('Insteon Gateway', function() {
 
     it('get the on level', function(done) {
       var gw = new Insteon();
+      var light = gw.light('999999');
+
+      mockData = 
+        [
+          {
+            '02629999991f2e0001000000000000000000000000d1':
+            [
+              '02629999991f2e0001000000000000000000000000d106',
+              '0250999999ffffff2f2e00',
+              '0251999999ffffff112e000101000020201cfe1f0000000000'
+            ]
+          },
+          {
+            '02629999991f2e0001000000000000000000000000d1':
+            [
+              '02629999991f2e0001000000000000000000000000d106',
+              '0250999999ffffff2f2e00',
+              '0251999999ffffff112e000101000020201cfe1f0000000000'
+            ]
+          }
+        ];
+
+
+      gw.connect(host, function () {
+        light.onLevel(function (err, level) {
+          should.not.exist(err);
+          should.exist(level);
+          level.should.eql(100);
+          done();
+        });
+
+        light.onLevel().then(function (level) {
+          should.exist(level);
+          level.should.eql(100);
+          done();
+        });
+      });
+    });
+
+    it('set the on level', function(done) {
+      var gw = new Insteon();
+      var light = gw.light('999999');
 
       mockData = {
-        '02629999991f2e0001000000000000000000000000d1':
+        '02629999991f2e000106ff00000000000000000000cc':
         [
-        '02629999991f2e0001000000000000000000000000d106',
-        '0250999999ffffff2f2e00',
+        '02629999991f2e000106ff00000000000000000000cc06',
         '0251999999ffffff112e000101000020201cfe1f0000000000'
         ]
       };
 
 
       gw.connect(host, function (){
-        gw.onLevel('999999', function(err, level){
+        light.onLevel(100, function(err, level){
           should.not.exist(err);
           should.exist(level);
           level.should.eql(100);
           done();
-
         });
       });
     });
