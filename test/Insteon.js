@@ -3469,7 +3469,7 @@ describe('Insteon Gateway', function() {
     });
   }); // Meter Functions
 
-  describe('Meter Commands', function () {
+  describe('IO Commands', function () {
     it('turns on', function (done) {
       var gw = new Insteon();
 
@@ -3566,5 +3566,5 @@ describe('Insteon Gateway', function() {
         }, 100);
       });
     });    
-  }); // io commands
+  }); // IO commands
 });
