@@ -4,6 +4,7 @@ var Insteon = require('../').Insteon;
 var should = require('should');
 var net = require('net');
 var util = require('util');
+var utils = require('../lib/Insteon/utils.js');
 var assert = require('assert');
 
 console.trace = function () {};
@@ -3567,4 +3568,26 @@ describe('Insteon Gateway', function() {
       });
     });    
   }); // IO commands
+
+
+
+  describe('Util tests', function () {
+    it('levelToHexHalfByte', function (done) {
+      (function() {
+        utils.levelToHexHalfByte(101);
+      }).should.throw();
+        done();      
+    });
+
+    it('convertTemp', function(done) {
+      utils.convertTemp('C', 'F', 0).should.equal(32);
+      utils.convertTemp('F', 'С', 32).should.equal(0);
+      utils.convertTemp('K', 'F', 273.15).should.equal(32);
+      utils.convertTemp('K', 'C', 273.15).should.equal(0);
+      utils.convertTemp('F', 'K', 32).should.equal(273.15);
+      utils.convertTemp('C', 'K', 0).should.equal(273.15);
+      done();
+    });
+  }); // utils tests
+
 });
