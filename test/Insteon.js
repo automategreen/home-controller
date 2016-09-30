@@ -4,6 +4,7 @@ var Insteon = require('../').Insteon;
 var should = require('should');
 var net = require('net');
 var util = require('util');
+var utils = require('../lib/Insteon/utils.js');
 var assert = require('assert');
 
 console.trace = function () {};
@@ -370,24 +371,101 @@ describe('Insteon Gateway', function() {
 
     it('get the ramp rate', function(done) {
       var gw = new Insteon();
+      var light = gw.light('999999');
 
-      mockData = {
-        '02629999991f2e0001000000000000000000000000d1':
+      mockData =
         [
-        '02629999991f2e0001000000000000000000000000d106',
-        '0250999999ffffff2f2e00',
-        '0251999999ffffff112e000101000020201cfe1f0000000000'
-        ]
-      };
+          {
+            '02629999991f2e0001000000000000000000000000d1':
+            [
+              '02629999991f2e0001000000000000000000000000d106',
+              '0250999999ffffff2f2e00',
+              '0251999999ffffff112e000101000020201cfe1f0000000000'
+            ]
+          },
+          {
+            '02629999991f2e0001000000000000000000000000d1':
+            [
+              '02629999991f2e0001000000000000000000000000d106',
+              '0250999999ffffff2f2e00',
+              '0251999999ffffff112e000101000020201cfe1f0000000000'
+            ]
+          }
+        ];
 
-
-      gw.connect(host, function (){
-        gw.rampRate('999999', function(err, rate){
+      gw.connect(host, function () {
+        light.rampRate(function (err, rate) {
           should.not.exist(err);
           should.exist(rate);
           rate.should.eql(500);
           done();
+        });
+        light.rampRate().then(function (rate) {
+          should.exist(rate);
+          rate.should.eql(500);
+          done();
+        });
+      });
+    });
 
+    it('error when trying to get a ramp rate', function(done) {
+      var gw = new Insteon();
+      var light = gw.light('999999');
+
+      mockData = {
+        '02629999991f2e0001000000000000000000000000d1':
+        [
+          '02629999991f2e0001000000000000000000000000d115'
+        ]
+      };
+
+      gw.connect(host, function () {
+        light.rampRate(function (err, rate) {
+          should.not.exist(err);
+          should.not.exist(rate);
+          done();
+        });
+      });
+    });
+
+    it('set the ramp rate', function(done) {
+      var gw = new Insteon();
+      var light = gw.light('999999');
+
+      mockData = {
+        '02629999991f2e0001051c00000000000000000000b0':
+        [
+          '02629999991f2e0001051c00000000000000000000b006',
+          '0251999999ffffff112e000101000020201cfe1f0000000000'
+        ]
+      };
+
+      gw.connect(host, function (){
+        light.rampRate(500, function(err, rate){
+          should.not.exist(err);
+          should.exist(rate);
+          rate.should.eql(500);
+          done();
+        });
+      });
+    });
+
+    it('error when trying to set a ramp rate', function(done) {
+      var gw = new Insteon();
+      var light = gw.light('999999');
+
+      mockData = {
+        '02629999991f2e0001051c00000000000000000000b0':
+        [
+          '02629999991f2e0001051c00000000000000000000b015'
+        ]
+      };
+
+      gw.connect(host, function () {
+        light.rampRate(500, function (err, rate) {
+          should.not.exist(err);
+          should.not.exist(rate);
+          done();
         });
       });
     });
@@ -418,24 +496,64 @@ describe('Insteon Gateway', function() {
 
     it('get the on level', function(done) {
       var gw = new Insteon();
+      var light = gw.light('999999');
+
+      mockData = 
+        [
+          {
+            '02629999991f2e0001000000000000000000000000d1':
+            [
+              '02629999991f2e0001000000000000000000000000d106',
+              '0250999999ffffff2f2e00',
+              '0251999999ffffff112e000101000020201cfe1f0000000000'
+            ]
+          },
+          {
+            '02629999991f2e0001000000000000000000000000d1':
+            [
+              '02629999991f2e0001000000000000000000000000d106',
+              '0250999999ffffff2f2e00',
+              '0251999999ffffff112e000101000020201cfe1f0000000000'
+            ]
+          }
+        ];
+
+
+      gw.connect(host, function () {
+        light.onLevel(function (err, level) {
+          should.not.exist(err);
+          should.exist(level);
+          level.should.eql(100);
+          done();
+        });
+
+        light.onLevel().then(function (level) {
+          should.exist(level);
+          level.should.eql(100);
+          done();
+        });
+      });
+    });
+
+    it('set the on level', function(done) {
+      var gw = new Insteon();
+      var light = gw.light('999999');
 
       mockData = {
-        '02629999991f2e0001000000000000000000000000d1':
+        '02629999991f2e000106ff00000000000000000000cc':
         [
-        '02629999991f2e0001000000000000000000000000d106',
-        '0250999999ffffff2f2e00',
+        '02629999991f2e000106ff00000000000000000000cc06',
         '0251999999ffffff112e000101000020201cfe1f0000000000'
         ]
       };
 
 
       gw.connect(host, function (){
-        gw.onLevel('999999', function(err, level){
+        light.onLevel(100, function(err, level){
           should.not.exist(err);
           should.exist(level);
           level.should.eql(100);
           done();
-
         });
       });
     });
@@ -3351,4 +3469,125 @@ describe('Insteon Gateway', function() {
       });
     });
   }); // Meter Functions
+
+  describe('IO Commands', function () {
+    it('turns on', function (done) {
+      var gw = new Insteon();
+
+      mockData = {
+        '0262aabbcc0f4500':
+        [
+          '0262aabbcc0f450006',
+          '0250aabbcc1122332b4500'
+        ],
+      };
+
+      gw.connect(host, function () {
+        gw.io('aabbcc').on().then(function () {
+          done();
+        });
+      });
+    });
+
+    it('turns off', function (done) {
+      var gw = new Insteon();
+
+      mockData = {
+        '0262aabbcc0f4600':
+        [
+          '0262aabbcc0f460006',
+          '0250aabbcc1122332b4600'
+        ],
+      };
+
+      gw.connect(host, function () {
+        gw.io('aabbcc').off().then(function () {
+          done();
+        });
+      });
+    });
+
+    it('sets the data', function (done) {
+      var gw = new Insteon();
+
+      mockData = {
+        '0262aabbcc0f480a':
+        [
+          '0262aabbcc0f480a06',
+          '0250aabbcc1122332b480a'
+        ],
+      };
+
+      gw.connect(host, function () {
+        gw.io('aabbcc').set(10).then(function () {
+          done();
+        });
+      });
+    });
+
+    it('cancels pending', function (done) {
+      var gw = new Insteon();
+
+      gw.connect(host, function () {
+        var io = gw.io('aabbcc');
+        var plan = new Plan(4, done);
+        
+        io.on().then(function() {
+          plan.ok();
+        });
+
+        io.off().then(function() {
+          throw new Error('This command should have been canceled.');
+        }).fail(function(err) {
+          should.exist(err);
+          err.message.should.equal('Canceled');
+          plan.ok();
+
+          setTimeout(function () { // make sure server connection event fires first
+            mockHub.send([
+              '0262aabbcc0f460006',
+              '0250aabbcc1122332b4600'
+            ], function () {
+              plan.ok();
+            });
+          }, 10);
+        });
+
+        io.off(5).then(function() {
+          throw new Error('This command should have been canceled.');
+        }).fail(function(err) {
+          should.exist(err);
+          err.message.should.equal('Canceled');
+          plan.ok();
+        });
+
+        setTimeout(function () {
+          io.cancelPending(5);
+          io.cancelPending();
+        }, 100);
+      });
+    });    
+  }); // IO commands
+
+
+
+  describe('Util tests', function () {
+    it('levelToHexHalfByte', function (done) {
+      (function() {
+        utils.levelToHexHalfByte(101);
+      }).should.throw();
+        done();      
+    });
+
+    it('convertTemp', function(done) {
+      utils.convertTemp('C', 'F', 0).should.equal(32);
+      utils.convertTemp('F', 'С', 32).should.equal(0);
+      utils.convertTemp('K', 'F', 273.15).should.equal(32);
+      utils.convertTemp('K', 'C', 273.15).should.equal(0);
+      utils.convertTemp('F', 'K', 32).should.equal(273.15);
+      utils.convertTemp('C', 'K', 0).should.equal(273.15);
+      done();
+    });
+  }); // utils tests
+
 });
