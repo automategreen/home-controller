@@ -4,7 +4,7 @@ a node package to control Insteon home automation devices
 
 [![Build Status](https://travis-ci.org/automategreen/home-controller.png)](https://travis-ci.org/automategreen/home-controller.svg?branch=master) [![Coverage Status](https://coveralls.io/repos/github/automategreen/home-controller/badge.svg?branch=master)](https://coveralls.io/github/automategreen/home-controller?branch=feature-add-coveralls-io) [![dependencies Status](https://david-dm.org/automategreen/home-controller/status.svg)](https://david-dm.org/automategreen/home-controller) [![optionalDependencies Status](https://david-dm.org/automategreen/home-controller/optional-status.svg)](https://david-dm.org/automategreen/home-controller?type=optional) [![devDependencies Status](https://david-dm.org/automategreen/home-controller/dev-status.svg)](https://david-dm.org/automategreen/home-controller?type=dev)
 
-> **WARNING** The new Insteon Hub (2245) does NOT have the required PLM over TCP interface.
+**WARNING** The new Insteon Hub (2245) does NOT have the required PLM over TCP interface.
 ***
 
 Overview
