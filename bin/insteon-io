@@ -1,0 +1,38 @@
+#!/usr/bin/env node
+
+'use strict';
+
+var Insteon = require('../').Insteon;
+var host = 'COM10';
+
+console.log('Connecting to ' + host);
+var gw = new Insteon();
+
+gw.on('connect', function () {
+  var g = gw.garage('4204e2');
+  /*g.open().then(function(success) {
+    console.log(success);
+  });*/
+  g.status()
+    .then(function(status) {
+      console.log('status:', status);
+    })
+    /*.then(function() {
+      console.log('trying to open');
+      g.close().then(function (status) {
+        console.log(status);
+      });
+    })*/
+    .then(function() {
+      console.log('trying to close');
+      g.close().then(function (status) {
+        console.log(status);
+      });
+    });
+});
+
+gw.on('close', function() {
+  console.log('Connection closed');
+});
+
+gw.serial(host);

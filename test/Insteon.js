@@ -3569,7 +3569,60 @@ describe('Insteon Gateway', function() {
     });    
   }); // IO commands
 
+  describe('Garage Door opener', function() {
+    it('gets status', function (done) {
+      var gw = new Insteon();
 
+      mockData = {
+        '0262aabbcc0f1901':
+        [
+          '0262aabbcc0f190106',
+          '0250aabbcc1122332b0201'
+        ]
+      };
+
+      gw.connect(host, function () {
+        gw.garage('aabbcc')
+          .status()
+          .then(function (status) {
+            should.exist(status);
+            status.should.equal('closed');
+            done();
+          });
+      });
+    });
+
+    it('tests lockout period', function(done) {
+      var gw = new Insteon();
+      var plan = new Plan(2, done);
+
+      mockData = [
+        {
+          '0262aabbcc0f1901': ['0262aabbcc0f190106', '0250aabbcc1122332b0201']
+        },
+        {
+
+          '0262aabbcc0f11ff': ['0262aabbcc0f11ff06', '0250aabbcc239acf2b11ff']
+        }
+      ];
+
+      gw.connect(host, function () {
+        var g = gw.garage('aabbcc');
+        g.open()
+          .then(function(status) {
+            should.exist(status);
+            status.should.equal(true);
+            plan.ok();
+          });
+        g.close()
+          .then(function(status) {
+            should.exist(status);
+            status.should.equal(false);
+            plan.ok();
+          });
+      });
+    });
+  });
 
   describe('Util tests', function () {
     it('levelToHexHalfByte', function (done) {
