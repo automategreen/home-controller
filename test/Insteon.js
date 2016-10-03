@@ -2966,6 +2966,7 @@ describe('Insteon Gateway', function () {
         }, 10);
       });
     });
+
     it('emits clear event', function (done) {
       var plan = new Plan(3, done);
       var gw = new Insteon();
@@ -2997,7 +2998,7 @@ describe('Insteon Gateway', function () {
     });
   }); // Motion Events
 
-  describe('Door Events', function () {
+  describe.only('Door Events', function () {
     it('emits opened event', function (done) {
       var plan = new Plan(3, done);
       var gw = new Insteon();
@@ -3014,7 +3015,7 @@ describe('Insteon Gateway', function () {
       });
 
       gw.connect(host, function () {
-        setTimeout(function () { // make sure server connection event fires first
+        setTimeout(function () {
           mockHub.send([
             '0250284283000001cf1101',
             '0250284283000001cf1101',
@@ -3027,6 +3028,7 @@ describe('Insteon Gateway', function () {
         }, 10);
       });
     });
+
     it('emits closed event', function (done) {
       var plan = new Plan(3, done);
       var gw = new Insteon();
@@ -3056,6 +3058,7 @@ describe('Insteon Gateway', function () {
         }, 10);
       });
     });
+
     it('emits closed event - ignoring direct message from Insteon App', function (done) {
       var plan = new Plan(11, done);
       var gw = new Insteon();
@@ -3087,6 +3090,7 @@ describe('Insteon Gateway', function () {
         }, 10);
       });
     });
+
     it('emits closed event - with emitDuplicates', function (done) {
       var plan = new Plan(11, done);
       var gw = new Insteon();
@@ -3117,6 +3121,7 @@ describe('Insteon Gateway', function () {
         }, 10);
       });
     });
+
     it('emits closed event - with duplicates 6 seconds apart', function (done) {
 
       this.timeout(10000);
@@ -3136,7 +3141,7 @@ describe('Insteon Gateway', function () {
       });
 
       gw.connect(host, function () {
-        setTimeout(function () { // make sure server connection event fires first
+        setTimeout(function () {
           mockHub.send([
             '0250284283000001cf1301',
             '0250284283000001cf1301',
@@ -3145,7 +3150,7 @@ describe('Insteon Gateway', function () {
             '0250284283130101cf0600'
           ], function () {
 
-            setTimeout(function () { // make sure server connection event fires first
+            setTimeout(function () {
               mockHub.send([
                 '0250284283000001cf1301',
                 '0250284283000001cf1301',
@@ -3160,6 +3165,7 @@ describe('Insteon Gateway', function () {
         }, 10);
       });
     });
+
     it('emits open/closed event - within 3 seconds', function (done) {
       var plan = new Plan(5, done);
       var gw = new Insteon();
@@ -3195,6 +3201,7 @@ describe('Insteon Gateway', function () {
         }, 10);
       });
     });
+
     it('emits closed event - group 2', function (done) {
       var plan = new Plan(3, done);
       var gw = new Insteon();
@@ -3224,6 +3231,7 @@ describe('Insteon Gateway', function () {
         }, 10);
       });
     });
+
     it('emits heartbeat event - opened', function (done) {
       var plan = new Plan(4, done);
       var gw = new Insteon();
@@ -3256,6 +3264,7 @@ describe('Insteon Gateway', function () {
         }, 10);
       });
     });
+
     it('emits heartbeat event - closed', function (done) {
       var plan = new Plan(4, done);
       var gw = new Insteon();
@@ -3282,6 +3291,30 @@ describe('Insteon Gateway', function () {
             '0250284283000004cf1304',
             '0250284283130004cf0600',
             '0250284283130004cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+
+    it('recieves unknown command', function (done) {
+      var gw = new Insteon();
+      var door = gw.door('284283');
+      var plan = new Plan(4, done);
+
+      door.on('command', function (group, cmd1) {
+        group.should.equalOneOf([1, 3, 4]);
+        cmd1.should.equal('12');
+        plan.ok();
+      });
+
+      gw.connect(host, function () {
+        setTimeout(function () {
+          mockHub.send([
+            '0250284283000004cf1204',
+            '0250284283000001cf1204',
+            '0250284283000003cf1204'
           ], function () {
             plan.ok();
           });
