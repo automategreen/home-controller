@@ -2830,6 +2830,7 @@ describe('Insteon Gateway', function() {
         }, 10);
       });
     });
+
     it('set options', function (done) {
       var gw = new Insteon();
       var motion = gw.motion('283e9e');
@@ -3569,7 +3570,7 @@ describe('Insteon Gateway', function() {
     });    
   }); // IO commands
 
-  describe('Garage Door opener', function() {
+  describe.only('Garage Door opener', function() {
     it('gets status', function (done) {
       var gw = new Insteon();
 
@@ -3594,31 +3595,75 @@ describe('Insteon Gateway', function() {
 
     it('tests lockout period', function(done) {
       var gw = new Insteon();
-      var plan = new Plan(2, done);
+      var plan = new Plan(3, done);
 
       mockData = [
         {
           '0262aabbcc0f1901': ['0262aabbcc0f190106', '0250aabbcc1122332b0201']
         },
         {
-
-          '0262aabbcc0f11ff': ['0262aabbcc0f11ff06', '0250aabbcc239acf2b11ff']
+          '0262aabbcc0f11ff': ['0262aabbcc0f11ff06', '0250aabbcc1122332b11ff']
+        },
+        {
+          '0262aabbcc0f1901': ['0262aabbcc0f190106', '0250aabbcc1122332b0200']
+        },
+        {
+          '0262aabbcc0f11ff': ['0262aabbcc0f11ff06', '0250aabbcc1122332b11ff']
         }
       ];
 
       gw.connect(host, function () {
         var g = gw.garage('aabbcc');
+        
+        // for this test's purposes reduce lockout time
+        g.LOCKOUT_TIME = 2000;
+        
         g.open()
-          .then(function(status) {
+          .then(function (status) {
             should.exist(status);
             status.should.equal(true);
             plan.ok();
+
+            setTimeout(function () {
+              g.close()
+                .then(function (status) {
+                  should.exist(status);
+                  status.should.equal(true);
+                  plan.ok();
+                });
+            }, 2500);
           });
-        g.close()
+
+        g.open()
           .then(function(status) {
             should.exist(status);
             status.should.equal(false);
             plan.ok();
+          });
+      });
+    });
+
+    it('tests wrong state/action combination', function(done) {
+      var gw = new Insteon();
+      var plan = new Plan(3, done);
+
+      mockData = [
+        {
+          '0262aabbcc0f1901': ['0262aabbcc0f190106', '0250aabbcc1122332b0201']
+        },
+        {
+          '0262aabbcc0f11ff': ['0262aabbcc0f11ff06', '0250aabbcc1122332b11ff']
+        }
+      ];
+
+      gw.connect(host, function () {
+        var g = gw.garage('aabbcc');
+        
+        g.close()
+          .then(function(status) {
+            should.exist(status);
+            status.should.equal(false);
+            done();
           });
       });
     });
