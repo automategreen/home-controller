@@ -2998,7 +2998,7 @@ describe('Insteon Gateway', function () {
     });
   }); // Motion Events
 
-  describe.only('Door Events', function () {
+  describe('Door Events', function () {
     it('emits opened event', function (done) {
       var plan = new Plan(3, done);
       var gw = new Insteon();
