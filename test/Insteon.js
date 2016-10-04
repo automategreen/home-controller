@@ -3414,6 +3414,7 @@ describe('Insteon Gateway', function () {
         }, 10);
       });
     });
+
     it('emits heartbeat event - wet', function (done) {
       var plan = new Plan(4, done);
       var gw = new Insteon();
@@ -3447,6 +3448,31 @@ describe('Insteon Gateway', function () {
         }, 10);
       });
     });
+    
+    [
+      {'raw': '02502d2dd9000004cf1204', 'group': 4},
+      {'raw': '02502d2dd9000008cf1204', 'group': 8}
+    ].forEach(function(data) {
+      it('handles invalid command for group '+data.group, function (done) {
+        var plan = new Plan(2, done);
+        var gw = new Insteon();
+        var leak = gw.leak('2d2dd9');
+
+        leak.on('command', function (group, cmd1) {
+          group.should.equal(data.group);
+          cmd1.should.equal('12');
+          plan.ok();
+        });
+
+        gw.connect(host, function () {
+          setTimeout(function () {
+            mockHub.send(data.raw, function () {
+              plan.ok();
+            });
+          }, 10);
+        });
+      });
+    });
   }); // Leak Events
 
   describe('Meter Commands', function () {
@@ -3474,6 +3500,7 @@ describe('Insteon Gateway', function () {
           .catch(done);
       });
     });
+    
     it('get status and reset', function (done) {
       var gw = new Insteon();
       var meter = gw.meter('1987b7');
