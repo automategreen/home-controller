@@ -472,24 +472,33 @@ describe('Insteon Gateway', function () {
 
     it('error getting the on level', function (done) {
       var gw = new Insteon();
+      var light = gw.light('999999');
 
       mockData = {
-        '02629999991f2e0001000000000000000000000000d1':
-        [
-          '02629999991f2e0001000000000000000000000000d106',
-          '0250999999ffffff2f2e00',
-          '0251999999ffffff112e000101000020201cfe1f0000000000'
-        ]
+        '02629999991f2e0001000000000000000000000000d1': '02629999991f2e0001000000000000000000000000d115'
       };
 
+      gw.connect(host, function () {
+        light.onLevel().then(function (level) {
+          should.not.exist(level);
+          done();
+        });
+      });
+    });
+
+    it('error setting the on level', function (done) {
+      var gw = new Insteon();
+      var light = gw.light('999999');
+
+      mockData = {
+        '02629999991f2e0001067f000000000000000000004c': '02629999991f2e0001067f000000000000000000004c15'
+      };
 
       gw.connect(host, function () {
-        gw.onLevel('999999', function (err, level) {
+        light.onLevel(50, function (err, level) {
           should.not.exist(err);
-          should.exist(level);
-          level.should.eql(100);
+          should.not.exist(level);
           done();
-
         });
       });
     });
@@ -942,6 +951,30 @@ describe('Insteon Gateway', function () {
       });
     });
 
+    it('emits heartbeat event', function (done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+      var light = gw.light('19d41c');
+
+      light.on('command', function (group, cmd1) {
+        group.should.equal(1);
+        cmd1.should.equal('04');
+        plan.ok();
+      });
+
+      light.on('heartbeat', function (level) {
+        level.should.equal(100);
+        plan.ok();
+      });
+
+      gw.connect(host, function () {
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([ '025019d41c000001cf04ff' ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
 
     it('emits turnOn event from command ACK', function (done) {
       var plan = new Plan(2, done);
@@ -971,7 +1004,6 @@ describe('Insteon Gateway', function () {
           });
       });
     });
-
 
     it('emits turnOn event from command All-Link ACK', function (done) {
       var plan = new Plan(3, done);
@@ -1009,7 +1041,6 @@ describe('Insteon Gateway', function () {
       });
     });
 
-
     it('emits turnOnFast event from command ACK', function (done) {
       var plan = new Plan(3, done);
       var gw = new Insteon();
@@ -1038,7 +1069,6 @@ describe('Insteon Gateway', function () {
       });
     });
 
-
     it('emits turnOff event from command ACK', function (done) {
       var plan = new Plan(2, done);
       var gw = new Insteon();
@@ -1066,6 +1096,53 @@ describe('Insteon Gateway', function () {
           });
       });
     });
+
+    it.only('emits turnOn at ramp level event from command ACK', function (done) {
+      var plan = new Plan(3, done);
+      var gw = new Insteon();
+      var light = gw.light('999999');
+
+      light.on('command', function (group, cmd1) {
+        should.not.exist(group);
+        cmd1.should.equal('2e');
+        plan.ok();
+      });
+
+      light.on('turnOn', function (group, level) {
+        should.not.exist(group);
+        level.should.equal(50);
+        plan.ok();
+      });
+
+      gw.connect(host, function () {
+        setTimeout(function () {
+          mockHub.send([ '0250999999ffffff2f2e00' ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+
+    it('emits invalid command', function (done) {
+      var plan = new Plan(2, done);
+      var gw = new Insteon();
+      var light = gw.light('19d41c');
+
+      light.on('command', function (group, cmd1) {
+        group.should.equal(1);
+        cmd1.should.equal('ff');
+        plan.ok();
+      });
+
+      gw.connect(host, function () {
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([ '025019d41c000001cfffff' ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+
   });
 
 
