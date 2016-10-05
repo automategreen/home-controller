@@ -27,7 +27,7 @@ Plan.prototype.ok = function () {
 };
 
 
-var mockData = null;
+var mockData = {};
 
 var host = '127.0.0.1';
 var port = 9761;
@@ -1097,7 +1097,7 @@ describe('Insteon Gateway', function () {
       });
     });
 
-    it.only('emits turnOn at ramp level event from command ACK', function (done) {
+    it('emits turnOn at ramp level event from command ACK', function (done) {
       var plan = new Plan(3, done);
       var gw = new Insteon();
       var light = gw.light('999999');
@@ -1110,13 +1110,13 @@ describe('Insteon Gateway', function () {
 
       light.on('turnOn', function (group, level) {
         should.not.exist(group);
-        level.should.equal(50);
+        level.should.equal(40);
         plan.ok();
       });
 
       gw.connect(host, function () {
         setTimeout(function () {
-          mockHub.send([ '0250999999ffffff2f2e00' ], function () {
+          mockHub.send([ '0250999999ffffff2f2e6f' ], function () {
             plan.ok();
           });
         }, 10);
@@ -1143,7 +1143,67 @@ describe('Insteon Gateway', function () {
       });
     });
 
-  });
+    it('does not emit event from command ACK', function (done) {
+      var plan = new Plan(2, done);
+      var gw = new Insteon();
+      var light = gw.light('999999');
+      light.emitOnAck = false;
+
+      light.on('command', function () {
+        throw new Error('This event should have been suppressed.');
+      });
+
+      light.on('turnOn', function () {
+        throw new Error('This event should have been suppressed.');
+      });
+
+      setTimeout(function() {
+        plan.ok();
+      }, 200);
+
+      gw.connect(host, function () {
+        setTimeout(function () {
+          mockHub.send([ '0250999999ffffff2f11ff' ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+
+    it('cancels pending', function (done) {
+      var gw = new Insteon();
+
+      gw.connect(host, function () {
+        var light = gw.light('999999');
+        var plan = new Plan(3, done);
+
+        light.turnOn().then(function () {
+          plan.ok();
+        });
+
+        light.turnOff().then(function () {
+          throw new Error('This command should have been canceled.');
+        }).fail(function (err) {
+          should.exist(err);
+          err.message.should.equal('Canceled');
+          plan.ok();
+
+          setTimeout(function () {
+            mockHub.send([
+              '02629999990f11ff06',
+              '0250999999ffffff2f11ff'
+            ], function () {
+              plan.ok();
+            });
+          }, 10);
+        });
+
+        setTimeout(function () {
+          light.cancelPending();
+        }, 100);
+      });
+    });
+  }); // Light Commands
 
 
   it('get the device info', function (done) {
