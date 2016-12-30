@@ -1,6 +1,6 @@
 home-controller
 ===============
-[![Build Status](https://travis-ci.org/automategreen/home-controller.svg?branch=master)](https://travis-ci.org/automategreen/home-controller) [![Coverage Status](https://coveralls.io/repos/github/automategreen/home-controller/badge.svg?branch=master)](https://coveralls.io/github/automategreen/home-controller?branch=feature-add-coveralls-io) [![dependencies Status](https://david-dm.org/automategreen/home-controller/status.svg)](https://david-dm.org/automategreen/home-controller) [![optionalDependencies Status](https://david-dm.org/automategreen/home-controller/optional-status.svg)](https://david-dm.org/automategreen/home-controller?type=optional) [![devDependencies Status](https://david-dm.org/automategreen/home-controller/dev-status.svg)](https://david-dm.org/automategreen/home-controller?type=dev)
+[![Build Status](https://travis-ci.org/automategreen/home-controller.svg?branch=master)](https://travis-ci.org/automategreen/home-controller) [![Coverage Status](https://coveralls.io/repos/github/automategreen/home-controller/badge.svg?branch=master)](https://coveralls.io/github/automategreen/home-controller?branch=master) [![dependencies Status](https://david-dm.org/automategreen/home-controller/status.svg)](https://david-dm.org/automategreen/home-controller) [![optionalDependencies Status](https://david-dm.org/automategreen/home-controller/optional-status.svg)](https://david-dm.org/automategreen/home-controller?type=optional) [![devDependencies Status](https://david-dm.org/automategreen/home-controller/dev-status.svg)](https://david-dm.org/automategreen/home-controller?type=dev)
 
 a node package to control Insteon home automation devices
 
@@ -42,7 +42,8 @@ Table of Contents
   + [Leak Sensor Functions](#leak-sensor-functions)
   + [Leak Sensor Events](#leak-sensor-events)
   + [Meter Functions](#meter-functions)
-  + [IO Sensor and Actuator Functions](#io-sensor-and-actuator-functions)
+  + [IO Linc Functions](#io-linc-functions)
+  + [EZ IO Sensor and Actuator](#ez-io-sensor-and-actuator-functions)
   + [Core Functions](#core-functions)
 - [Testing](#testing)
 - [References](#references)
@@ -1116,19 +1117,68 @@ Resets the energy accumulation
 Combines the status and reset commands
 
 
-### IO Sensor and Actuator Functions
+### IO Linc Functions
+
+Functions to control an IO Linc.
+
+**Note:** The meaning of "ON" and "OFF" varies based on the IO Linc configurations. See Insteon documentation for details.
+
+#### insteon.ioLinc(id)
+
+Creates a IO Linc object with the Insteon id
+
+`id` is the id (6 digit hex String) of the IO Linc.
+
+#### ioLinc.relayOn(id)
+
+Send ON command to IO Linc
+
+`id` is the id (6 digit hex String) of the IO Linc.
+
+#### ioLinc.relayOff(id)
+
+Send OFF command to IO Linc
+
+`id` is the id (6 digit hex String) of the IO Linc.
+
+#### ioLinc.status([callback])
+
+Get the status of the IO Linc
+
+The returned status object is described below:
+
+```js
+{
+  relay: String, // either "on" or "off"
+  sensor: String // either "on" or "off"
+}
+```
+
+### IO Linc Events
+
+#### Event: 'relayOn'
+
+Event emitted when the relay is in the "ON" state.  
+
+#### Event: 'relayOff'
+
+Event emitted when the relay is in the "OFF" state.  
+
+#### Event: 'sensorOn'
+
+Event emitted when the sensor is in the "ON" state.  
+
+#### Event: 'sensorOff'
+
+Event emitted when the sensor is in the "OFF" state.
+
+### EZ IO Sensor and Actuator Functions
 
 #### insteon.io(id)
 
 Creates an IO object with the Insteon id
 
 `id` is the id (6 digit hex String) of the IO sensor/actuator.
-
-### IO Sensor Events
-
-Not implemented yet.
-
-### IO Functions
 
 #### io.on(port)
 
