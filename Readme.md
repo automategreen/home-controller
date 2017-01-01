@@ -44,6 +44,7 @@ Table of Contents
   + [Meter Functions](#meter-functions)
   + [IO Linc Functions](#io-linc-functions)
   + [EZ IO Sensor and Actuator](#ez-io-sensor-and-actuator-functions)
+  + [X10 Functions](#x10-functions)
   + [Core Functions](#core-functions)
 - [Testing](#testing)
 - [References](#references)
@@ -1192,6 +1193,23 @@ Turns off the actuator port.  For a relay device like the EZIO4O, this command r
 
 Sets all actuator ports based on the data number. Each port is represented by one bit in the data.  E.G. the data value `13` will clear all ports except ports 0, 1, and 4, which will be set.
 
+
+### X10 Functions
+
+#### insteon.x10(house, unit)
+
+Creates an X10 object with the house and unit code
+
+`house` is the house code ('A' - 'P')
+`unit` is the unit/device code (1-16)
+
+#### x10.turnOn()
+
+Turns on the device.
+
+#### x10.turnOff()
+
+Turns off the device.
 
 ### Core Functions
 

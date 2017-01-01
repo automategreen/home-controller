@@ -3677,6 +3677,44 @@ describe('Insteon Gateway', function () {
   }); // IO Linc Events
 
 
+  describe('X10 Functions', function () {
+
+
+    it('turn on', function (done) {
+      var gw = new Insteon();
+
+      mockData = [{
+        '02636600': '0263660006'
+      }, {
+        '02636280': '0263628006'
+      }];
+
+      gw.connect(host, function () {
+        var x10 = gw.x10('A', 1);
+        x10.turnOn(done);
+
+      });
+    });
+
+    it('turn off', function (done) {
+      var gw = new Insteon();
+
+      mockData = [{
+        '0263cc00': '0263cc0006'
+      }, {
+        '0263c380': '0263c38006'
+      }];
+
+      gw.connect(host, function () {
+        var x10 = gw.x10('p', 16);
+        x10.turnOff(done);
+
+      });
+
+    });
+
+  }); // X10 Functions
+
   describe('IO Commands', function () {
     it('turns on', function (done) {
       var gw = new Insteon();
