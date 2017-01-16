@@ -11,6 +11,7 @@ console.trace = function () { };
 function Plan(count, done) {
   this.done = done;
   this.count = count;
+  this.ok = this.ok.bind(this);
 }
 
 Plan.prototype.ok = function () {
@@ -1101,7 +1102,7 @@ describe('Insteon Gateway', function () {
     var gw = new Insteon();
 
     mockData = {
-      '02629999990f0f00': '02629999990F0F00060250999999FFFFFF2F0F00'
+      '02629999990f0f00': '0262999999000F00060250999999FFFFFF2F0F00'
     };
 
     gw.connect(host, function () {
@@ -3963,6 +3964,32 @@ describe('Insteon Gateway', function () {
     });
   });
 
+
+  // Testing weird conditions
+  describe('Parser consistency', function () {
+    it('handles incoming data not packetized well', function (done) {
+      var gw = new Insteon();
+      var light = gw.light('19d41c');
+      var plan = new Plan(2, done);
+
+      light.on('turnOn', function (group) {
+        this.id.should.equal('19D41C');
+        should.exist(this.turnOff);
+        group.should.equal(1);
+        plan.ok();
+      });
+
+      gw.connect(host, function () {
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '025019d41c000001cb1100' +
+            '025019d41c1e', 'b552451101' +
+            '025019d41c110101cf0600'
+          ], function () { plan.ok(); });
+        }, 10);
+      });
+    });
+  }); // End parser consistency tests
 
   describe('Util tests', function () {
     it('levelToHexHalfByte', function (done) {
