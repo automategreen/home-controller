@@ -3989,6 +3989,72 @@ describe('Insteon Gateway', function () {
         }, 10);
       });
     });
+
+    it('handles a randomly arriving extended command (0251)', function(done) {
+      var gw = new Insteon();
+      var plan = new Plan(2, done);
+      gw.on('command', function() {
+        plan.ok();
+      });
+      gw.connect(host, function () {
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0251112233ffffff112e0001010000202018fc7f0000000000'
+          ], function () { plan.ok(); });
+        }, 10);
+      });
+    });
+
+    it('handles a randomly arriving link completed command (0253)', function(done) {
+      var gw = new Insteon();
+      var plan = new Plan(2, done);
+      gw.on('command', function() {
+        plan.ok();
+      });
+      gw.connect(host, function () {
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0253010111223301204100'
+          ], function () { plan.ok(); });
+        }, 10);
+      });
+    });
+
+    function skippedCheck(buffer, done) {
+      var gw = new Insteon();
+      gw.connect(host, function () {
+        gw.buffer = buffer;
+        var result = gw._checkStatus();
+        result.should.equal(3); // MESSAGE_SKIPPED = 3
+        gw.buffer.should.equal('');
+        done();
+      });
+    }
+
+    it('skips a randomly arriving X10 Response (0263)', function(done) {
+      skippedCheck('0263000000', done);
+    });
+
+    it('skips a randomly arriving All-Link start response (0264)', function(done) {
+      skippedCheck('0264000000', done);
+    });
+
+    it('skips a randomly arriving All-Link cancel response (0265)', function(done) {
+      skippedCheck('026506', done);
+    });
+
+    it('skips a randomly arriving All-Link records response (0269)', function(done) {
+      skippedCheck('026906', done);
+    });
+
+    it('skips a randomly arriving All-Link records Next response (026A)', function(done) {
+      skippedCheck('026A06', done);
+    });
+
+    it('skips a randomly arriving manage all-link response (026F)', function(done) {
+      skippedCheck('026f40c23226b1cc7f190006', done);
+    });
+
   }); // End parser consistency tests
 
   describe('Util tests', function () {
