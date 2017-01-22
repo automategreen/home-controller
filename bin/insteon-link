@@ -74,13 +74,12 @@ gw.on('connect', function () {
       gw.close();
     });
   } else if(program.unlink) {
-    if(devices.length < 2) {
-      console.log('Please supply two ids');
-      return gw.close();
+    if(devices.length === 0) {
+      devices = null;
     }
     gw.unlink(devices, program, function (err, links) {
       if (err) {
-        console.log('unlinking failed: ' + err);
+        console.log('linking failed: ' + err);
         return gw.close();
       }
       console.log('unlinking done: \n\n' + util.inspect(links));
