@@ -2069,6 +2069,27 @@ describe('Insteon Gateway', function () {
       });
     });
 
+    it('set mode', function (done) {
+      var gw = new Insteon();
+
+      mockData = [
+        {
+          '0262aabbcc1f6b040000000000000000000000000091':
+          [
+            '0262aabbcc1f6b04000000000000000000000000009106',
+            '0250aabbcc9999992b6b04'
+          ]
+        }];
+
+      gw.connect(host, function () {
+        gw.thermostat('aabbcc').mode('heat', function (err, mode) {
+          should.not.exist(err);
+          mode.should.eql('heat');
+          done();
+        });
+      });
+    });
+
     it('turn temp up', function (done) {
       var plan = new Plan(3, done);
       var gw = new Insteon();
