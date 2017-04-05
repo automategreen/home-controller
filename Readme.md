@@ -4,20 +4,16 @@ home-controller
 
 a node package to control Insteon home automation devices
 
-**WARNING** The new Insteon Hub (2245) does NOT have the required PLM over TCP interface.
-***
-
 Overview
 --------
 
-home-controller is a node package to control Insteon home automation devices.  The API uses the direct PLM connection over TCP, Serial connection or the cloud.  To control the Insteon devices on of the following is needed
+home-controller is a node package to control Insteon home automation devices.  The API uses the direct PLM connection over TCP, Serial connection or the cloud.  To control the Insteon devices one of the following is needed:
 
   - [Automate Green WiFi Hub i](https://github.com/automategreen/hub-i)
   - [Automate Green PLM WiFi Adapter](http://blog.automategreen.com/post/plm-wifi-adapter)  - [Insteon Hub 2242](http://www.insteon.com/2242-222-insteon-hub.html)
   - [Insteon SmartLinc](http://www.insteon.com/2412n-smartlinc-central-controller.html)
   - [Insteon PowerLinc Modem](http://www.insteon.com/2412s-powerlinc-modem-serial.html) is required.
-
-**The new Insteon Hub 2245 is not supported.  Insteon has removed the PLM over TCP interface.**
+  - [Insteon Hub 2245](http://www.smarthome.com/insteon-2245-222-hub.html) is only supported over the HTTP client interface, which has caveats (see [httpClient](#http-client))
 
 Table of Contents
 -----------------
@@ -100,7 +96,17 @@ hub.connect(process.env.HUB_IP, function () {
 API
 ---
 
-**0.6.0 Update Hightlights:**
+**0.7.0 Update Highlights:**
+
+  - Major bugfixes and refactor of parsing code for event data
+  - Support for the Insteon 2245 hub
+  - Support for the following device types:
+    * X10 
+    * IO Linc
+    * GarageDoor
+  - Drastic increase in test coverage
+
+**0.6.0 Update Highlights:**
 
   - Add support for IO
   - Add support for FanLinc (light)
@@ -178,6 +184,43 @@ The 'connectListener' parameter, if present, will be invoked once the connection
 
 **Warning** serialport is not supported in all environments. Verify serialport installed successfully before using this functionality.
 
+#### insteon.httpClient({host: 'host' port: 123, ...}, [connectListener])
+<a name="http-client"></a>
+
+Connect to a newer Hub (such as model 2245) via the HTTP interface.
+The `config` must be an object with at minimum `host` and `port`. Full set of options:
+
+ * `host` Required, the IP address or hostname of the hub on your local network 
+ * `port` Required, the port of the hub's interface (printed on the label on the bottom)
+ * `user` The username for the endpoint (usually printed on the bottom label)
+ * `password` Password for the endpoint (also on bottom label)
+ * `maxDelay` Advanced Usage: the maximum amount of time (in milliseconds) between fetches. If not provided, this defaults to `5000`.
+
+The optional `connectListener` parameter can be passed a function which will 
+be called after the client has made its first request, and is provided mainly 
+for symmetry with all the other types of client connections.
+
+##### HTTP Limitations 
+Due to limitations in the Insteon Hub's single threaded design, when using the HTTP client, it will "lock out" any other local network apps (such as the Insteon Hub iOS app or other internal home-control apps) from accessing the hub for programming, setup, etc. To resume using those apps, you must first close your `home-controller` instance using either `insteon.close()` or closing out your application.
+
+Similarly, you will probably find that if you were using one of these iOS apps, your application using home-controller will refuse to start until you quit the app.
+
+
+##### HTTP Client Example
+```js
+var insteon = new Insteon();
+var config = {
+  host: '192.168.10.10',
+  port: 2525,
+  user: 'hubuser',
+  password: 'hubpassword'
+};
+insteon.httpClient(config, function(){
+  console.log('Connected!');
+});
+```
+
+
 #### insteon.close()
 
 Closes the connection to the gateway.  The event `'close'` will be emitted once the connection is closed.
@@ -209,7 +252,7 @@ Emitted when an error occurs. The 'close' event will be called directly followin
 
 #### insteon.emitOnAck
 
-By default, events will be emitted for both device triggered (button presses) and hub triggered actions.  If you don't want that behavior, disable it by setting `emitOnAct` to false.
+By default, events will be emitted for both device triggered (button presses) and hub triggered actions.  If you don't want that behavior, disable it by setting `emitOnAck` to false.
 
 
 **Example:**
