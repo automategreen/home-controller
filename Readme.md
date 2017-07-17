@@ -976,6 +976,7 @@ Event emitted when humidity goes below the low humidity set point
 
 Event emitted when humidity returns to normal levels (i.e. Humidity is between high and low set points.)
 
+**Important note:** in order to get the above events working, Thermostat must be properly linked to the PLM/Hub: as a controller on groups 1 through 5. For example, 'heating' event message will be sent by Thermostat with group 2. Therefore if you are not properly linked, PLM/Hub will discard the message.
 
 ### Motion Sensor Functions
 
