@@ -1006,6 +1006,71 @@ describe('Insteon Gateway', function () {
       });
     });
 
+    it('does not emits turnOn with .info', function (done) {
+      var gw = new Insteon();
+      var light = gw.light('112233');
+
+      light.on('turnOn', function () {
+        done(new Error('no turnOn event'));
+      });
+
+      mockData = {
+        '02621122331f2e0001000000000000000000000000d1':
+        [
+          '02621122331f2e0001000000000000000000000000d106',
+          '0250112233ffffff2f2e00',
+          '0251112233ffffff112e0001010000202018fc7f0000000000'
+        ]
+      };
+
+      gw.connect(host, function () {
+        light.info().then(function (info) {
+          should.exist(info);
+          done();
+        });
+      });
+    });
+
+
+
+    it('does not emits turnOff when getting links', function (done) {
+      var gw = new Insteon();
+      var light = gw.light('999999');
+
+      light.on('turnOff', function () {
+        done(new Error('no turnOff event'));
+      });
+
+      mockData = [{
+        '02629999991f2f0000000fff010000000000000000c2':
+        ['02629999991f2f0000000fff010000000000000000c206',
+          '0250999999ffffff2f2f00',
+          '0251999999ffffff112f0000010fff00aa01ffffff001c01d5']
+
+      },
+        {
+          '02629999991f2f0000000ff7010000000000000000ca':
+          ['02629999991f2f0000000ff7010000000000000000ca06',
+            '0250999999ffffff2f2f00',
+            '0251999999ffffff112f0000010ff7000000000000000000ca']
+        }];
+
+      gw.connect(host, function () {
+        gw.links('999999', function (err, links) {
+          should.not.exist(err);
+          should.exist(links);
+          links.length.should.eql(1);
+          links[0].group.should.eql(1);
+          links[0].id.should.eql('ffffff');
+          links[0].controller.should.be.false;
+          links[0].isInUse.should.be.true;
+          links[0].isLast.should.be.false;
+          links[0].at.should.eql(4095);
+          done();
+        });
+      });
+    });
+
     it('emits turnOn event from command All-Link ACK', function (done) {
       var plan = new Plan(3, done);
       var gw = new Insteon();
@@ -2593,7 +2658,7 @@ describe('Insteon Gateway', function () {
             status.ack.should.be.true;
             done();
           });
-        
+
         setTimeout(function() {
           mockHub.send(['02621122331f2e020204103b3a00000000000000d4c606']);
         }, 10);
@@ -4020,7 +4085,7 @@ describe('Insteon Gateway', function () {
         }, 10);
       });
     });
-    
+
     [
       {'raw': '02502d2dd9000004cf1204', 'group': 4},
       {'raw': '02502d2dd9000008cf1204', 'group': 8}
@@ -4072,7 +4137,7 @@ describe('Insteon Gateway', function () {
           .catch(done);
       });
     });
-    
+
     it('get status and reset', function (done) {
       var gw = new Insteon();
       var meter = gw.meter('1987b7');
