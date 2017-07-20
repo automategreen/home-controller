@@ -96,12 +96,16 @@ hub.connect(process.env.HUB_IP, function () {
 API
 ---
 
+**0.8.0 Update Highlights:** *Not released - use master branch*
+  - **BREAKING CHANGES**
+    * By default event are no longer emitted for commands.  The previous behavior can be restored by setting `insteon.emitSelfAck = true`.
+
 **0.7.0 Update Highlights:**
 
   - Major bugfixes and refactor of parsing code for event data
   - Support for the Insteon 2245 hub
   - Support for the following device types:
-    * X10 
+    * X10
     * IO Linc
     * GarageDoor
   - Drastic increase in test coverage
@@ -190,17 +194,17 @@ The 'connectListener' parameter, if present, will be invoked once the connection
 Connect to a newer Hub (such as model 2245) via the HTTP interface.
 The `config` must be an object with at minimum `host` and `port`. Full set of options:
 
- * `host` Required, the IP address or hostname of the hub on your local network 
+ * `host` Required, the IP address or hostname of the hub on your local network
  * `port` Required, the port of the hub's interface (printed on the label on the bottom)
  * `user` The username for the endpoint (usually printed on the bottom label)
  * `password` Password for the endpoint (also on bottom label)
  * `maxDelay` Advanced Usage: the maximum amount of time (in milliseconds) between fetches. If not provided, this defaults to `5000`.
 
-The optional `connectListener` parameter can be passed a function which will 
-be called after the client has made its first request, and is provided mainly 
+The optional `connectListener` parameter can be passed a function which will
+be called after the client has made its first request, and is provided mainly
 for symmetry with all the other types of client connections.
 
-##### HTTP Limitations 
+##### HTTP Limitations
 Due to limitations in the Insteon Hub's single threaded design, when using the HTTP client, it will "lock out" any other local network apps (such as the Insteon Hub iOS app or other internal home-control apps) from accessing the hub for programming, setup, etc. To resume using those apps, you must first close your `home-controller` instance using either `insteon.close()` or closing out your application.
 
 Similarly, you will probably find that if you were using one of these iOS apps, your application using home-controller will refuse to start until you quit the app.
@@ -1004,7 +1008,7 @@ The returned status object is described below:
 {
   ledLevel: Number, // 0 to 100
   clearTimer: Number, // seconds in 30 second increments
-  duskThreshold: Number, // 0 to 100 - light level at to trigger dawn/dusk 
+  duskThreshold: Number, // 0 to 100 - light level at to trigger dawn/dusk
   options: {
     occupancyMode: Boolean, // 'motion' event every ~4 sec
     ledOn: Boolean, // turn on or off the LED when motion is detected

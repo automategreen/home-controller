@@ -977,9 +977,34 @@ describe('Insteon Gateway', function () {
       });
     });
 
+    it('does not emit turnOn event from command ACK', function (done) {
+      var gw = new Insteon();
+      var light = gw.light('999999');
+
+      light.on('command', function () {
+        done(new Error('command should not be emitted'));
+      });
+
+      light.on('turnOn', function () {
+        done(new Error('command should not be emitted'));
+      });
+
+      mockData = {
+        '02629999990f117f': '02629999990f117f060250999999ffffff2f117f'
+      };
+
+      gw.connect(host, function () {
+        light.turnOn(50).then(function () {
+          done();
+        })
+        .catch(done);
+      });
+    });
+
     it('emits turnOn event from command ACK', function (done) {
       var plan = new Plan(2, done);
       var gw = new Insteon();
+      gw.emitSelfAck = true;
       var light = gw.light('999999');
 
       light.on('command', function (group, cmd1) {
@@ -1110,6 +1135,7 @@ describe('Insteon Gateway', function () {
     it('emits turnOnFast event from command ACK', function (done) {
       var plan = new Plan(3, done);
       var gw = new Insteon();
+      gw.emitSelfAck = true;
       var light = gw.light('999999');
 
       light.on('command', function (group, cmd1) {
@@ -1138,6 +1164,7 @@ describe('Insteon Gateway', function () {
     it('emits turnOff event from command ACK', function (done) {
       var plan = new Plan(2, done);
       var gw = new Insteon();
+      gw.emitSelfAck = true;
       var light = gw.light('999999');
 
       light.on('command', function (group, cmd1) {
@@ -1166,6 +1193,7 @@ describe('Insteon Gateway', function () {
     it('emits turnOn at ramp level event from command ACK', function (done) {
       var plan = new Plan(3, done);
       var gw = new Insteon();
+      gw.emitSelfAck = true;
       var light = gw.light('999999');
 
       light.on('command', function (group, cmd1) {
@@ -4175,6 +4203,7 @@ describe('Insteon Gateway', function () {
 
     it('relay on', function (done) {
       var gw = new Insteon();
+      gw.emitSelfAck = true;
 
       mockData = [{
         '02629999990f11ff': '02629999990f11ff060250999999ffffff2f11ff'
@@ -4191,6 +4220,7 @@ describe('Insteon Gateway', function () {
 
     it('relay off', function (done) {
       var gw = new Insteon();
+      gw.emitSelfAck = true;
 
       mockData = [{
         '02629999990f1300': '02629999990f1300060250999999ffffff2f1300'
