@@ -98,7 +98,7 @@ API
 
 **0.8.0 Update Highlights:** *Not released - use master branch*
   - **BREAKING CHANGES**
-    * By default event are no longer emitted for commands.  The previous behavior can be restored by setting `insteon.emitSelfAck = true`.
+    * By default, events are not emitted for commands you call.  You can restore the previous functionality by setting `insteon.emitSelfAck = true`.
 
 **0.7.0 Update Highlights:**
 
