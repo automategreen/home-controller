@@ -3072,6 +3072,90 @@ describe('Insteon Gateway', function () {
       });
     });
 
+    it('disables monitoring mode', function (done) {
+      this.slow(500);
+      var gw = new Insteon();
+
+      mockData = [
+        {
+          '0260': '0260ffffff03159b06'
+        },
+        {
+          '0262aaaaaa1f2f0000000fff010000000000000000c2':
+          [
+            '0262aaaaaa1f2f0000000fff010000000000000000c206',
+            '0250aaaaaaffffff2b2f00',
+            '0251aaaaaaffffff112f0000010fff0142efcccccc0100efb9'
+          ]
+        },
+        {
+          '0262aaaaaa1f2f0000000ff7010000000000000000ca':
+          [
+            '0262aaaaaa1f2f0000000ff7010000000000000000ca06',
+            '0250aaaaaaffffff2b2f00',
+            '0251aaaaaaffffff112f0000010ff701c2efffffff0000008c'
+          ]
+        },
+        {
+          '0262aaaaaa1f2f0000000fef010000000000000000d2':
+          [
+            '0262aaaaaa1f2f0000000fef010000000000000000d206',
+            '0250aaaaaaffffff2b2f00',
+            '0251aaaaaaffffff112f0000010fef01c2feffffff00000085'
+          ]
+        },
+        {
+          '0262aaaaaa1f2f0000000fe7010000000000000000da':
+          [
+            '0262aaaaaa1f2f0000000fe7010000000000000000da06',
+            '0250aaaaaaffffff2b2f00',
+            '0251aaaaaaffffff112f0000010fe701e201ffffff03159bb7'
+          ]
+        },
+        {
+          '0262aaaaaa1f2f0000000fdf010000000000000000e2':
+          [
+            '0262aaaaaa1f2f0000000fdf010000000000000000e206',
+            '0250aaaaaaffffff2b2f00',
+            '0251aaaaaaffffff112f0000010fdf01a201ffffff3c4b43e8'
+          ]
+        },
+        {
+          '0262aaaaaa1f2f0000000fd7010000000000000000ea':
+          [
+            '0262aaaaaa1f2f0000000fd7010000000000000000ea06',
+            '0250aaaaaaffffff2b2f00',
+            '0251aaaaaaffffff112f0000010fd7010000000000000000e9'
+          ]
+        },
+        {
+          '0269': '026915'
+        },
+        {
+          '026f8000efaaaaaa000000':
+          [
+            '026f8000efaaaaaa00000015'
+          ]
+        },
+        {
+          '0262aaaaaa1f2f0000020ff70842efffffff00000093':
+          [
+            '0262aaaaaa1f2f0000020ff70842efffffff0000009306',
+            '0250aaaaaa239acf2b2e00'
+          ]
+        }
+      ];
+
+      gw.connect(host, function () {
+        var thermostat = gw.thermostat('aaaaaa');
+
+        thermostat.monitor(false).then(function (status) {
+          (status === null).should.be.true;
+          done();
+        });
+      });
+    });
+
     it('enables monitoring mode #2', function (done) {
       this.slow(500);
       var gw = new Insteon();
