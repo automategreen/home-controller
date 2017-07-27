@@ -161,9 +161,33 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
   });
 
+  it('emits \'close\' event', function(done) {
+    var gw = new Insteon();
+
+    gw.on('close', done);
+    gw.connect(host, function () {
+      gw.close();
+    });
+  });
+
+  it.only('emits \'error\' event', function(done) {
+    var gw = new Insteon();
+
+    gw.on('error', function(err, info) {
+      should.exist(err);
+      err.message.should.equal('test');
+      done();
+    });
+    gw.connect(host, function () {
+      setTimeout(function() {
+        gw.socket.destroy(new Error("test"));
+      }, 100);
+    });
+  });
+
   describe('Light commands', function () {
 
-    it('gets light\' informaion', function (done) {
+    it('gets light\'s informaion', function (done) {
       var gw = new Insteon();
       var light = gw.light('112233');
       var plan = new Plan(3, done);
