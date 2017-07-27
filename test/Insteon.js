@@ -4953,6 +4953,7 @@ describe('Insteon Gateway (Serial Interface)', function () {
     });
   });
 
+  it('gets the gateway info', function (done) {
     mockData = {
       '0260': '0260ffffff03379c06'
     };
