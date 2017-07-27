@@ -38,7 +38,8 @@
     "grunt-mocha-test": "*",
     "istanbul": "*",
     "mocha": "*",
-    "should": "*"
+    "should": "*",
+    "virtual-serialport": "*"
   },
   "scripts": {
     "test": "grunt test"

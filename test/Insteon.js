@@ -81,6 +81,56 @@ mockHub.send = function (responses, next) {
   write(responses.shift());
 };
 
+var mockSerial = { port: null };
+mockSerial.attach = function (port) {
+  mockSerial.port = port;
+
+  mockSerial.port.on('dataToDevice', function(cmd) {
+    cmd = cmd.toString('hex');
+    if (!util.isArray(mockData)) {
+      mockData = [mockData];
+    }
+    var responses;
+    for (var i in mockData) {
+      var data = mockData[i];
+      if (data[cmd]) {
+        responses = data[cmd];
+        mockData.splice(i, 1);
+        break;
+      }
+    }
+
+    mockSerial.send(responses);
+  });
+};
+
+mockSerial.send = function (responses, next) {
+  if (!responses) {
+    if (next) {
+      next();
+    }
+    return;
+  }
+
+  if (typeof responses === 'string') {
+    responses = [responses];
+  }
+
+  function write(response) {
+    if (!response) {
+      if (next) {
+        next();
+      }
+      return;
+    }
+    mockSerial.port.writeToComputer(response);
+    setTimeout(function () {
+      write(responses.shift());
+    }, 10);
+  }
+  write(responses.shift());
+};
+
 
 describe('Insteon Gateway (IP Interface)', function () {
   this.timeout(5000);
@@ -4856,31 +4906,28 @@ describe('Insteon Gateway (IP Interface)', function () {
 });
 
 describe('Insteon Gateway (Serial Interface)', function () {
+  var gw = new Insteon();
+
   before(function (done) {
-    var SerialPort = require('serialport/test');
-    var MockBinding = SerialPort.Binding;
-    MockBinding.createPort('/dev/STEWARD', { echo: true, record: true });
-    done();
+    gw.serial('/dev/home-controller-mock', function () {
+      mockSerial.attach(gw.socket);
+      done();
+    });
   });
 
-  it.only('gets the gateway info', function (done) {
-    var gw = new Insteon();
-
+  it('gets the gateway info', function (done) {
     mockData = {
       '0260': '0260ffffff03379c06'
     };
 
-    /*gw.connect(host, function () {
-      gw.info(function (err, info) {
-        should.not.exist(err);
-        should.exist(info);
-        info.firmwareVersion.should.equal('9c');
-        info.id.should.equal('ffffff');
-        info.deviceCategory.id.should.equal(3);
-        info.deviceSubcategory.id.should.equal(55);
-        done();
-      });
-    });*/
+    gw.info().then(function (info) {
+      should.exist(info);
+      info.firmwareVersion.should.equal('9c');
+      info.id.should.equal('ffffff');
+      info.deviceCategory.id.should.equal(3);
+      info.deviceSubcategory.id.should.equal(55);
+      done();
+    });
   });
 
 });
