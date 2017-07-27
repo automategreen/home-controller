@@ -85,7 +85,7 @@ var mockSerial = { port: null };
 mockSerial.attach = function (port) {
   mockSerial.port = port;
 
-  mockSerial.port.on('dataToDevice', function(cmd) {
+  mockSerial.port.on('dataToDevice', function (cmd) {
     cmd = cmd.toString('hex');
     if (!util.isArray(mockData)) {
       mockData = [mockData];
@@ -161,7 +161,7 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
   });
 
-  it('emits \'close\' event', function(done) {
+  it('emits \'close\' event', function (done) {
     var gw = new Insteon();
 
     gw.on('close', done);
@@ -170,18 +170,30 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
   });
 
-  it('emits \'error\' event', function(done) {
+  it('emits \'error\' event', function (done) {
     var gw = new Insteon();
 
-    gw.on('error', function(err) {
+    gw.on('error', function (err) {
       should.exist(err);
       err.message.should.equal('test');
       done();
     });
     gw.connect(host, function () {
-      setTimeout(function() {
+      setTimeout(function () {
         gw.socket.destroy(new Error('test'));
       }, 100);
+    });
+  });
+
+  it('connects to specified/default port', function (done) {
+    var gw = new Insteon();
+
+    gw.connect(host, 9761, function () {
+
+      var gw2 = new Insteon();
+      gw2.connect(host, 0, function () {
+        done();
+      });
     });
   });
 
@@ -4933,13 +4945,14 @@ describe('Insteon Gateway (Serial Interface)', function () {
   var gw = new Insteon();
 
   before(function (done) {
+    gw.SerialPort = require('virtual-serialport');
+
     gw.serial('/dev/home-controller-mock', function () {
       mockSerial.attach(gw.socket);
       done();
     });
   });
 
-  it('gets the gateway info', function (done) {
     mockData = {
       '0260': '0260ffffff03379c06'
     };
