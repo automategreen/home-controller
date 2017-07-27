@@ -6,6 +6,7 @@ var net = require('net');
 var util = require('util');
 var utils = require('../lib/Insteon/utils.js');
 var assert = require('assert');
+var virtualSerialPort = require('virtual-serialport')
 
 console.trace = function () { };
 function Plan(count, done) {
@@ -4945,11 +4946,55 @@ describe('Insteon Gateway (Serial Interface)', function () {
   var gw = new Insteon();
 
   before(function (done) {
-    gw.SerialPort = require('virtual-serialport');
+    gw.SerialPort = virtualSerialPort;
 
     gw.serial('/dev/home-controller-mock', function () {
       mockSerial.attach(gw.socket);
       done();
+    });
+  });
+
+  it('tests serial connection', function (done) {
+    var plan = new Plan(3, done);
+
+    var gw2 = new Insteon();
+    gw2.SerialPort = virtualSerialPort;
+
+    gw2.serial('/dev/home-controller-mock', {}, function () {
+      plan.ok();
+    });
+
+    gw2.serial('/dev/home-controller-mock', { baudrate: 19200, databits: 8, parity: 'none', stopbits: 1 }, function () {
+      plan.ok();
+    });
+
+    var gw3 = new Insteon();
+    gw3.SerialPort = virtualSerialPort;
+    gw3.on('connect', function() {
+      plan.ok();
+    })
+    gw3.serial('/dev/home-controller-mock');
+  });
+
+  it.only('tests serial socker events', function (done) {
+    var plan = new Plan(2, done);
+
+    var gw2 = new Insteon();
+    gw2.SerialPort = virtualSerialPort;
+
+    /* TODO Add error event test
+    gw2.on('error', function(err) {
+      should.exist(err);
+      err.message.should.equal('test');
+      plan.ok();
+    });*/
+    gw2.on('close', function() {
+      plan.ok();
+    });
+
+    gw2.serial('/dev/home-controller-mock', {}, function () {
+      plan.ok();
+      gw2.socket.close();
     });
   });
 
