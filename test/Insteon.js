@@ -4976,7 +4976,7 @@ describe('Insteon Gateway (Serial Interface)', function () {
     gw3.serial('/dev/home-controller-mock');
   });
 
-  it.only('tests serial socker events', function (done) {
+  it('tests serial socker events', function (done) {
     var plan = new Plan(2, done);
 
     var gw2 = new Insteon();
