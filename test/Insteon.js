@@ -170,17 +170,17 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
   });
 
-  it.only('emits \'error\' event', function(done) {
+  it('emits \'error\' event', function(done) {
     var gw = new Insteon();
 
-    gw.on('error', function(err, info) {
+    gw.on('error', function(err) {
       should.exist(err);
       err.message.should.equal('test');
       done();
     });
     gw.connect(host, function () {
       setTimeout(function() {
-        gw.socket.destroy(new Error("test"));
+        gw.socket.destroy(new Error('test'));
       }, 100);
     });
   });
