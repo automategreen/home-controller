@@ -6,7 +6,7 @@ var net = require('net');
 var util = require('util');
 var utils = require('../lib/Insteon/utils.js');
 var assert = require('assert');
-var virtualSerialPort = require('virtual-serialport')
+var virtualSerialPort = require('virtual-serialport');
 
 console.trace = function () { };
 function Plan(count, done) {
@@ -27,7 +27,6 @@ Plan.prototype.ok = function () {
     this.done();
   }
 };
-
 
 var mockData = {};
 
@@ -132,7 +131,6 @@ mockSerial.send = function (responses, next) {
   write(responses.shift());
 };
 
-
 describe('Insteon Gateway (IP Interface)', function () {
   this.timeout(5000);
 
@@ -142,7 +140,70 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
   });
 
-  it('gets the gateway info', function (done) {
+  it('sends a simple command', function (done) {
+    var gw = new Insteon();
+
+    mockData = {
+      '0260': '0260ffffff03379c06'
+    };
+
+    gw.connect(host, function () {
+      gw.sendCommand('60', function () {
+        done();
+      });
+    });
+  });
+
+  it('catches a socket error', function (done) {
+    var gw = new Insteon();
+
+    mockData = {
+      '0260': '0260ffffff03379c06'
+    };
+
+    gw.connect(host, function () {
+      gw.write = 'error';
+      gw.sendCommand('60', function (err) {
+        should.exist(err);
+        done();
+      });
+    });
+  });
+
+  it('catches a socket error after timeout', function (done) {
+    this.slow(2500);
+
+    var gw = new Insteon();
+
+    mockData = {};
+
+    gw.connect(host, function () {
+      setTimeout(function () {
+        gw.write = 'error';
+      }, 200);
+
+      gw.sendCommand('60', 1000, function (err) {
+        should.exist(err);
+        done();
+      });
+    });
+  });
+
+  it('skips write for broken gateway', function (done) {
+    var gw = new Insteon();
+
+    mockData = {};
+
+    gw.connect(host, function () {
+      gw.write = null;
+      gw.sendCommand('60', 100, function (err) {
+        should.not.exist(err);
+        done();
+      });
+    });
+  });
+
+  it  ('gets the gateway info', function (done) {
     var gw = new Insteon();
 
     mockData = {
@@ -294,7 +355,6 @@ describe('Insteon Gateway (IP Interface)', function () {
       });
     });
 
-
     it('turns on a light to level at ramp (min)', function (done) {
       var gw = new Insteon();
 
@@ -306,7 +366,6 @@ describe('Insteon Gateway (IP Interface)', function () {
         gw.turnOn('999999', 50, 0, done);
       });
     });
-
 
     it('turns on a light to level at ramp (max)', function (done) {
       var gw = new Insteon();
@@ -331,7 +390,6 @@ describe('Insteon Gateway (IP Interface)', function () {
         gw.turnOn('999999', 50, 'slow', done);
       });
     });
-
 
     it('turns on a light to level at ramp (fast)', function (done) {
       var gw = new Insteon();
@@ -368,7 +426,6 @@ describe('Insteon Gateway (IP Interface)', function () {
         gw.turnOff('999999', 'slow', done);
       });
     });
-
 
     it('turns off a light at ramp (fast)', function (done) {
       var gw = new Insteon();
@@ -455,7 +512,6 @@ describe('Insteon Gateway (IP Interface)', function () {
         }).should.throw('level must be between 0 and 100');
       });
     });
-
 
     it('get the ramp rate', function (done) {
       var gw = new Insteon();
@@ -615,7 +671,6 @@ describe('Insteon Gateway (IP Interface)', function () {
           }
         ];
 
-
       gw.connect(host, function () {
         light.onLevel(function (err, level) {
           should.not.exist(err);
@@ -643,7 +698,6 @@ describe('Insteon Gateway (IP Interface)', function () {
           '0251999999ffffff112e000101000020201cfe1f0000000000'
         ]
       };
-
 
       gw.connect(host, function () {
         light.onLevel(100, function (err, level) {
@@ -685,7 +739,6 @@ describe('Insteon Gateway (IP Interface)', function () {
         ]
       };
 
-
       gw.connect(host, function () {
         gw.light('999999').fanOff(function (err) {
           should.not.exist(err);
@@ -693,7 +746,6 @@ describe('Insteon Gateway (IP Interface)', function () {
         });
       });
     });
-
 
     it('fan low', function (done) {
       var gw = new Insteon();
@@ -706,7 +758,6 @@ describe('Insteon Gateway (IP Interface)', function () {
         ]
       };
 
-
       gw.connect(host, function () {
         gw.light('999999').fanLow(function (err) {
           should.not.exist(err);
@@ -714,7 +765,6 @@ describe('Insteon Gateway (IP Interface)', function () {
         });
       });
     });
-
 
 
     it('fan medium', function (done) {
@@ -728,7 +778,6 @@ describe('Insteon Gateway (IP Interface)', function () {
         ]
       };
 
-
       gw.connect(host, function () {
         gw.light('999999').fanMedium(function (err) {
           should.not.exist(err);
@@ -736,7 +785,6 @@ describe('Insteon Gateway (IP Interface)', function () {
         });
       });
     });
-
 
 
     it('fan high', function (done) {
@@ -749,7 +797,6 @@ describe('Insteon Gateway (IP Interface)', function () {
           '0250999999ffffff2f11ff'
         ]
       };
-
 
       gw.connect(host, function () {
         gw.light('999999').fanHigh(function (err) {
@@ -777,7 +824,6 @@ describe('Insteon Gateway (IP Interface)', function () {
           '02624444440f1903': '02624444440f1903060250444444ffffff2f19ff'
         },
       ];
-
 
       gw.connect(host, function () {
         gw.light('111111').fan(function (err, speed) {
@@ -822,7 +868,6 @@ describe('Insteon Gateway (IP Interface)', function () {
           '02629999990f1903': '02629999990f190315'
         }
       ];
-
 
       gw.connect(host, function () {
         gw.light('999999').fan(function (err, speed) {
@@ -1144,7 +1189,6 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
 
 
-
     it('does not emits turnOff when getting links', function (done) {
       var gw = new Insteon();
       var light = gw.light('999999');
@@ -1386,7 +1430,6 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
   }); // Light Commands
 
-
   it('get the device info', function (done) {
     var gw = new Insteon();
 
@@ -1450,7 +1493,6 @@ describe('Insteon Gateway (IP Interface)', function () {
   });
 
 
-
   it('get the linking data of the gateway', function (done) {
     var gw = new Insteon();
 
@@ -1476,7 +1518,6 @@ describe('Insteon Gateway (IP Interface)', function () {
       });
     });
   });
-
 
 
   it('gets the linking data of a device', function (done) {
@@ -1512,7 +1553,6 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
   });
 
-
   it('links gw to an unknown device ', function (done) {
     var gw = new Insteon();
 
@@ -1538,7 +1578,6 @@ describe('Insteon Gateway (IP Interface)', function () {
       });
     });
   });
-
 
   it('unlinks gw from a device', function (done) {
     var gw = new Insteon();
@@ -1570,7 +1609,6 @@ describe('Insteon Gateway (IP Interface)', function () {
       });
     });
   });
-
 
   it('links gw to a device', function (done) {
     var gw = new Insteon();
@@ -1627,7 +1665,6 @@ describe('Insteon Gateway (IP Interface)', function () {
       });
     });
   });
-
 
   it('links gw to multiple devices', function (done) {
     var gw = new Insteon();
@@ -1866,7 +1903,6 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
   });
 
-
   it('creates a scene between two devices and the gateway', function (done) {
     var gw = new Insteon();
 
@@ -1985,7 +2021,6 @@ describe('Insteon Gateway (IP Interface)', function () {
       });
     });
   });
-
 
 
   describe('Scene Control', function () {
@@ -2182,9 +2217,7 @@ describe('Insteon Gateway (IP Interface)', function () {
       });
     });
 
-
   }); // describe Scene Control
-
 
   describe('Queueing', function () {
 
@@ -2206,7 +2239,6 @@ describe('Insteon Gateway (IP Interface)', function () {
           '025026b1cc1eb5522f1500'
         ]
       }];
-
 
       gw.connect(host, function () {
         gw.dim('26ace1', function (err) {
@@ -2234,7 +2266,6 @@ describe('Insteon Gateway (IP Interface)', function () {
             '025026b1cc1eb5522f1500'
           ]
         }];
-
 
       gw.connect(host, function () {
         gw.dim('26ace1', function (err, status) {
@@ -2268,7 +2299,6 @@ describe('Insteon Gateway (IP Interface)', function () {
         ]
       }];
 
-
       gw.connect(host, function () {
         gw.dim('26ace1', function (err) {
           should.not.exist(err);
@@ -2294,9 +2324,7 @@ describe('Insteon Gateway (IP Interface)', function () {
       });
     });
 
-
   }); // describe Queueing
-
 
   describe('Thermostat (commands)', function () {
 
@@ -3613,7 +3641,6 @@ describe('Insteon Gateway (IP Interface)', function () {
 
   }); // Thermostat Events
 
-
   describe('Motion Commands', function () {
     it('get status', function (done) {
       var gw = new Insteon();
@@ -3628,7 +3655,6 @@ describe('Insteon Gateway (IP Interface)', function () {
           '0251283e9e1eb5521b2e0001016401800e00450e00d35f00d2'
         ]
       };
-
 
       gw.connect(host, function () {
         motion.status()
@@ -3681,7 +3707,6 @@ describe('Insteon Gateway (IP Interface)', function () {
         ]
       };
 
-
       gw.connect(host, function () {
         motion.options()
           .then(function (rsp) {
@@ -3690,7 +3715,6 @@ describe('Insteon Gateway (IP Interface)', function () {
             plan.ok();
           })
           .catch(done);
-
 
         setTimeout(function () { // make sure server connection event fires first
           mockHub.send([
@@ -3715,7 +3739,6 @@ describe('Insteon Gateway (IP Interface)', function () {
         ]
       };
 
-
       gw.connect(host, function () {
         motion.clearTimer(120)
           .then(function (rsp) {
@@ -3724,7 +3747,6 @@ describe('Insteon Gateway (IP Interface)', function () {
             plan.ok();
           })
           .catch(done);
-
 
         setTimeout(function () { // make sure server connection event fires first
           mockHub.send([
@@ -3749,7 +3771,6 @@ describe('Insteon Gateway (IP Interface)', function () {
         ]
       };
 
-
       gw.connect(host, function () {
         motion.duskThreshold(50)
           .then(function (rsp) {
@@ -3758,7 +3779,6 @@ describe('Insteon Gateway (IP Interface)', function () {
             plan.ok();
           })
           .catch(done);
-
 
         setTimeout(function () { // make sure server connection event fires first
           mockHub.send([
@@ -4325,7 +4345,6 @@ describe('Insteon Gateway (IP Interface)', function () {
         ]
       };
 
-
       gw.connect(host, function () {
         meter.status()
           .then(function (status) {
@@ -4354,7 +4373,6 @@ describe('Insteon Gateway (IP Interface)', function () {
         ]
       };
 
-
       gw.connect(host, function () {
         meter.status()
           .then(function (status) {
@@ -4368,9 +4386,7 @@ describe('Insteon Gateway (IP Interface)', function () {
   }); // Meter Functions
 
 
-
   describe('IO Linc Functions', function () {
-
 
     it('relay on', function (done) {
       var gw = new Insteon();
@@ -4449,7 +4465,6 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
 
   }); // IO Linc Functions
-
 
   describe('IO Linc Events', function () {
     it('emits sensorOn event', function (done) {
@@ -4541,9 +4556,7 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
   }); // IO Linc Events
 
-
   describe('X10 Functions', function () {
-
 
     it('turn on', function (done) {
       var gw = new Insteon();
@@ -4678,7 +4691,6 @@ describe('Insteon Gateway (IP Interface)', function () {
       });
     });
   }); // IO commands
-
 
   describe('Garage Door opener', function () {
     it('gets status', function (done) {
@@ -4828,7 +4840,6 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
   });
 
-
   // Testing weird conditions
   describe('Parser consistency', function () {
     it('handles incoming data not packetized well', function (done) {
@@ -4970,9 +4981,9 @@ describe('Insteon Gateway (Serial Interface)', function () {
 
     var gw3 = new Insteon();
     gw3.SerialPort = virtualSerialPort;
-    gw3.on('connect', function() {
+    gw3.on('connect', function () {
       plan.ok();
-    })
+    });
     gw3.serial('/dev/home-controller-mock');
   });
 
@@ -4988,7 +4999,7 @@ describe('Insteon Gateway (Serial Interface)', function () {
       err.message.should.equal('test');
       plan.ok();
     });*/
-    gw2.on('close', function() {
+    gw2.on('close', function () {
       plan.ok();
     });
 
