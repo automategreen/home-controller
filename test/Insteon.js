@@ -203,7 +203,7 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
   });
 
-  it  ('gets the gateway info', function (done) {
+  it('gets the gateway info', function (done) {
     var gw = new Insteon();
 
     mockData = {
@@ -256,6 +256,67 @@ describe('Insteon Gateway (IP Interface)', function () {
       gw2.connect(host, 0, function () {
         done();
       });
+    });
+  });
+
+  it('cancels all pending commands', function (done) {
+    var gw = new Insteon();
+
+    mockData = {};
+
+    gw.connect(host, function () {
+      gw.ping('111111');
+
+      gw.ping('222222').then(function () {
+        throw new Error('Then handler should\'ve never been called');
+      }).fail(function (err) {
+        should.exist(err);
+        err.message.should.equal('Canceled');
+        gw.queue.length.should.equal(0, 'Gateway queue must be empty');
+        done();
+      }).fail(done);
+
+      gw.cancelPending();
+    });
+  });
+
+  it('cancels specific pending commands', function (done) {
+    var gw = new Insteon();
+
+    mockData = {};
+
+    gw.connect(host, function () {
+      gw.ping('111111');
+      gw.ping('222222');
+
+      gw.ping('333333').then(function () {
+        throw new Error('Then handler should\'ve never been called');
+      }).fail(function (err) {
+        should.exist(err);
+        err.message.should.equal('Canceled');
+        gw.queue.length.should.equal(1, 'Gateway queue must not be empty');
+        gw.queue[0].command.id.should.equal('222222');
+        done();
+      }).fail(done);
+
+      gw.cancelPending('999999');
+      gw.cancelPending('333333');
+    });
+  });
+
+  it('throws errors in cancel', function (done) {
+    var gw = new Insteon();
+
+    mockData = {};
+
+    gw.connect(host, function () {
+      (function cancelPending() {
+        gw.cancelPending('gggggg');
+      }).should.throw('Invalid Insteon ID');
+      (function() {
+        gw.cancelPending(999999);
+      }).should.throw('Invalid cmdMatch');
+      done();
     });
   });
 
