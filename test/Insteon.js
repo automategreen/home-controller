@@ -1526,8 +1526,7 @@ describe('Insteon Gateway (IP Interface)', function () {
       { // missing full response
         '02621122550f1000':
         [
-          '02621122550f100006',
-          '02501122559999992b1000'
+          '02621122550f100006'
         ]
       },
       { // missing broadcast message
