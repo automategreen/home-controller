@@ -1492,32 +1492,58 @@ describe('Insteon Gateway (IP Interface)', function () {
   }); // Light Commands
 
   it('get the device info', function (done) {
+    this.slow(4000);
+
     var gw = new Insteon();
-    var plan = new Plan(3, done);
+    gw.commandTimeout = 1000;
+    var plan = new Plan(6, done);
 
     mockData = [
-      {
+      { // thermostat
         '02622926380f1000':
         [
           '02622926380f100006',
           '02502926381eb5522f1000',
-          '0250292638050b0d8f01350250292638050b0d8f0135'
+          '0250292638050b0d8f0135'
         ]
       },
-      {
+      { // dimmer switch
         '02621122330f1000':
         [
           '02621122330f100006',
-          '0250112233239acf2b1000',
+          '02501122339999992b1000',
           '02501122330120458b0178'
         ],
       },
-      {
+      { // on/off switch
         '02621122440f1000':
         [
           '02621122440f100006',
-          '0250112244239acf2b1000',
+          '02501122449999992b1000',
           '02501122440220458b0178'
+        ]
+      },
+      { // missing full response
+        '02621122550f1000':
+        [
+          '02621122550f100006',
+          '02501122559999992b1000'
+        ]
+      },
+      { // missing broadcast message
+        '02621122660f1000':
+        [
+          '02621122660f100006',
+          '02501122669999992b1000',
+          '02501122660220452b0178'
+        ]
+      },
+      { // unknown device
+        '02621122770f1000':
+        [
+          '02621122770f100006',
+          '02501122779999992b1000',
+          '02501122772220458b0178'
         ]
       }
     ];
@@ -1557,6 +1583,21 @@ describe('Insteon Gateway (IP Interface)', function () {
         profile.isLighting.should.be.true;
         profile.isDimmable.should.be.false;
         profile.isThermostat.should.be.false;
+        plan.ok();
+      }).catch(done);
+
+      gw.info('112255').then(function (profile) {
+        should.not.exist(profile);
+        plan.ok();
+      }).catch(done);
+
+      gw.info('112266').then(function (profile) {
+        should.not.exist(profile);
+        plan.ok();
+      }).catch(done);
+
+      gw.info('112277').then(function (profile) {
+        should.exist(profile);
         plan.ok();
       }).catch(done);
     });
