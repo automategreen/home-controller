@@ -313,7 +313,7 @@ describe('Insteon Gateway (IP Interface)', function () {
       (function cancelPending() {
         gw.cancelPending('gggggg');
       }).should.throw('Invalid Insteon ID');
-      (function() {
+      (function () {
         gw.cancelPending(999999);
       }).should.throw('Invalid cmdMatch');
       done();
@@ -1493,15 +1493,34 @@ describe('Insteon Gateway (IP Interface)', function () {
 
   it('get the device info', function (done) {
     var gw = new Insteon();
+    var plan = new Plan(3, done);
 
-    mockData = {
-      '02622926380f1000':
-      [
-        '02622926380f100006',
-        '02502926381eb5522f1000',
-        '0250292638050b0d8f01350250292638050b0d8f0135'
-      ]
-    };
+    mockData = [
+      {
+        '02622926380f1000':
+        [
+          '02622926380f100006',
+          '02502926381eb5522f1000',
+          '0250292638050b0d8f01350250292638050b0d8f0135'
+        ]
+      },
+      {
+        '02621122330f1000':
+        [
+          '02621122330f100006',
+          '0250112233239acf2b1000',
+          '02501122330120458b0178'
+        ],
+      },
+      {
+        '02621122440f1000':
+        [
+          '02621122440f100006',
+          '0250112244239acf2b1000',
+          '02501122440220458b0178'
+        ]
+      }
+    ];
 
     gw.connect(host, function () {
       gw.info('292638', function (err, profile) {
@@ -1511,11 +1530,35 @@ describe('Insteon Gateway (IP Interface)', function () {
         profile.firmware.should.eql('0d');
         profile.deviceCategory.id.should.eql(5);
         profile.deviceSubcategory.id.should.eql(11);
-        profile.isDimmable.should.be.false;
         profile.isLighting.should.be.false;
+        profile.isDimmable.should.be.false;
         profile.isThermostat.should.be.true;
-        done();
+        plan.ok();
       });
+
+      gw.info('112233').then(function (profile) {
+        should.exist(profile);
+        profile.id.should.eql('112233');
+        profile.firmware.should.eql('45');
+        profile.deviceCategory.id.should.eql(1);
+        profile.deviceSubcategory.id.should.eql(32);
+        profile.isLighting.should.be.true;
+        profile.isDimmable.should.be.true;
+        profile.isThermostat.should.be.false;
+        plan.ok();
+      }).catch(done);
+
+      gw.info('112244').then(function (profile) {
+        should.exist(profile);
+        profile.id.should.eql('112244');
+        profile.firmware.should.eql('45');
+        profile.deviceCategory.id.should.eql(2);
+        profile.deviceSubcategory.id.should.eql(32);
+        profile.isLighting.should.be.true;
+        profile.isDimmable.should.be.false;
+        profile.isThermostat.should.be.false;
+        plan.ok();
+      }).catch(done);
     });
   });
 
