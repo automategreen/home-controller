@@ -1,5 +1,5 @@
 {
-  "version": "0.7.0",
+  "version": "0.8.0",
   "author": "Brandon Goode <brandon@automategreen.com>",
   "name": "home-controller",
   "description": "A Node Home Automation Controller for Insteon Devices",

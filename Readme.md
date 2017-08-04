@@ -96,9 +96,11 @@ hub.connect(process.env.HUB_IP, function () {
 API
 ---
 
-**0.8.0 Update Highlights:** *Not released - use master branch*
+**0.8.0 Update Highlights:**
   - **BREAKING CHANGES**
     * By default, events are not emitted for commands you call.  You can restore the previous functionality by setting `insteon.emitSelfAck = true`.
+  - Updated dependencies
+  - Improved testing and code
 
 **0.7.0 Update Highlights:**
 
