@@ -182,11 +182,12 @@ insteon.connect('192.168.10.10', function(){
 
 Creates a connection to a PowerLinc USB driver residing at the specified USB serial device.
 The 'options' parameter, if present, contains values suitable for use with the
-[serialport](https://github.com/voodootikigod/node-serialport)
-[constructor](https://github.com/voodootikigod/node-serialport#to-use).
+[serialport](https://github.com/EmergingTechnologyAdvisors/node-serialport)
+[constructor](https://github.com/EmergingTechnologyAdvisors/node-serialport#new_module_serialport--SerialPort_new).
 The 'connectListener' parameter, if present, will be invoked once the connection is open;
 
 **Warning** serialport is not supported in all environments. Verify serialport installed successfully before using this functionality.
+**Note** Starting with verion 5.0 `options` parameter accepts key names in camelCase only.	
 
 #### insteon.httpClient({host: 'host' port: 123, ...}, [connectListener])
 <a name="http-client"></a>

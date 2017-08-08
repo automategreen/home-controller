@@ -5036,7 +5036,7 @@ describe('Insteon Gateway (Serial Interface)', function () {
       plan.ok();
     });
 
-    gw2.serial('/dev/home-controller-mock', { baudrate: 19200, databits: 8, parity: 'none', stopbits: 1 }, function () {
+    gw2.serial('/dev/home-controller-mock', { baudRate: 19200, dataBits: 8, parity: 'none', stopBits: 1 }, function () {
       plan.ok();
     });
 
