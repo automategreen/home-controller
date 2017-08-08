@@ -1,22 +1,14 @@
+'use strict';
+
 var Insteon = require('../').Insteon;
 var should = require('should');
 var virtualSerialPort = require('virtual-serialport');
 
-var common = require('./common');
-var mockSerial = common.mockSerial;
-var Plan = common.Plan;
+var mockSerial = require('../lib/Test/mockSerial');
+var Plan = require('../lib/Test/Plan');
 
 describe('Insteon Gateway (Serial Interface)', function () {
-  var gw = new Insteon();
-
-  before(function (done) {
-    gw.SerialPort = virtualSerialPort;
-
-    gw.serial('/dev/home-controller-mock', function () {
-      mockSerial.attach(gw.socket);
-      done();
-    });
-  });
+  this.timeout(5000);
 
   it('tests serial connection', function (done) {
     var plan = new Plan(3, done);
@@ -63,6 +55,16 @@ describe('Insteon Gateway (Serial Interface)', function () {
   });
 
   it('gets the gateway info', function (done) {
+    var gw = new Insteon();
+    gw.SerialPort = virtualSerialPort;
+
+    var plan = new Plan(2, done);
+
+    gw.serial('/dev/home-controller-mock', function () {
+      mockSerial.attach(gw.socket);
+      plan.ok();
+    });
+
     mockSerial.mockData = {
       '0260': '0260ffffff03379c06'
     };
@@ -73,7 +75,7 @@ describe('Insteon Gateway (Serial Interface)', function () {
       info.id.should.equal('ffffff');
       info.deviceCategory.id.should.equal(3);
       info.deviceSubcategory.id.should.equal(55);
-      done();
+      plan.ok();
     });
   });
 
