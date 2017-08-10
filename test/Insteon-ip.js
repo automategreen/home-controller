@@ -1092,11 +1092,14 @@ describe('Insteon Gateway (IP Interface)', function () {
       }];
 
       gw.connect(host, function () {
-        gw.dim('26ace1', function (err) {
+        var light1 = gw.light('26ace1'),
+          light2 = gw.light('26b1cc');
+
+        light1.dim(function (err) {
           should.not.exist(err);
           plan.ok();
         });
-        gw.brighten('26b1cc', function (err) {
+        light2.brighten(function (err) {
           should.not.exist(err);
           plan.ok();
         });
@@ -1104,10 +1107,9 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
 
     it('multiple commands with timeout', function (done) {
-      this.timeout(15000);
-
       var plan = new Plan(2, done);
       var gw = new Insteon();
+      gw.commandTimeout = 2000;
 
       mockHub.mockData = [
         {
@@ -1119,12 +1121,13 @@ describe('Insteon Gateway (IP Interface)', function () {
         }];
 
       gw.connect(host, function () {
-        gw.dim('26ace1', function (err, status) {
+        var light = gw.light('26b1cc');
+        light.dim(function (err, status) {
           should.not.exist(err);
           should.not.exist(status.standard);
           plan.ok();
         });
-        gw.brighten('26b1cc', function (err) {
+        light.brighten(function (err) {
           should.not.exist(err);
           plan.ok();
         });
@@ -1151,27 +1154,30 @@ describe('Insteon Gateway (IP Interface)', function () {
       }];
 
       gw.connect(host, function () {
-        gw.dim('26ace1', function (err) {
+        var light1 = gw.light('26ace1'),
+          light2 = gw.light('26b1cc');
+
+        light1.dim(function (err) {
           should.not.exist(err);
           plan.ok();
         });
-        gw.dim('26ace1', function (err) {
+        light1.dim(function (err) {
           should.exist(err);
           plan.ok();
         });
-        gw.brighten('26b1cc', function (err) {
+        light2.brighten(function (err) {
           should.not.exist(err);
           plan.ok();
         });
-        gw.dim('26ace1', function (err) {
+        light1.dim(function (err) {
           should.exist(err);
           plan.ok();
         });
-        gw.dim('26ace1', function (err) {
+        light1.dim(function (err) {
           should.exist(err);
           plan.ok();
         });
-        gw.cancelPending('26ACE1');
+        light1.cancelPending();
       });
     });
 

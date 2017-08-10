@@ -80,7 +80,7 @@ describe('Light commands', function () {
     };
 
     gw.connect(host, function () {
-      gw.turnOn('999999', 50, done);
+      gw.light('999999').turnOn(50, done);
     });
   });
 
@@ -95,8 +95,8 @@ describe('Light commands', function () {
     }];
 
     gw.connect(host, function () {
-      gw.turnOn('999999');
-      gw.turnOn('999999', done);
+      gw.light('999999').turnOn();
+      gw.light('999999').turnOn(done);
     });
   });
 
@@ -108,7 +108,7 @@ describe('Light commands', function () {
     };
 
     gw.connect(host, function () {
-      gw.turnOn('999999', 50, 2000, done);
+      gw.light('999999').turnOn(50, 2000, done);
     });
   });
 
@@ -120,7 +120,7 @@ describe('Light commands', function () {
     };
 
     gw.connect(host, function () {
-      gw.turnOn('999999', 50, 0, done);
+      gw.light('999999').turnOn(50, 0, done);
     });
   });
 
@@ -132,7 +132,7 @@ describe('Light commands', function () {
     };
 
     gw.connect(host, function () {
-      gw.turnOn('999999', 50, 10000000, done);
+      gw.light('999999').turnOn(50, 10000000, done);
     });
   });
 
@@ -144,7 +144,7 @@ describe('Light commands', function () {
     };
 
     gw.connect(host, function () {
-      gw.turnOn('999999', 50, 'slow', done);
+      gw.light('999999').turnOn(50, 'slow', done);
     });
   });
 
@@ -156,7 +156,7 @@ describe('Light commands', function () {
     };
 
     gw.connect(host, function () {
-      gw.turnOn('999999', 50, 'fast', done);
+      gw.light('999999').turnOn(50, 'fast', done);
     });
   });
 
@@ -168,7 +168,7 @@ describe('Light commands', function () {
     };
 
     gw.connect(host, function () {
-      gw.turnOff('999999', done);
+      gw.light('999999').turnOff(done);
     });
   });
 
@@ -180,7 +180,7 @@ describe('Light commands', function () {
     };
 
     gw.connect(host, function () {
-      gw.turnOff('999999', 'slow', done);
+      gw.light('999999').turnOff('slow', done);
     });
   });
 
@@ -192,7 +192,7 @@ describe('Light commands', function () {
     };
 
     gw.connect(host, function () {
-      gw.turnOff('999999', 'fast', done);
+      gw.light('999999').turnOff('fast', done);
     });
   });
 
@@ -204,7 +204,7 @@ describe('Light commands', function () {
     };
 
     gw.connect(host, function () {
-      gw.turnOffFast('999999', done);
+      gw.light('999999').turnOffFast(done);
     });
   });
 
@@ -216,7 +216,7 @@ describe('Light commands', function () {
     };
 
     gw.connect(host, function () {
-      gw.level('999999', function (err, level) {
+      gw.light('999999').level(function (err, level) {
         should.not.exist(err);
         level.should.eql(100);
         done();
@@ -258,15 +258,16 @@ describe('Light commands', function () {
     });
   });
 
-  it('error when trying to turn light to invalid level', function () {
+  it('error when trying to turn light to invalid level', function (done) {
     var gw = new Insteon();
 
     mockHub.mockData = {};
 
     gw.connect(host, function () {
-      (function () {
-        gw.turnOn('999999', 101, function () { });
+      (function level() {
+        gw.light('999999').level(101, function () { });
       }).should.throw('level must be between 0 and 100');
+      done();
     });
   });
 
