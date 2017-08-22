@@ -313,7 +313,7 @@ describe('Insteon Gateway (IP Interface)', function () {
       (function cancelPending() {
         gw.cancelPending('gggggg');
       }).should.throw('Invalid Insteon ID');
-      (function() {
+      (function () {
         gw.cancelPending(999999);
       }).should.throw('Invalid cmdMatch');
       done();
@@ -1492,16 +1492,60 @@ describe('Insteon Gateway (IP Interface)', function () {
   }); // Light Commands
 
   it('get the device info', function (done) {
-    var gw = new Insteon();
+    this.slow(4000);
 
-    mockData = {
-      '02622926380f1000':
-      [
-        '02622926380f100006',
-        '02502926381eb5522f1000',
-        '0250292638050b0d8f01350250292638050b0d8f0135'
-      ]
-    };
+    var gw = new Insteon();
+    gw.commandTimeout = 1000;
+    var plan = new Plan(6, done);
+
+    mockData = [
+      { // thermostat
+        '02622926380f1000':
+        [
+          '02622926380f100006',
+          '02502926381eb5522f1000',
+          '0250292638050b0d8f0135'
+        ]
+      },
+      { // dimmer switch
+        '02621122330f1000':
+        [
+          '02621122330f100006',
+          '02501122339999992b1000',
+          '02501122330120458b0178'
+        ],
+      },
+      { // on/off switch
+        '02621122440f1000':
+        [
+          '02621122440f100006',
+          '02501122449999992b1000',
+          '02501122440220458b0178'
+        ]
+      },
+      { // missing full response
+        '02621122550f1000':
+        [
+          '02621122550f100006'
+        ]
+      },
+      { // missing broadcast message
+        '02621122660f1000':
+        [
+          '02621122660f100006',
+          '02501122669999992b1000',
+          '02501122660220452b0178'
+        ]
+      },
+      { // unknown device
+        '02621122770f1000':
+        [
+          '02621122770f100006',
+          '02501122779999992b1000',
+          '02501122772220458b0178'
+        ]
+      }
+    ];
 
     gw.connect(host, function () {
       gw.info('292638', function (err, profile) {
@@ -1511,11 +1555,50 @@ describe('Insteon Gateway (IP Interface)', function () {
         profile.firmware.should.eql('0d');
         profile.deviceCategory.id.should.eql(5);
         profile.deviceSubcategory.id.should.eql(11);
-        profile.isDimmable.should.be.false;
         profile.isLighting.should.be.false;
+        profile.isDimmable.should.be.false;
         profile.isThermostat.should.be.true;
-        done();
+        plan.ok();
       });
+
+      gw.info('112233').then(function (profile) {
+        should.exist(profile);
+        profile.id.should.eql('112233');
+        profile.firmware.should.eql('45');
+        profile.deviceCategory.id.should.eql(1);
+        profile.deviceSubcategory.id.should.eql(32);
+        profile.isLighting.should.be.true;
+        profile.isDimmable.should.be.true;
+        profile.isThermostat.should.be.false;
+        plan.ok();
+      }).catch(done);
+
+      gw.info('112244').then(function (profile) {
+        should.exist(profile);
+        profile.id.should.eql('112244');
+        profile.firmware.should.eql('45');
+        profile.deviceCategory.id.should.eql(2);
+        profile.deviceSubcategory.id.should.eql(32);
+        profile.isLighting.should.be.true;
+        profile.isDimmable.should.be.false;
+        profile.isThermostat.should.be.false;
+        plan.ok();
+      }).catch(done);
+
+      gw.info('112255').then(function (profile) {
+        should.not.exist(profile);
+        plan.ok();
+      }).catch(done);
+
+      gw.info('112266').then(function (profile) {
+        should.not.exist(profile);
+        plan.ok();
+      }).catch(done);
+
+      gw.info('112277').then(function (profile) {
+        should.exist(profile);
+        plan.ok();
+      }).catch(done);
     });
   });
 

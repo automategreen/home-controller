@@ -1,5 +1,5 @@
 {
-  "version": "0.7.0",
+  "version": "0.8.0",
   "author": "Brandon Goode <brandon@automategreen.com>",
   "name": "home-controller",
   "description": "A Node Home Automation Controller for Insteon Devices",
@@ -21,13 +21,13 @@
     "node": ">= 0.10"
   },
   "dependencies": {
-    "commander": "^2.7.0",
-    "debug": "^2.1.0",
-    "eventsource": "^0.1.0",
-    "q": "^1.4.1"
+    "commander": "^2.11.0",
+    "debug": "^2.6.8",
+    "eventsource": "^1.0.5",
+    "q": "^1.5.0"
   },
   "optionalDependencies": {
-    "serialport": "^5.x",
+    "serialport": "^5.0.0",
     "spark": "^1.0.0"
   },
   "devDependencies": {
