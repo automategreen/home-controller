@@ -60,7 +60,7 @@ gw.on('connect', function () {
       console.log('Remove link from ' + program.remove[0]);
 
       if (!isNaN(program.remove[1])) {
-        gw.removeLinkAt(program.remove[0], program.remove[1], function () {
+        gw.removeLinkAt(program.remove[0], parseInt(program.remove[1]), function () {
           return gw.close();
         });
       } else {
