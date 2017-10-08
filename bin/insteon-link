@@ -14,21 +14,20 @@ program
   .option('-c, --controller', 'devices are the controller')
   .option('-l, --link', 'link devices')
   .option('-u, --unlink', 'unlink devices')
-  .option('--remove [<device>,]<link>', 'remove link from device', list)
+  .option('--remove [<device>;]<link>', 'remove link from device', list)
   .option('--cancel', 'cancel linking')
   .option('-g, --group <type>', 'group number to use for links', parseInt)
   .option('-v, --verbose', 'more output')
   .parse(process.argv);
 
 function list(val) {
-  if(val.indexOf(';') > -1)
-  {
-    return [val.substr(0, val.indexOf(';')), JSON.parse(val.substr(val.indexOf(';')+1))];
+  if (val.indexOf(';') > -1) {
+    return [val.substr(0, val.indexOf(';')).replace(/\./g, ''), JSON.parse(val.substr(val.indexOf(';') + 1))];
   }
   return [JSON.parse(val)];
 }
 
-if(program.args.length < 1) {
+if (program.args.length < 1) {
   return program.help();
 }
 
@@ -37,14 +36,14 @@ var host, port;
 var devices = [];
 var idRegex = /^[0-9a-f]{2}\.?[0-9a-f]{2}\.?[0-9a-f]{2}$/i;
 
-program.args.forEach(function(arg) {
-  if(idRegex.test(arg)){
+program.args.forEach(function (arg) {
+  if (idRegex.test(arg)) {
     devices.push(arg.replace(/\./g, ''));
   } else {
     var uriParts = arg.split(':');
 
     host = uriParts[0];
-    if(uriParts.length > 1) {
+    if (uriParts.length > 1) {
       port = parseInt(uriParts[1]);
     }
   }
@@ -56,25 +55,32 @@ console.log('Connecting to ' + host);
 var gw = new Insteon();
 
 gw.on('connect', function () {
-  if(program.remove) {
-    if(program.remove.length === 2) {
-      console.log('Remove link from '+program.remove[0]);
-      gw.removeLink(program.remove[0], program.remove[1], function() {
-        return gw.close();
-      });
-    } else if(program.remove.length === 1) {
+  if (program.remove) {
+    if (program.remove.length === 2) {
+      console.log('Remove link from ' + program.remove[0]);
+
+      if (!isNaN(program.remove[1])) {
+        gw.removeLinkAt(program.remove[0], program.remove[1], function () {
+          return gw.close();
+        });
+      } else {
+        gw.removeLink(program.remove[0], program.remove[1], function () {
+          return gw.close();
+        });
+      }
+    } else if (program.remove.length === 1) {
       console.log('Removing link from gateway');
-      gw.removeLink(program.remove[0], function() {
+      gw.removeLink(program.remove[0], function () {
         return gw.close();
       });
     }
-  } else if(program.cancel) {
+  } else if (program.cancel) {
     console.log('Canceling linking mode');
-    gw.cancelLinking(function() {
+    gw.cancelLinking(function () {
       gw.close();
     });
-  } else if(program.unlink) {
-    if(devices.length === 0) {
+  } else if (program.unlink) {
+    if (devices.length === 0) {
       devices = null;
     }
     gw.unlink(devices, program, function (err, links) {
@@ -85,8 +91,8 @@ gw.on('connect', function () {
       console.log('unlinking done: \n\n' + util.inspect(links));
       return gw.close();
     });
-  } else if(program.link) {
-    if(devices.length === 0) {
+  } else if (program.link) {
+    if (devices.length === 0) {
       devices = null;
     }
     gw.link(devices, program, function (err, links) {
@@ -99,23 +105,23 @@ gw.on('connect', function () {
     });
   } else {
     var id = !!devices[0] ? devices[0] : null;
-    console.log('Polling device: '+id);
+    console.log('Polling device: ' + id);
     gw.info(id, function onInfo(err, info) {
-      if(err) {
+      if (err) {
         return console.log('Failed to connect to device, ' + err);
       }
 
       console.log('Device found: ' + info.id + ' - ' + info.deviceCategory.name);
       console.log('Getting links for device: ' + info.id);
 
-      gw.links(id, function onLinksFound(err, links){
-        if(err) {
+      gw.links(id, function onLinksFound(err, links) {
+        if (err) {
           return console.log('Failed to find any links because of an error, ' + err);
         }
 
-        if(links && links.length > 0) {
-          console.log('Found '+links.length+' link(s): \n');
-          for(var i=0;i<links.length;i++) {
+        if (links && links.length > 0) {
+          console.log('Found ' + links.length + ' link(s): \n');
+          for (var i = 0; i < links.length; i++) {
             console.log(JSON.stringify(links[i]));
           }
         } else {
@@ -127,11 +133,11 @@ gw.on('connect', function () {
   }
 });
 
-gw.on('close', function() {
+gw.on('close', function () {
   console.log('Connection closed');
 });
 
-if(host.substring(0, 5) === '/dev/' || host.substring(0, 3) === 'COM') {
+if (host.substring(0, 5) === '/dev/' || host.substring(0, 3) === 'COM') {
   gw.serial(host);
 } else {
   gw.connect(host, port);
