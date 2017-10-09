@@ -39,6 +39,7 @@ module.exports = function (grunt) {
         src: 'test',
         options: {
           coverage: true,
+		  mochaOptions: ['--exit'],
           root: './lib/Insteon/',
           reportFormats: ['html', 'lcovonly'],
           check: {
