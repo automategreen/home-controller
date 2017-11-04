@@ -110,6 +110,10 @@ gw.on('connect', function () {
       if (err) {
         return console.log('Failed to connect to device, ' + err);
       }
+      if(!info) {
+        console.log('No links were found.');
+        return gw.close();
+      }
 
       console.log('Device found: ' + info.id + ' - ' + info.deviceCategory.name);
       console.log('Getting links for device: ' + info.id);
