@@ -22,12 +22,12 @@
   },
   "dependencies": {
     "commander": "^2.11.0",
-    "debug": "^2.6.8",
-    "eventsource": "^1.0.5",
-    "q": "^1.5.0"
+    "debug": "^3.0.0",
+    "eventsource": "^1.0.0",
+    "q": "^1.0.0"
   },
   "optionalDependencies": {
-    "serialport": "^5.0.0",
+    "serialport": "^6.0.0",
     "spark": "^1.0.0"
   },
   "devDependencies": {
