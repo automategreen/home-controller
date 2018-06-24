@@ -17,6 +17,12 @@ describe('Garage Door opener', function () {
     });
   });
 
+  after(function (done) {
+    mockHub.close(function() {
+      done();
+    });
+  });
+
   it('gets status', function (done) {
     var gw = new Insteon();
 
@@ -34,6 +40,7 @@ describe('Garage Door opener', function () {
         .then(function (status) {
           should.exist(status);
           status.should.equal('closed');
+          gw.close();
           done();
         });
     });
@@ -51,6 +58,7 @@ describe('Garage Door opener', function () {
         .status()
         .then(function (status) {
           should.not.exist(status);
+          gw.close();
           done();
         });
     });
@@ -60,7 +68,10 @@ describe('Garage Door opener', function () {
     this.slow(5000);
 
     var gw = new Insteon();
-    var plan = new Plan(3, done);
+    var plan = new Plan(3, function() {
+      gw.close();
+      done();
+    });
 
     mockHub.mockData = [
       {
@@ -127,6 +138,7 @@ describe('Garage Door opener', function () {
         .then(function (status) {
           should.exist(status);
           status.should.equal(false);
+          gw.close();
           done();
         });
     });
@@ -137,7 +149,10 @@ describe('Garage Door opener', function () {
 
     gw.connect(host, function () {
       var g = gw.garage('aabbcc');
-      var plan = new Plan(2, done);
+      var plan = new Plan(2, function() {
+        gw.close();
+        done();
+      });
 
       mockHub.mockData = { '0262aabbcc0f1901': '' };
 

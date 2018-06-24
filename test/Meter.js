@@ -17,6 +17,12 @@ describe('Meter Commands', function () {
     });
   });
 
+  after(function (done) {
+    mockHub.close(function() {
+      done();
+    });
+  });
+
   it('get status', function (done) {
     var gw = new Insteon();
     var meter = gw.meter('1987b7');
@@ -35,9 +41,13 @@ describe('Meter Commands', function () {
         .then(function (status) {
           should.exist(status);
           status.should.eql({ energy: 0.012742916666666666, power: 3 });
+          gw.close();
           done();
         })
-        .catch(done);
+        .catch(function() {
+          gw.close();
+          done();
+        });
     });
   });
 
@@ -63,9 +73,13 @@ describe('Meter Commands', function () {
         .then(function (status) {
           should.exist(status);
           status.should.eql({ energy: 0.033677708333333334, power: 2 });
+          gw.close();
           done();
         })
-        .catch(done);
+        .catch(function() {
+          gw.close();
+          done();
+        });
     });
   });
 }); // Meter Functions

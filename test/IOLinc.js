@@ -16,6 +16,12 @@ describe('IO Linc Functions', function () {
     });
   });
 
+  after(function (done) {
+    mockHub.close(function () {
+      done();
+    });
+  });
+
   it('relay on', function (done) {
     var gw = new Insteon();
     gw.emitSelfAck = true;
@@ -27,7 +33,10 @@ describe('IO Linc Functions', function () {
     gw.connect(host, function () {
       var ioLinc = gw.ioLinc('999999');
 
-      ioLinc.on('relayOn', done);
+      ioLinc.on('relayOn', function () {
+        gw.close();
+        done();
+      });
       ioLinc.relayOn();
 
     });
@@ -44,7 +53,10 @@ describe('IO Linc Functions', function () {
     gw.connect(host, function () {
       var ioLinc = gw.ioLinc('999999');
 
-      ioLinc.on('relayOff', done);
+      ioLinc.on('relayOff', function () {
+        gw.close();
+        done();
+      });
       ioLinc.relayOff();
 
     });
@@ -65,6 +77,7 @@ describe('IO Linc Functions', function () {
       ioLinc.status().then(function (status) {
         status.relay.should.equal('on');
         status.sensor.should.equal('on');
+        gw.close();
         done();
       });
 
@@ -86,101 +99,109 @@ describe('IO Linc Functions', function () {
       ioLinc.status().then(function (status) {
         status.relay.should.equal('off');
         status.sensor.should.equal('off');
+        gw.close();
         done();
       });
 
     });
   });
 
+  describe('IO Linc Events', function () {
+    it('emits sensorOn event', function (done) {
+      var plan = new Plan(3, function () {
+        gw.close();
+        done();
+      });
+      var gw = new Insteon();
+      var light = gw.ioLinc('19d41c');
+
+      light.on('command', function (group, cmd1) {
+        this.id.should.equal('19D41C');
+        group.should.equal(1);
+        cmd1.should.equal('11');
+        plan.ok();
+      });
+
+      light.on('sensorOn', function () {
+        this.id.should.equal('19D41C');
+        plan.ok();
+      });
+
+      gw.connect(host, function () {
+        setTimeout(function () {
+          mockHub.send([
+            '025019d41c000001cb1100',
+            '025019d41c1eb552451101',
+            '025019d41c110101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+    it('emits sensorOff event', function (done) {
+      var plan = new Plan(3, function () {
+        gw.close();
+        done();
+      });
+      var gw = new Insteon();
+      var light = gw.ioLinc('19d41c');
+
+      light.on('command', function (group, cmd1) {
+        this.id.should.equal('19D41C');
+        group.should.equal(1);
+        cmd1.should.equal('13');
+        plan.ok();
+      });
+
+      light.on('sensorOff', function () {
+        this.id.should.equal('19D41C');
+        plan.ok();
+      });
+
+      gw.connect(host, function () {
+        setTimeout(function () {
+          mockHub.send([
+            '025019d41c000001cb1300',
+            '025019d41c1eb552451301',
+            '025019d41c130101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+    it('emits relayOff event', function (done) {
+      var plan = new Plan(3, function () {
+        gw.close();
+        done();
+      });
+      var gw = new Insteon();
+      var light = gw.ioLinc('19d41c');
+
+      light.on('command', function (group, cmd1) {
+        this.id.should.equal('19D41C');
+        group.should.equal(0);
+        cmd1.should.equal('13');
+        plan.ok();
+      });
+
+      light.on('relayOff', function () {
+        this.id.should.equal('19D41C');
+        plan.ok();
+      });
+
+      gw.connect(host, function () {
+        setTimeout(function () {
+          mockHub.send([
+            '025019d41c000000cb1300',
+            '025019d41c1eb552451300',
+            '025019d41c130100cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+  });
 });
-
-describe('IO Linc Events', function () {
-  it('emits sensorOn event', function (done) {
-    var plan = new Plan(3, done);
-    var gw = new Insteon();
-    var light = gw.ioLinc('19d41c');
-
-    light.on('command', function (group, cmd1) {
-      this.id.should.equal('19D41C');
-      group.should.equal(1);
-      cmd1.should.equal('11');
-      plan.ok();
-    });
-
-    light.on('sensorOn', function () {
-      this.id.should.equal('19D41C');
-      plan.ok();
-    });
-
-    gw.connect(host, function () {
-      setTimeout(function () {
-        mockHub.send([
-          '025019d41c000001cb1100',
-          '025019d41c1eb552451101',
-          '025019d41c110101cf0600'
-        ], function () {
-          plan.ok();
-        });
-      }, 10);
-    });
-  });
-  it('emits sensorOff event', function (done) {
-    var plan = new Plan(3, done);
-    var gw = new Insteon();
-    var light = gw.ioLinc('19d41c');
-
-    light.on('command', function (group, cmd1) {
-      this.id.should.equal('19D41C');
-      group.should.equal(1);
-      cmd1.should.equal('13');
-      plan.ok();
-    });
-
-    light.on('sensorOff', function () {
-      this.id.should.equal('19D41C');
-      plan.ok();
-    });
-
-    gw.connect(host, function () {
-      setTimeout(function () {
-        mockHub.send([
-          '025019d41c000001cb1300',
-          '025019d41c1eb552451301',
-          '025019d41c130101cf0600'
-        ], function () {
-          plan.ok();
-        });
-      }, 10);
-    });
-  });
-  it('emits relayOff event', function (done) {
-    var plan = new Plan(3, done);
-    var gw = new Insteon();
-    var light = gw.ioLinc('19d41c');
-
-    light.on('command', function (group, cmd1) {
-      this.id.should.equal('19D41C');
-      group.should.equal(0);
-      cmd1.should.equal('13');
-      plan.ok();
-    });
-
-    light.on('relayOff', function () {
-      this.id.should.equal('19D41C');
-      plan.ok();
-    });
-
-    gw.connect(host, function () {
-      setTimeout(function () {
-        mockHub.send([
-          '025019d41c000000cb1300',
-          '025019d41c1eb552451300',
-          '025019d41c130100cf0600'
-        ], function () {
-          plan.ok();
-        });
-      }, 10);
-    });
-  });
-});
-

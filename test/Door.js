@@ -17,8 +17,18 @@ describe('Door Events', function () {
     });
   });
 
+  after(function (done) {
+    this.timeout(10000);
+    mockHub.close(function() {
+      done();
+    });
+  });
+
   it('emits opened event', function (done) {
-    var plan = new Plan(3, done);
+    var plan = new Plan(3, function() {
+      gw.close();
+      done();
+    });
     var gw = new Insteon();
     var door = gw.door('284283');
 
@@ -50,7 +60,10 @@ describe('Door Events', function () {
   });
 
   it('emits closed event', function (done) {
-    var plan = new Plan(3, done);
+    var plan = new Plan(3, function() {
+      gw.close();
+      done();
+    });
     var gw = new Insteon();
     var door = gw.door('284283');
 
@@ -80,7 +93,10 @@ describe('Door Events', function () {
   });
 
   it('emits closed event - ignoring direct message from Insteon App', function (done) {
-    var plan = new Plan(11, done);
+    var plan = new Plan(11, function() {
+      gw.close();
+      done();
+    });
     var gw = new Insteon();
     gw.emitDuplicates = true;
     var door = gw.door('284283');
@@ -112,7 +128,10 @@ describe('Door Events', function () {
   });
 
   it('emits closed event - with emitDuplicates', function (done) {
-    var plan = new Plan(11, done);
+    var plan = new Plan(11, function() {
+      gw.close();
+      done();
+    });
     var gw = new Insteon();
     gw.emitDuplicates = true;
     var door = gw.door('284283');
@@ -146,7 +165,10 @@ describe('Door Events', function () {
 
     this.timeout(10000);
 
-    var plan = new Plan(5, done);
+    var plan = new Plan(5, function() {
+      gw.close();
+      done();
+    });
     var gw = new Insteon();
     var door = gw.door('284283');
 
@@ -187,7 +209,10 @@ describe('Door Events', function () {
   });
 
   it('emits open/closed event - within 3 seconds', function (done) {
-    var plan = new Plan(5, done);
+    var plan = new Plan(5, function() {
+      gw.close();
+      done();
+    });
     var gw = new Insteon();
     var door = gw.door('284283');
 
@@ -223,7 +248,10 @@ describe('Door Events', function () {
   });
 
   it('emits closed event - group 2', function (done) {
-    var plan = new Plan(3, done);
+    var plan = new Plan(3, function() {
+      gw.close();
+      done();
+    });
     var gw = new Insteon();
     var door = gw.door('284283');
 
@@ -253,7 +281,10 @@ describe('Door Events', function () {
   });
 
   it('emits heartbeat event - opened', function (done) {
-    var plan = new Plan(4, done);
+    var plan = new Plan(4, function() {
+      gw.close();
+      done();
+    });
     var gw = new Insteon();
     var door = gw.door('284283');
 
@@ -286,7 +317,10 @@ describe('Door Events', function () {
   });
 
   it('emits heartbeat event - closed', function (done) {
-    var plan = new Plan(4, done);
+    var plan = new Plan(4, function() {
+      gw.close();
+      done();
+    });
     var gw = new Insteon();
     var door = gw.door('284283');
 
@@ -321,7 +355,10 @@ describe('Door Events', function () {
   it('recieves unknown command', function (done) {
     var gw = new Insteon();
     var door = gw.door('284283');
-    var plan = new Plan(4, done);
+    var plan = new Plan(4, function() {
+      gw.close();
+      done();
+    });
 
     door.on('command', function (group, cmd1) {
       group.should.equalOneOf([1, 3, 4]);

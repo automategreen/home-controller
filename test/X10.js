@@ -15,6 +15,12 @@ describe('X10 Functions', function () {
     });
   });
 
+  after(function (done) {
+    mockHub.close(function() {
+      done();
+    });
+  });
+
   it('turn on', function (done) {
     var gw = new Insteon();
 
@@ -26,8 +32,10 @@ describe('X10 Functions', function () {
 
     gw.connect(host, function () {
       var x10 = gw.x10('A', 1);
-      x10.turnOn(done);
-
+      x10.turnOn(function() {
+        gw.close();
+        done();
+      });
     });
   });
 
@@ -42,11 +50,10 @@ describe('X10 Functions', function () {
 
     gw.connect(host, function () {
       var x10 = gw.x10('p', 16);
-      x10.turnOff(done);
-
+      x10.turnOff(function() {
+        gw.close();
+        done();
+      });
     });
-
   });
-
 }); // X10 Functions
-

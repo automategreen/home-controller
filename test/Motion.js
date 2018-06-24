@@ -18,18 +18,27 @@ describe('Motion Commands', function () {
     });
   });
 
+  after(function (done) {
+    mockHub.close(function () {
+      done();
+    });
+  });
+
   it('get status', function (done) {
     var gw = new Insteon();
     var motion = gw.motion('283e9e');
-    var plan = new Plan(2, done);
+    var plan = new Plan(2, function () {
+      gw.close();
+      done();
+    });
 
     mockHub.mockData = {
       '0262283e9e1f2e0000000000000000000000000000d2':
-      [
-        '0262283e9e1f2e0000000000000000000000000000d206',
-        '0250283e9e1eb5522f2e00',
-        '0251283e9e1eb5521b2e0001016401800e00450e00d35f00d2'
-      ]
+        [
+          '0262283e9e1f2e0000000000000000000000000000d206',
+          '0250283e9e1eb5522f2e00',
+          '0251283e9e1eb5521b2e0001016401800e00450e00d35f00d2'
+        ]
     };
 
     gw.connect(host, function () {
@@ -57,7 +66,10 @@ describe('Motion Commands', function () {
           });
           plan.ok();
         })
-        .catch(done);
+        .catch(function () {
+          gw.close();
+          done();
+        });
 
       setTimeout(function () { // make sure server connection event fires first
         mockHub.send([
@@ -73,14 +85,17 @@ describe('Motion Commands', function () {
     var gw = new Insteon();
     var motion = gw.motion('283e9e');
 
-    var plan = new Plan(2, done);
+    var plan = new Plan(2, function () {
+      gw.close();
+      done();
+    });
 
     mockHub.mockData = {
       '0262283e9e1f2e0000050e00000000000000000000bf':
-      [
-        '0262283e9e1f2e0000050e00000000000000000000bf06',
-        '0250283e9e1eb5522f2e00'
-      ]
+        [
+          '0262283e9e1f2e0000050e00000000000000000000bf06',
+          '0250283e9e1eb5522f2e00'
+        ]
     };
 
     gw.connect(host, function () {
@@ -90,7 +105,10 @@ describe('Motion Commands', function () {
           rsp.success.should.be.true;
           plan.ok();
         })
-        .catch(done);
+        .catch(function () {
+          gw.close();
+          done();
+        });
 
       setTimeout(function () { // make sure server connection event fires first
         mockHub.send([
@@ -105,14 +123,17 @@ describe('Motion Commands', function () {
     var gw = new Insteon();
     var motion = gw.motion('283e9e');
 
-    var plan = new Plan(2, done);
+    var plan = new Plan(2, function () {
+      gw.close();
+      done();
+    });
 
     mockHub.mockData = {
       '0262283e9e1f2e0000030300000000000000000000cc':
-      [
-        '0262283e9e1f2e0000030300000000000000000000cc06',
-        '0250283e9e1eb5522f2e00'
-      ]
+        [
+          '0262283e9e1f2e0000030300000000000000000000cc06',
+          '0250283e9e1eb5522f2e00'
+        ]
     };
 
     gw.connect(host, function () {
@@ -122,7 +143,10 @@ describe('Motion Commands', function () {
           rsp.success.should.be.true;
           plan.ok();
         })
-        .catch(done);
+        .catch(function () {
+          gw.close();
+          done();
+        });
 
       setTimeout(function () { // make sure server connection event fires first
         mockHub.send([
@@ -137,14 +161,17 @@ describe('Motion Commands', function () {
     var gw = new Insteon();
     var motion = gw.motion('283e9e');
 
-    var plan = new Plan(2, done);
+    var plan = new Plan(2, function () {
+      gw.close();
+      done();
+    });
 
     mockHub.mockData = {
       '0262283e9e1f2e00000480000000000000000000004e':
-      [
-        '0262283e9e1f2e00000480000000000000000000004e06',
-        '0250283e9e1eb5522f2e00'
-      ]
+        [
+          '0262283e9e1f2e00000480000000000000000000004e06',
+          '0250283e9e1eb5522f2e00'
+        ]
     };
 
     gw.connect(host, function () {
@@ -154,7 +181,10 @@ describe('Motion Commands', function () {
           rsp.success.should.be.true;
           plan.ok();
         })
-        .catch(done);
+        .catch(function () {
+          gw.close();
+          done();
+        });
 
       setTimeout(function () { // make sure server connection event fires first
         mockHub.send([
@@ -166,67 +196,73 @@ describe('Motion Commands', function () {
     });
   });
 
+  describe('Motion Events', function () {
+    it('emits motion event', function (done) {
+      var plan = new Plan(3, function () {
+        gw.close();
+        done();
+      });
+      var gw = new Insteon();
+      var motion = gw.motion('283e9e');
+
+      motion.on('command', function (group, cmd1) {
+        group.should.equal(1);
+        cmd1.should.equal('11');
+        plan.ok();
+      });
+
+      motion.on('motion', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function () {
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250283e9e000001cf1101',
+            '0250283e9e1eb552411101',
+            '0250283e9e1eb5524a1101',
+            '0250283e9e110101cf0600',
+            '0250283e9e110101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+
+    it('emits clear event', function (done) {
+      var plan = new Plan(3, function () {
+        gw.close();
+        done();
+      });
+      var gw = new Insteon();
+      var motion = gw.motion('283e9e');
+
+      motion.on('command', function (group, cmd1) {
+        group.should.equal(1);
+        cmd1.should.equal('13');
+        plan.ok();
+      });
+
+      motion.on('clear', function () {
+        plan.ok();
+      });
+
+      gw.connect(host, function () {
+        setTimeout(function () { // make sure server connection event fires first
+          mockHub.send([
+            '0250283e9e000001cf1301',
+            '0250283e9e000001cf1301',
+            '0250283e9e1eb552451301',
+            '0250283e9e130101cf0600',
+            '0250283e9e130101cf0600'
+          ], function () {
+            plan.ok();
+          });
+        }, 10);
+      });
+    });
+  }); // Motion Events
+
 });
-
-describe('Motion Events', function () {
-  it('emits motion event', function (done) {
-    var plan = new Plan(3, done);
-    var gw = new Insteon();
-    var motion = gw.motion('283e9e');
-
-    motion.on('command', function (group, cmd1) {
-      group.should.equal(1);
-      cmd1.should.equal('11');
-      plan.ok();
-    });
-
-    motion.on('motion', function () {
-      plan.ok();
-    });
-
-    gw.connect(host, function () {
-      setTimeout(function () { // make sure server connection event fires first
-        mockHub.send([
-          '0250283e9e000001cf1101',
-          '0250283e9e1eb552411101',
-          '0250283e9e1eb5524a1101',
-          '0250283e9e110101cf0600',
-          '0250283e9e110101cf0600'
-        ], function () {
-          plan.ok();
-        });
-      }, 10);
-    });
-  });
-
-  it('emits clear event', function (done) {
-    var plan = new Plan(3, done);
-    var gw = new Insteon();
-    var motion = gw.motion('283e9e');
-
-    motion.on('command', function (group, cmd1) {
-      group.should.equal(1);
-      cmd1.should.equal('13');
-      plan.ok();
-    });
-
-    motion.on('clear', function () {
-      plan.ok();
-    });
-
-    gw.connect(host, function () {
-      setTimeout(function () { // make sure server connection event fires first
-        mockHub.send([
-          '0250283e9e000001cf1301',
-          '0250283e9e000001cf1301',
-          '0250283e9e1eb552451301',
-          '0250283e9e130101cf0600',
-          '0250283e9e130101cf0600'
-        ], function () {
-          plan.ok();
-        });
-      }, 10);
-    });
-  });
-}); // Motion Events
 

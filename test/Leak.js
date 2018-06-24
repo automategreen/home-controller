@@ -15,9 +15,18 @@ describe('Leak Events', function () {
       done();
     });
   });
+  
+  after(function (done) {
+    mockHub.close(function() {
+      done();
+    });
+  });
 
   it('emits dry event', function (done) {
-    var plan = new Plan(3, done);
+    var plan = new Plan(3, function() {
+      gw.close();
+      done();
+    });
     var gw = new Insteon();
     var leak = gw.leak('2d2dd9');
 
@@ -46,7 +55,10 @@ describe('Leak Events', function () {
     });
   });
   it('emits wet event', function (done) {
-    var plan = new Plan(3, done);
+    var plan = new Plan(3, function() {
+      gw.close();
+      done();
+    });
     var gw = new Insteon();
     var leak = gw.leak('2d2dd9');
 
@@ -75,7 +87,10 @@ describe('Leak Events', function () {
     });
   });
   it('emits heartbeat event - dry', function (done) {
-    var plan = new Plan(4, done);
+    var plan = new Plan(4, function() {
+      gw.close();
+      done();
+    });
     var gw = new Insteon();
     var leak = gw.leak('2d2dd9');
 
@@ -108,7 +123,10 @@ describe('Leak Events', function () {
   });
 
   it('emits heartbeat event - wet', function (done) {
-    var plan = new Plan(4, done);
+    var plan = new Plan(4, function() {
+      gw.close();
+      done();
+    });
     var gw = new Insteon();
     var leak = gw.leak('2d2dd9');
 
@@ -146,7 +164,10 @@ describe('Leak Events', function () {
     { 'raw': '02502d2dd9000008cf1204', 'group': 8 }
   ].forEach(function (data) {
     it('handles invalid command for group ' + data.group, function (done) {
-      var plan = new Plan(2, done);
+      var plan = new Plan(2, function() {
+        gw.close();
+        done();
+      });
       var gw = new Insteon();
       var leak = gw.leak('2d2dd9');
 

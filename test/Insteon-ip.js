@@ -18,6 +18,12 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
   });
 
+  after(function (done) {
+    mockHub.close(function() {
+      done();
+    });
+  });
+
   it('sends a simple command', function (done) {
     var gw = new Insteon();
 
@@ -27,6 +33,7 @@ describe('Insteon Gateway (IP Interface)', function () {
 
     gw.connect(host, function () {
       gw.sendCommand('60', function () {
+        gw.close();
         done();
       });
     });
@@ -43,6 +50,7 @@ describe('Insteon Gateway (IP Interface)', function () {
       gw.write = 'error';
       gw.sendCommand('60', function (err) {
         should.exist(err);
+        gw.close();
         done();
       });
     });
@@ -62,6 +70,7 @@ describe('Insteon Gateway (IP Interface)', function () {
 
       gw.sendCommand('60', 1000, function (err) {
         should.exist(err);
+        gw.close();
         done();
       });
     });
@@ -76,6 +85,7 @@ describe('Insteon Gateway (IP Interface)', function () {
       gw.write = null;
       gw.sendCommand('60', 100, function (err) {
         should.not.exist(err);
+        gw.close();
         done();
       });
     });
@@ -96,6 +106,7 @@ describe('Insteon Gateway (IP Interface)', function () {
         info.id.should.equal('ffffff');
         info.deviceCategory.id.should.equal(3);
         info.deviceSubcategory.id.should.equal(55);
+        gw.close();
         done();
       });
     });
@@ -104,7 +115,9 @@ describe('Insteon Gateway (IP Interface)', function () {
   it('emits \'close\' event', function (done) {
     var gw = new Insteon();
 
-    gw.on('close', done);
+    gw.on('close', function() {
+      done();
+    });
     gw.connect(host, function () {
       gw.close();
     });
@@ -116,6 +129,7 @@ describe('Insteon Gateway (IP Interface)', function () {
     gw.on('error', function (err) {
       should.exist(err);
       err.message.should.equal('test');
+      gw.close();
       done();
     });
     gw.connect(host, function () {
@@ -132,6 +146,8 @@ describe('Insteon Gateway (IP Interface)', function () {
 
       var gw2 = new Insteon();
       gw2.connect(host, 0, function () {
+        gw.close();
+        gw2.close();
         done();
       });
     });
@@ -151,8 +167,12 @@ describe('Insteon Gateway (IP Interface)', function () {
         should.exist(err);
         err.message.should.equal('Canceled');
         gw.queue.length.should.equal(0, 'Gateway queue must be empty');
+        gw.close();
         done();
-      }).fail(done);
+      }).fail(function() {
+        gw.close();
+        done();
+      });
 
       gw.cancelPending();
     });
@@ -174,8 +194,12 @@ describe('Insteon Gateway (IP Interface)', function () {
         err.message.should.equal('Canceled');
         gw.queue.length.should.equal(1, 'Gateway queue must not be empty');
         gw.queue[0].command.id.should.equal('222222');
+        gw.close();
         done();
-      }).fail(done);
+      }).fail(function() {
+        gw.close();
+        done();
+      });
 
       gw.cancelPending('999999');
       gw.cancelPending('333333');
@@ -194,6 +218,7 @@ describe('Insteon Gateway (IP Interface)', function () {
       (function () {
         gw.cancelPending(999999);
       }).should.throw('Invalid cmdMatch');
+      gw.close();
       done();
     });
   });
@@ -203,7 +228,10 @@ describe('Insteon Gateway (IP Interface)', function () {
 
     var gw = new Insteon();
     gw.commandTimeout = 1000;
-    var plan = new Plan(6, done);
+    var plan = new Plan(6, function() {
+      gw.close();
+      done();
+    });
 
     mockHub.mockData = [
       { // thermostat
@@ -278,7 +306,10 @@ describe('Insteon Gateway (IP Interface)', function () {
         profile.isDimmable.should.be.true;
         profile.isThermostat.should.be.false;
         plan.ok();
-      }).catch(done);
+      }).catch(function() {
+        gw.close();
+        done();
+      });
 
       gw.info('112244').then(function (profile) {
         should.exist(profile);
@@ -290,22 +321,34 @@ describe('Insteon Gateway (IP Interface)', function () {
         profile.isDimmable.should.be.false;
         profile.isThermostat.should.be.false;
         plan.ok();
-      }).catch(done);
+      }).catch(function() {
+        gw.close();
+        done();
+      });
 
       gw.info('112255').then(function (profile) {
         should.not.exist(profile);
         plan.ok();
-      }).catch(done);
+      }).catch(function() {
+        gw.close();
+        done();
+      });
 
       gw.info('112266').then(function (profile) {
         should.not.exist(profile);
         plan.ok();
-      }).catch(done);
+      }).catch(function() {
+        gw.close();
+        done();
+      });
 
       gw.info('112277').then(function (profile) {
         should.exist(profile);
         plan.ok();
-      }).catch(done);
+      }).catch(function() {
+        gw.close();
+        done();
+      });
     });
   });
 
@@ -320,6 +363,7 @@ describe('Insteon Gateway (IP Interface)', function () {
       gw.ping('999999', function (err, resp) {
         should.not.exist(err);
         should.exist(resp);
+        gw.close();
         done();
       });
     });
@@ -338,6 +382,7 @@ describe('Insteon Gateway (IP Interface)', function () {
         should.exist(version);
         version.code.should.eql(2);
         version.name.should.eql('i2cs');
+        gw.close();
         done();
       });
     });
@@ -365,6 +410,7 @@ describe('Insteon Gateway (IP Interface)', function () {
         links[0].group.should.eql(1);
         links[0].id.should.eql('112233');
         links[0].controller.should.be.true;
+        gw.close();
         done();
       });
     });
@@ -399,6 +445,7 @@ describe('Insteon Gateway (IP Interface)', function () {
         links[0].isInUse.should.be.true;
         links[0].isLast.should.be.false;
         links[0].at.should.eql(4095);
+        gw.close();
         done();
       });
     });
@@ -425,6 +472,7 @@ describe('Insteon Gateway (IP Interface)', function () {
         link.id.should.eql('112233');
         link.wasDeleted.should.be.false;
         link.deviceCategory.id.should.eql(1);
+        gw.close();
         done();
       });
     });
@@ -456,6 +504,7 @@ describe('Insteon Gateway (IP Interface)', function () {
         link.id.should.eql('aaaaaa');
         link.wasDeleted.should.be.true;
         link.deviceCategory.id.should.eql(1);
+        gw.close();
         done();
       });
     });
@@ -486,6 +535,7 @@ describe('Insteon Gateway (IP Interface)', function () {
         link.id.should.eql('aaaaaa');
         link.wasDeleted.should.be.false;
         link.deviceCategory.id.should.eql(1);
+        gw.close();
         done();
       });
     });
@@ -500,8 +550,7 @@ describe('Insteon Gateway (IP Interface)', function () {
     {
       '02640104':
       ['0264010406',
-        '0250999999021C418B010002530104999999021C41',
-        '0250999999FFFFFF2301040250999999FFFFFF230104']
+        '0250999999021C418B010002530104999999021C41']
     }];
 
     gw.connect(host, function () {
@@ -512,6 +561,7 @@ describe('Insteon Gateway (IP Interface)', function () {
         link.id.should.eql('999999');
         link.wasDeleted.should.be.false;
         link.deviceCategory.id.should.eql(2);
+        gw.close();
         done();
       });
     });
@@ -557,6 +607,7 @@ describe('Insteon Gateway (IP Interface)', function () {
         links[1].group.should.eql(20);
         links[1].id.should.eql('999999');
         links[1].wasDeleted.should.be.false;
+        gw.close();
         done();
       });
     });
@@ -586,6 +637,7 @@ describe('Insteon Gateway (IP Interface)', function () {
         link.group.should.eql(1);
         link.controller.should.be.false;
         link.wasDeleted.should.be.false;
+        gw.close();
         done();
       });
     });
@@ -670,6 +722,7 @@ describe('Insteon Gateway (IP Interface)', function () {
       };
       gw.scene('AAAAAA', responder, function (err) {
         should.not.exist(err);
+        gw.close();
         done();
       });
     });
@@ -749,6 +802,7 @@ describe('Insteon Gateway (IP Interface)', function () {
     gw.connect(host, function () {
       gw.scene('aaaaaa', null, { remove: true }, function (err) {
         should.not.exist(err);
+        gw.close();
         done();
       });
     });
@@ -868,6 +922,7 @@ describe('Insteon Gateway (IP Interface)', function () {
       }];
       gw.scene('gw', responders, { group: 50 }, function (err) {
         should.not.exist(err);
+        gw.close();
         done();
       });
     });
@@ -877,7 +932,10 @@ describe('Insteon Gateway (IP Interface)', function () {
   describe('Scene Control', function () {
 
     it('scene on', function (done) {
-      var plan = new Plan(4, done);
+      var plan = new Plan(4, function() {
+        gw.close();
+        done();
+      });
       var gw = new Insteon();
 
       mockHub.mockData = [{
@@ -909,7 +967,10 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
 
     it('scene on fast', function (done) {
-      var plan = new Plan(4, done);
+      var plan = new Plan(4, function() {
+        gw.close();
+        done();
+      });
       var gw = new Insteon();
 
       mockHub.mockData = [{
@@ -941,7 +1002,10 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
 
     it('scene off', function (done) {
-      var plan = new Plan(3, done);
+      var plan = new Plan(3, function() {
+        gw.close();
+        done();
+      });
       var gw = new Insteon();
 
       mockHub.mockData = [{
@@ -973,7 +1037,10 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
 
     it('scene off fast', function (done) {
-      var plan = new Plan(3, done);
+      var plan = new Plan(3, function() {
+        gw.close();
+        done();
+      });
       var gw = new Insteon();
 
       mockHub.mockData = [{
@@ -1005,7 +1072,10 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
 
     it('scene dim', function (done) {
-      var plan = new Plan(3, done);
+      var plan = new Plan(3, function() {
+        gw.close();
+        done();
+      });
       var gw = new Insteon();
 
       mockHub.mockData = [{
@@ -1037,7 +1107,10 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
 
     it('scene brighten', function (done) {
-      var plan = new Plan(3, done);
+      var plan = new Plan(3, function() {
+        gw.close();
+        done();
+      });
       var gw = new Insteon();
 
       mockHub.mockData = [{
@@ -1073,7 +1146,10 @@ describe('Insteon Gateway (IP Interface)', function () {
   describe('Queueing', function () {
 
     it('multiple commands', function (done) {
-      var plan = new Plan(2, done);
+      var plan = new Plan(2, function() {
+        gw.close();
+        done();
+      });
       var gw = new Insteon();
 
       mockHub.mockData = [{
@@ -1107,7 +1183,10 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
 
     it('multiple commands with timeout', function (done) {
-      var plan = new Plan(2, done);
+      var plan = new Plan(2, function() {
+        gw.close();
+        done();
+      });
       var gw = new Insteon();
       gw.commandTimeout = 2000;
 
@@ -1135,7 +1214,10 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
 
     it('multiple commands with cancel', function (done) {
-      var plan = new Plan(5, done);
+      var plan = new Plan(5, function() {
+        gw.close();
+        done();
+      });
       var gw = new Insteon();
 
       mockHub.mockData = [{
@@ -1187,10 +1269,25 @@ describe('Insteon Gateway (IP Interface)', function () {
 
 // Testing weird conditions
 describe('Parser consistency', function () {
+  before(function (done) {
+    mockHub.listen(port, host, function () {
+      done();
+    });
+  });
+
+  after(function (done) {
+    mockHub.close(function() {
+      done();
+    });
+  });
+
   it('handles incoming data not packetized well', function (done) {
     var gw = new Insteon();
     var light = gw.light('19d41c');
-    var plan = new Plan(2, done);
+    var plan = new Plan(2, function() {
+      gw.close();
+      done();
+    });
 
     light.on('turnOn', function (group) {
       this.id.should.equal('19D41C');
@@ -1212,7 +1309,10 @@ describe('Parser consistency', function () {
 
   it('handles a randomly arriving extended command (0251)', function (done) {
     var gw = new Insteon();
-    var plan = new Plan(2, done);
+    var plan = new Plan(2, function() {
+      gw.close();
+      done();
+    });
     gw.on('command', function () {
       plan.ok();
     });
@@ -1227,7 +1327,10 @@ describe('Parser consistency', function () {
 
   it('handles a randomly arriving link completed command (0253)', function (done) {
     var gw = new Insteon();
-    var plan = new Plan(2, done);
+    var plan = new Plan(2, function() {
+      gw.close();
+      done();
+    });
     gw.on('command', function () {
       plan.ok();
     });
@@ -1247,6 +1350,7 @@ describe('Parser consistency', function () {
       var result = gw._checkStatus();
       result.should.equal(3); // MESSAGE_SKIPPED = 3
       gw.buffer.should.equal('');
+      gw.close();
       done();
     });
   }

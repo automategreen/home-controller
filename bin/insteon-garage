@@ -1,0 +1,24 @@
+#!/usr/bin/env node
+
+'use strict';
+
+var Insteon = require('../').Insteon;
+var host = 'COM10';
+
+console.log('Connecting to ' + host);
+var gw = new Insteon();
+
+gw.on('connect', function () {
+  console.log('Connected!');
+
+});
+
+gw.on('recvCommand', function() {
+  //console.log('command received:', cmd)
+});
+
+gw.on('close', function() {
+  console.log('Connection closed');
+});
+
+gw.serial(host);

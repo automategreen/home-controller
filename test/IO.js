@@ -17,6 +17,12 @@ describe('IO Commands', function () {
     });
   });
 
+  after(function (done) {
+    mockHub.close(function() {
+      done();
+    });
+  });
+
   it('turns on', function (done) {
     var gw = new Insteon();
 
@@ -30,6 +36,7 @@ describe('IO Commands', function () {
 
     gw.connect(host, function () {
       gw.io('aabbcc').on().then(function () {
+        gw.close();
         done();
       });
     });
@@ -48,6 +55,7 @@ describe('IO Commands', function () {
 
     gw.connect(host, function () {
       gw.io('aabbcc').off().then(function () {
+        gw.close();
         done();
       });
     });
@@ -66,6 +74,7 @@ describe('IO Commands', function () {
 
     gw.connect(host, function () {
       gw.io('aabbcc').set(10).then(function () {
+        gw.close();
         done();
       });
     });
@@ -76,7 +85,10 @@ describe('IO Commands', function () {
 
     gw.connect(host, function () {
       var io = gw.io('aabbcc');
-      var plan = new Plan(4, done);
+      var plan = new Plan(4, function() {
+        gw.close();
+        done();
+      });
 
       io.on().then(function () {
         plan.ok();
