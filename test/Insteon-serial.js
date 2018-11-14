@@ -84,4 +84,25 @@ describe('Insteon Gateway (Serial Interface)', function () {
     });
   });
 
+  it('beeps', function (done) {
+    var gw = new Insteon();
+    gw.SerialPort = SerialPort;
+
+    mockSerial.mockData = {
+      '0262407fb40f3000': [
+        '0262407fb40f300006',
+        '0250407fb43118bd2f3000'
+      ]
+    };
+    
+    gw.serial('/dev/home-controller-mock', function () {
+      mockSerial.attach(gw.socket);
+
+      gw.beep('407fb4').then(function () {
+        gw.close();
+        done();
+      });
+    });
+  });
+
 });
