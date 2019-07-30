@@ -19,7 +19,7 @@ describe('Insteon Gateway (IP Interface)', function () {
   });
 
   after(function (done) {
-    mockHub.close(function() {
+    mockHub.close(function () {
       done();
     });
   });
@@ -115,7 +115,7 @@ describe('Insteon Gateway (IP Interface)', function () {
   it('emits \'close\' event', function (done) {
     var gw = new Insteon();
 
-    gw.on('close', function() {
+    gw.on('close', function () {
       done();
     });
     gw.connect(host, function () {
@@ -169,7 +169,7 @@ describe('Insteon Gateway (IP Interface)', function () {
         gw.queue.length.should.equal(0, 'Gateway queue must be empty');
         gw.close();
         done();
-      }).fail(function() {
+      }).fail(function () {
         gw.close();
         done();
       });
@@ -196,7 +196,7 @@ describe('Insteon Gateway (IP Interface)', function () {
         gw.queue[0].command.id.should.equal('222222');
         gw.close();
         done();
-      }).fail(function() {
+      }).fail(function () {
         gw.close();
         done();
       });
@@ -223,58 +223,86 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
   });
 
+  it('handles gateway NAK', function (done) {
+    this.slow(10000);
+    this.timeout(15000);
+
+    var gw = new Insteon();
+    gw.commandTimeout = 1000;
+    gw.nakTimeout = 1000;
+
+    mockHub.mockData = [{
+      '0260': '15'
+    }, {
+      '0260': '15'
+    }, {
+      '0260': '15'
+    }];
+
+    var startTime = new Date();
+
+    gw.connect(host, function () {
+      gw.info()
+        .then(function (info) {
+          should.not.exist(info);
+
+          var duration = new Date() - startTime;
+
+          duration.should.be.above(4000, 'expected total duration [' + (duration/1000) + 'sec] of all attempts to be greater than 4 seconds. ');
+        })
+        .then(done)
+        .catch(done)
+        .finally(function () {
+          gw.close();
+        });
+    });
+  });
+
   it('get the device info', function (done) {
     this.slow(4000);
 
     var gw = new Insteon();
     gw.commandTimeout = 1000;
-    var plan = new Plan(6, function() {
+    var plan = new Plan(6, function () {
       gw.close();
       done();
     });
 
-    mockHub.mockData = [
-      { // thermostat
-        '02622926380f1000':
-        [
+    mockHub.mockData = [{ // thermostat
+        '02622926380f1000': [
           '02622926380f100006',
           '02502926381eb5522f1000',
           '0250292638050b0d8f0135'
         ]
       },
       { // dimmer switch
-        '02621122330f1000':
-        [
+        '02621122330f1000': [
           '02621122330f100006',
           '02501122339999992b1000',
           '02501122330120458b0178'
         ],
       },
       { // on/off switch
-        '02621122440f1000':
-        [
+        '02621122440f1000': [
           '02621122440f100006',
           '02501122449999992b1000',
           '02501122440220458b0178'
         ]
       },
       { // missing full response
-        '02621122550f1000':
-        [
+        '02621122550f1000': [
           '02621122550f100006'
         ]
       },
       { // missing broadcast message
-        '02621122660f1000':
-        [
+        '02621122660f1000': [
           '02621122660f100006',
           '02501122669999992b1000',
           '02501122660220452b0178'
         ]
       },
       { // unknown device
-        '02621122770f1000':
-        [
+        '02621122770f1000': [
           '02621122770f100006',
           '02501122779999992b1000',
           '02501122772220458b0178'
@@ -306,7 +334,7 @@ describe('Insteon Gateway (IP Interface)', function () {
         profile.isDimmable.should.be.true;
         profile.isThermostat.should.be.false;
         plan.ok();
-      }).catch(function() {
+      }).catch(function () {
         gw.close();
         done();
       });
@@ -321,7 +349,7 @@ describe('Insteon Gateway (IP Interface)', function () {
         profile.isDimmable.should.be.false;
         profile.isThermostat.should.be.false;
         plan.ok();
-      }).catch(function() {
+      }).catch(function () {
         gw.close();
         done();
       });
@@ -329,7 +357,7 @@ describe('Insteon Gateway (IP Interface)', function () {
       gw.info('112255').then(function (profile) {
         should.not.exist(profile);
         plan.ok();
-      }).catch(function() {
+      }).catch(function () {
         gw.close();
         done();
       });
@@ -337,7 +365,7 @@ describe('Insteon Gateway (IP Interface)', function () {
       gw.info('112266').then(function (profile) {
         should.not.exist(profile);
         plan.ok();
-      }).catch(function() {
+      }).catch(function () {
         gw.close();
         done();
       });
@@ -345,7 +373,7 @@ describe('Insteon Gateway (IP Interface)', function () {
       gw.info('112277').then(function (profile) {
         should.exist(profile);
         plan.ok();
-      }).catch(function() {
+      }).catch(function () {
         gw.close();
         done();
       });
@@ -393,14 +421,15 @@ describe('Insteon Gateway (IP Interface)', function () {
     var gw = new Insteon();
 
     mockHub.mockData = [{
-      '0269': '0269060257e201112233032041'
-    },
-    {
-      '026a': '026a060257e201aaaaaa033041'
-    },
-    {
-      '026a': '026A15'
-    }];
+        '0269': '0269060257e201112233032041'
+      },
+      {
+        '026a': '026a060257e201aaaaaa033041'
+      },
+      {
+        '026a': '026A15'
+      }
+    ];
 
     gw.connect(host, function () {
       gw.links(function (err, links) {
@@ -421,18 +450,19 @@ describe('Insteon Gateway (IP Interface)', function () {
     var gw = new Insteon();
 
     mockHub.mockData = [{
-      '02629999991f2f0000000fff010000000000000000c2':
-      ['02629999991f2f0000000fff010000000000000000c206',
-        '0250999999ffffff2f2f00',
-        '0251999999ffffff112f0000010fff00aa01ffffff001c01d5']
+        '02629999991f2f0000000fff010000000000000000c2': ['02629999991f2f0000000fff010000000000000000c206',
+          '0250999999ffffff2f2f00',
+          '0251999999ffffff112f0000010fff00aa01ffffff001c01d5'
+        ]
 
-    },
-    {
-      '02629999991f2f0000000ff7010000000000000000ca':
-      ['02629999991f2f0000000ff7010000000000000000ca06',
-        '0250999999ffffff2f2f00',
-        '0251999999ffffff112f0000010ff7000000000000000000ca']
-    }];
+      },
+      {
+        '02629999991f2f0000000ff7010000000000000000ca': ['02629999991f2f0000000ff7010000000000000000ca06',
+          '0250999999ffffff2f2f00',
+          '0251999999ffffff112f0000010ff7000000000000000000ca'
+        ]
+      }
+    ];
 
     gw.connect(host, function () {
       gw.links('999999', function (err, links) {
@@ -455,14 +485,15 @@ describe('Insteon Gateway (IP Interface)', function () {
     var gw = new Insteon();
 
     mockHub.mockData = [{
-      '0265': '026506'
-    },
-    {
-      '02640101':
-      ['0264010106',
-        '02501122330120418f0170',
-        '0253010111223301204100']
-    }];
+        '0265': '026506'
+      },
+      {
+        '02640101': ['0264010106',
+          '02501122330120418f0170',
+          '0253010111223301204100'
+        ]
+      }
+    ];
 
     gw.connect(host, function () {
       gw.link(function (err, link) {
@@ -482,22 +513,25 @@ describe('Insteon Gateway (IP Interface)', function () {
     var gw = new Insteon();
 
     mockHub.mockData = [{
-      '0265': '026506'
-    },
-    {
-      '0264ff00': '0264ff0006'
-    },
-    {
-      '0262aaaaaa0f0a00':
-      ['0262aaaaaa0f0a0006',
-        '02',
-        '50aaaaaaffffff2f0a00',
-        '0250aaaaaa0130418f0100',
-        '0253ff00aaaaaa013041']
-    }];
+        '0265': '026506'
+      },
+      {
+        '0264ff00': '0264ff0006'
+      },
+      {
+        '0262aaaaaa0f0a00': ['0262aaaaaa0f0a0006',
+          '02',
+          '50aaaaaaffffff2f0a00',
+          '0250aaaaaa0130418f0100',
+          '0253ff00aaaaaa013041'
+        ]
+      }
+    ];
 
     gw.connect(host, function () {
-      gw.unlink('aaaaaa', { group: 0 }, function (err, link) {
+      gw.unlink('aaaaaa', {
+        group: 0
+      }, function (err, link) {
         should.not.exist(err);
         should.exist(link);
         link.group.should.eql(0);
@@ -514,21 +548,24 @@ describe('Insteon Gateway (IP Interface)', function () {
     var gw = new Insteon();
 
     mockHub.mockData = [{
-      '0265': '026506'
-    },
-    {
-      '02640105': '0264010506'
-    },
-    {
-      '0262aaaaaa1f090000000000000000000000000000f7':
-      ['0262aaaaaa1f090000000000000000000000000000f706',
-        '0250aaaaaaffffff2f0900',
-        '0250aaaaaa0130418f0100',
-        '02530105aaaaaa013041']
-    }];
+        '0265': '026506'
+      },
+      {
+        '02640105': '0264010506'
+      },
+      {
+        '0262aaaaaa1f090000000000000000000000000000f7': ['0262aaaaaa1f090000000000000000000000000000f706',
+          '0250aaaaaaffffff2f0900',
+          '0250aaaaaa0130418f0100',
+          '02530105aaaaaa013041'
+        ]
+      }
+    ];
 
     gw.connect(host, function () {
-      gw.link('aaaaaa', { group: 5 }, function (err, link) {
+      gw.link('aaaaaa', {
+        group: 5
+      }, function (err, link) {
         should.not.exist(err);
         should.exist(link);
         link.group.should.eql(5);
@@ -545,16 +582,20 @@ describe('Insteon Gateway (IP Interface)', function () {
     var gw = new Insteon();
 
     mockHub.mockData = [{
-      '0265': '026506'
-    },
-    {
-      '02640104':
-      ['0264010406',
-        '0250999999021C418B010002530104999999021C41']
-    }];
+        '0265': '026506'
+      },
+      {
+        '02640104': ['0264010406',
+          '0250999999021C418B010002530104999999021C41'
+        ]
+      }
+    ];
 
     gw.connect(host, function () {
-      gw.link({ timeout: 60000, group: 4 }, function (err, link) {
+      gw.link({
+        timeout: 60000,
+        group: 4
+      }, function (err, link) {
         should.not.exist(err);
         should.exist(link);
         link.group.should.eql(4);
@@ -571,32 +612,35 @@ describe('Insteon Gateway (IP Interface)', function () {
     var gw = new Insteon();
 
     mockHub.mockData = [{
-      '0265': '026506'
-    },
-    {
-      '02640114': '0264011406'
-    },
-    {
-      '0262aaaaaa1f090000000000000000000000000000f7':
-      ['0262aaaaaa1f090000000000000000000000000000f706',
-        '0250aaaaaaffffff2f09000250aaaaaa0130418f0100',
-        '02530114aaaaaa013041']
-    },
-    {
-      '0265': '026506'
-    },
-    {
-      '02640114': '0264011406'
-    },
-    {
-      '02629999991f090000000000000000000000000000f7':
-      ['02629999991f090000000000000000000000000000f706',
-        '0250999999ffffff2f09000250999999021c418f0100',
-        '02530114999999021c41']
-    }];
+        '0265': '026506'
+      },
+      {
+        '02640114': '0264011406'
+      },
+      {
+        '0262aaaaaa1f090000000000000000000000000000f7': ['0262aaaaaa1f090000000000000000000000000000f706',
+          '0250aaaaaaffffff2f09000250aaaaaa0130418f0100',
+          '02530114aaaaaa013041'
+        ]
+      },
+      {
+        '0265': '026506'
+      },
+      {
+        '02640114': '0264011406'
+      },
+      {
+        '02629999991f090000000000000000000000000000f7': ['02629999991f090000000000000000000000000000f706',
+          '0250999999ffffff2f09000250999999021c418f0100',
+          '02530114999999021c41'
+        ]
+      }
+    ];
 
     gw.connect(host, function () {
-      gw.link(['aaaaaa', '999999'], { group: 20 }, function (err, links) {
+      gw.link(['aaaaaa', '999999'], {
+        group: 20
+      }, function (err, links) {
         should.not.exist(err);
         should.exist(links);
         links.should.be.an.Array;
@@ -617,20 +661,23 @@ describe('Insteon Gateway (IP Interface)', function () {
     var gw = new Insteon();
 
     mockHub.mockData = [{
-      '0265': '026506'
-    },
-    {
-      '02640001': '0264000006'
-    },
-    {
-      '02629999991f090100000000000000000000000000f6':
-      ['02629999991f090100000000000000000000000000f606',
-        '0250999999ffffff2f0901',
-        '02530001999999000000']
-    }];
+        '0265': '026506'
+      },
+      {
+        '02640001': '0264000006'
+      },
+      {
+        '02629999991f090100000000000000000000000000f6': ['02629999991f090100000000000000000000000000f606',
+          '0250999999ffffff2f0901',
+          '02530001999999000000'
+        ]
+      }
+    ];
 
     gw.connect(host, function () {
-      gw.link('999999', { controller: true }, function (err, link) {
+      gw.link('999999', {
+        controller: true
+      }, function (err, link) {
         should.not.exist(err);
         should.exist(link);
         link.id.should.eql('999999');
@@ -647,77 +694,79 @@ describe('Insteon Gateway (IP Interface)', function () {
     var gw = new Insteon();
 
     mockHub.mockData = [{
-      '0260': '0260ffffff03379c06'
-    },
-    {
-      '0262aaaaaa1f2f0000000fff010000000000000000c2':
-      ['0262aaaaaa1f2f0000000fff010000000000000000c206',
-        '0250aaaaaaffffff2f2f00',
-        '0251aaaaaaffffff112f0000010fff010262aaaaaa1f2f0000']
-    },
-    {
-      '0262aaaaaa1f2f0000000ff7010000000000000000ca':
-      ['0262aaaaaa1f2f0000000ff7010000000000000000ca06',
-        '0250aaaaaaffffff2f2f00',
-        '0251aaaaaaffffff112f0000010ff701ea00ffffff031c009b']
-    },
-    {
-      '0262aaaaaa1f2f0000000fef010000000000000000d2':
-      ['0262aaaaaa1f2f0000000fef010000000000000000d206',
-        '0250aaaaaaffffff2f2f00',
-        '0251aaaaaaffffff112f0000010fef01ea00ffffff031c00a3']
-    },
-    {
-      '0262aaaaaa1f2f0000000fe7010000000000000000da':
-      ['0262aaaaaa1f2f0000000fe7010000000000000000da06',
-        '0250aaaaaaffffff2f2f00',
-        '0251aaaaaaffffff112f0000010fe701aa01ffffff001c00ed']
-    },
-    {
-      '0262aaaaaa1f2f0000000fdf010000000000000000e2':
-      ['0262aaaaaa1f2f0000000fdf010000000000000000e206',
-        '0250aaaaaaffffff2f2f00',
-        '0251aaaaaaffffff112f0000010fdf010000000000000000e1']
-    },
-    {
-      '0262bbbbbb1f2f0000000fff010000000000000000c2':
-      ['0262bbbbbb1f2f0000000fff010000000000000000c206',
-        '0250bbbbbbffffff2f2f00',
-        '0251bbbbbbffffff112f0001010fff000201aaaaaa000000b5']
-    },
-    {
-      '0262bbbbbb1f2f0000000ff7010000000000000000ca':
-      ['0262bbbbbb1f2f0000000ff7010000000000000000ca06',
-        '0250bbbbbbffffff2f2f00',
-        '0251bbbbbbffffff112f0001010ff700e201ffffff001c00a5']
-    },
-    {
-      '0262bbbbbb1f2f0000000fef010000000000000000d2':
-      ['0262bbbbbb1f2f0000000fef010000000000000000d206',
-        '0250bbbbbbffffff2f2f00',
-        '0251bbbbbbffffff112f0001010fef00a201ffffff001c00ed']
-    },
-    {
-      '0262bbbbbb1f2f0000000fe7010000000000000000da':
-      ['0262bbbbbb1f2f0000000fe7010000000000000000da06',
-        '0250bbbbbbffffff2f2f00',
-        '0251bbbbbbffffff112f0001010fe7000000000000000000d9']
-    },
-    {
-      '0262bbbbbb1f2f0000020fff088201aaaaaaff1b001e':
-      ['0262bbbbbb1f2f0000020fff088201aaaaaaff1b001e06',
-        '0250bbbbbbffffff2f2f00']
-    },
-    {
-      '0262aaaaaa1f2f0000020fff08c201bbbbbbff1b00ab':
-      ['0262aaaaaa1f2f0000020fff08c201bbbbbbff1b00ab06',
-        '0250aaaaaaffffff2f2f00']
-    }];
+        '0260': '0260ffffff03379c06'
+      },
+      {
+        '0262aaaaaa1f2f0000000fff010000000000000000c2': ['0262aaaaaa1f2f0000000fff010000000000000000c206',
+          '0250aaaaaaffffff2f2f00',
+          '0251aaaaaaffffff112f0000010fff010262aaaaaa1f2f0000'
+        ]
+      },
+      {
+        '0262aaaaaa1f2f0000000ff7010000000000000000ca': ['0262aaaaaa1f2f0000000ff7010000000000000000ca06',
+          '0250aaaaaaffffff2f2f00',
+          '0251aaaaaaffffff112f0000010ff701ea00ffffff031c009b'
+        ]
+      },
+      {
+        '0262aaaaaa1f2f0000000fef010000000000000000d2': ['0262aaaaaa1f2f0000000fef010000000000000000d206',
+          '0250aaaaaaffffff2f2f00',
+          '0251aaaaaaffffff112f0000010fef01ea00ffffff031c00a3'
+        ]
+      },
+      {
+        '0262aaaaaa1f2f0000000fe7010000000000000000da': ['0262aaaaaa1f2f0000000fe7010000000000000000da06',
+          '0250aaaaaaffffff2f2f00',
+          '0251aaaaaaffffff112f0000010fe701aa01ffffff001c00ed'
+        ]
+      },
+      {
+        '0262aaaaaa1f2f0000000fdf010000000000000000e2': ['0262aaaaaa1f2f0000000fdf010000000000000000e206',
+          '0250aaaaaaffffff2f2f00',
+          '0251aaaaaaffffff112f0000010fdf010000000000000000e1'
+        ]
+      },
+      {
+        '0262bbbbbb1f2f0000000fff010000000000000000c2': ['0262bbbbbb1f2f0000000fff010000000000000000c206',
+          '0250bbbbbbffffff2f2f00',
+          '0251bbbbbbffffff112f0001010fff000201aaaaaa000000b5'
+        ]
+      },
+      {
+        '0262bbbbbb1f2f0000000ff7010000000000000000ca': ['0262bbbbbb1f2f0000000ff7010000000000000000ca06',
+          '0250bbbbbbffffff2f2f00',
+          '0251bbbbbbffffff112f0001010ff700e201ffffff001c00a5'
+        ]
+      },
+      {
+        '0262bbbbbb1f2f0000000fef010000000000000000d2': ['0262bbbbbb1f2f0000000fef010000000000000000d206',
+          '0250bbbbbbffffff2f2f00',
+          '0251bbbbbbffffff112f0001010fef00a201ffffff001c00ed'
+        ]
+      },
+      {
+        '0262bbbbbb1f2f0000000fe7010000000000000000da': ['0262bbbbbb1f2f0000000fe7010000000000000000da06',
+          '0250bbbbbbffffff2f2f00',
+          '0251bbbbbbffffff112f0001010fe7000000000000000000d9'
+        ]
+      },
+      {
+        '0262bbbbbb1f2f0000020fff088201aaaaaaff1b001e': ['0262bbbbbb1f2f0000020fff088201aaaaaaff1b001e06',
+          '0250bbbbbbffffff2f2f00'
+        ]
+      },
+      {
+        '0262aaaaaa1f2f0000020fff08c201bbbbbbff1b00ab': ['0262aaaaaa1f2f0000020fff08c201bbbbbbff1b00ab06',
+          '0250aaaaaaffffff2f2f00'
+        ]
+      }
+    ];
 
     gw.connect(host, function () {
       var responder = {
         id: 'BBBBBB',
-        level: 100, /* 100% */
+        level: 100,
+        /* 100% */
         ramp: 2000 /* 2 sec */
       };
       gw.scene('AAAAAA', responder, function (err) {
@@ -732,75 +781,78 @@ describe('Insteon Gateway (IP Interface)', function () {
     var gw = new Insteon();
 
     mockHub.mockData = [{
-      '0260': '0260ffffff03379c06'
-    },
-    {
-      '0262aaaaaa1f2f0000000fff010000000000000000c2':
-      ['0262aaaaaa1f2f0000000fff010000000000000000c206',
-        '0250aaaaaaffffff2f2f00',
-        '0251aaaaaaffffff112f0000010fff01c201999999ff00005c']
-    },
-    {
-      '0262aaaaaa1f2f0000000ff7010000000000000000ca':
-      ['0262aaaaaa1f2f0000000ff7010000000000000000ca06',
-        '0250aaaaaaffffff2f2f00',
-        '0251aaaaaaffffff112f0000010ff701ea00ffffff031c009b']
-    },
-    {
-      '0262aaaaaa1f2f0000000fef010000000000000000d2':
-      ['0262aaaaaa1f2f0000000fef010000000000000000d206',
-        '0250aaaaaaffffff2f2f00',
-        '0251aaaaaaffffff112f0000010fef01ea00ffffff031c00a3']
-    },
-    {
-      '0262aaaaaa1f2f0000000fe7010000000000000000da':
-      ['0262aaaaaa1f2f0000000fe7010000000000000000da06',
-        '0250aaaaaaffffff2f2f00',
-        '0251aaaaaaffffff112f0000010fe701aa01ffffff001c00ed']
-    },
-    {
-      '0262aaaaaa1f2f0000000fdf010000000000000000e2':
-      ['0262aaaaaa1f2f0000000fdf010000000000000000e206',
-        '0250aaaaaaffffff2f2f00',
-        '0251aaaaaaffffff112f0000010fdf010000000000000000e1']
-    },
-    {
-      '02629999991f2f0000000fff010000000000000000c2':
-      ['02629999991f2f0000000fff010000000000000000c206',
-        '0250999999ffffff2f2f00',
-        '0251999999ffffff112f0001010fff008201aaaaaaff1b001b']
-    },
-    {
-      '02629999991f2f0000000ff7010000000000000000ca':
-      ['02629999991f2f0000000ff7010000000000000000ca06',
-        '0250999999ffffff2f2f00',
-        '0251999999ffffff112f0001010ff700e201ffffff001c00a5']
-    },
-    {
-      '02629999991f2f0000000fef010000000000000000d2':
-      ['02629999991f2f0000000fef010000000000000000d206',
-        '0250999999ffffff2f2f00',
-        '0251999999ffffff112f0001010fef00a201ffffff001c00ed']
-    },
-    {
-      '02629999991f2f0000000fe7010000000000000000da':
-      ['02629999991f2f0000000fe7010000000000000000da06',
-        '0250999999ffffff2f2f00',
-        '0251999999ffffff112f0001010fe7000000000000000000d9']
-    },
-    {
-      '02629999991f2f0000020fff080201aaaaaa000000b8':
-      ['02629999991f2f0000020fff080201aaaaaa000000b806',
-        '0250999999ffffff2f2f00']
-    },
-    {
-      '0262aaaaaa1f2f0000020fff084201999999000000ab':
-      ['0262aaaaaa1f2f0000020fff084201999999000000ab06',
-        '0250aaaaaaffffff2f2f00']
-    }];
+        '0260': '0260ffffff03379c06'
+      },
+      {
+        '0262aaaaaa1f2f0000000fff010000000000000000c2': ['0262aaaaaa1f2f0000000fff010000000000000000c206',
+          '0250aaaaaaffffff2f2f00',
+          '0251aaaaaaffffff112f0000010fff01c201999999ff00005c'
+        ]
+      },
+      {
+        '0262aaaaaa1f2f0000000ff7010000000000000000ca': ['0262aaaaaa1f2f0000000ff7010000000000000000ca06',
+          '0250aaaaaaffffff2f2f00',
+          '0251aaaaaaffffff112f0000010ff701ea00ffffff031c009b'
+        ]
+      },
+      {
+        '0262aaaaaa1f2f0000000fef010000000000000000d2': ['0262aaaaaa1f2f0000000fef010000000000000000d206',
+          '0250aaaaaaffffff2f2f00',
+          '0251aaaaaaffffff112f0000010fef01ea00ffffff031c00a3'
+        ]
+      },
+      {
+        '0262aaaaaa1f2f0000000fe7010000000000000000da': ['0262aaaaaa1f2f0000000fe7010000000000000000da06',
+          '0250aaaaaaffffff2f2f00',
+          '0251aaaaaaffffff112f0000010fe701aa01ffffff001c00ed'
+        ]
+      },
+      {
+        '0262aaaaaa1f2f0000000fdf010000000000000000e2': ['0262aaaaaa1f2f0000000fdf010000000000000000e206',
+          '0250aaaaaaffffff2f2f00',
+          '0251aaaaaaffffff112f0000010fdf010000000000000000e1'
+        ]
+      },
+      {
+        '02629999991f2f0000000fff010000000000000000c2': ['02629999991f2f0000000fff010000000000000000c206',
+          '0250999999ffffff2f2f00',
+          '0251999999ffffff112f0001010fff008201aaaaaaff1b001b'
+        ]
+      },
+      {
+        '02629999991f2f0000000ff7010000000000000000ca': ['02629999991f2f0000000ff7010000000000000000ca06',
+          '0250999999ffffff2f2f00',
+          '0251999999ffffff112f0001010ff700e201ffffff001c00a5'
+        ]
+      },
+      {
+        '02629999991f2f0000000fef010000000000000000d2': ['02629999991f2f0000000fef010000000000000000d206',
+          '0250999999ffffff2f2f00',
+          '0251999999ffffff112f0001010fef00a201ffffff001c00ed'
+        ]
+      },
+      {
+        '02629999991f2f0000000fe7010000000000000000da': ['02629999991f2f0000000fe7010000000000000000da06',
+          '0250999999ffffff2f2f00',
+          '0251999999ffffff112f0001010fe7000000000000000000d9'
+        ]
+      },
+      {
+        '02629999991f2f0000020fff080201aaaaaa000000b8': ['02629999991f2f0000020fff080201aaaaaa000000b806',
+          '0250999999ffffff2f2f00'
+        ]
+      },
+      {
+        '0262aaaaaa1f2f0000020fff084201999999000000ab': ['0262aaaaaa1f2f0000020fff084201999999000000ab06',
+          '0250aaaaaaffffff2f2f00'
+        ]
+      }
+    ];
 
     gw.connect(host, function () {
-      gw.scene('aaaaaa', null, { remove: true }, function (err) {
+      gw.scene('aaaaaa', null, {
+        remove: true
+      }, function (err) {
         should.not.exist(err);
         gw.close();
         done();
@@ -812,115 +864,114 @@ describe('Insteon Gateway (IP Interface)', function () {
     var gw = new Insteon();
 
     mockHub.mockData = [{
-      '0260': '02601eb55203379c06'
-    },
-    {
-      '0269':
-      ['026906', '0257e20126b1cc030e41']
-    },
-    {
-      '026a':
-      ['026a06', '0257e20119d41c033041']
-    },
-    {
-      '026a':
-      ['026a06', '0257e21426b1cc7f1900']
-    },
-    {
-      '026a':
-      ['026a06', '0257a20126b1cc000000']
-    },
-    {
-      '026a':
-      ['026a06', '0257e21419d41c7f1900']
-    },
-    {
-      '026a':
-      ['026a15', '00000000000000000000']
-    },
-    {
-      '026226b1cc1f2f0000000fff010000000000000000c2':
-      ['026226b1cc1f2f0000000fff010000000000000000c206',
-        '025026b1cc1eb5522f2f00',
-        '025126b1cc1eb552112f0001010fff0082141eb5527f19006e']
-    },
-    {
-      '026226b1cc1f2f0000000ff7010000000000000000ca':
-      ['026226b1cc1f2f0000000ff7010000000000000000ca06',
-        '025026b1cc1eb5522f2f00',
-        '025126b1cc1eb552112f0001010ff700e2011eb552001c00a5']
-    },
-    {
-      '026226b1cc1f2f0000000fef010000000000000000d2':
-      ['026226b1cc1f2f0000000fef010000000000000000d206',
-        '025026b1cc1eb5522f2f00',
-        '025126b1cc1eb552112f0001010fef00a2011eb552001c00ed']
-    },
-    {
-      '026226b1cc1f2f0000000fe7010000000000000000da':
-      ['026226b1cc1f2f0000000fe7010000000000000000da06',
-        '025026b1cc1eb5522f2f00',
-        '025126b1cc1eb552112f0001010fe7000000000000000000d9']
-    },
-    {
-      '026219d41c1f2f0000000fff010000000000000000c2':
-      ['026219d41c1f2f0000000fff010000000000000000c206',
-        '025019d41c1eb5522f2f00',
-        '025119d41c1eb552112f0000010fff0182141eb5527f19006e']
-    },
-    {
-      '026219d41c1f2f0000000ff7010000000000000000ca':
-      ['026219d41c1f2f0000000ff7010000000000000000ca06',
-        '025019d41c1eb5522f2f00',
-        '025119d41c1eb552112f0000010ff701ea001eb552031c009b']
-    },
-    {
-      '026219d41c1f2f0000000fef010000000000000000d2':
-      ['026219d41c1f2f0000000fef010000000000000000d206',
-        '025019d41c1eb5522f2f00',
-        '025119d41c1eb552112f0000010fef01ea001eb552031c00a3']
-    },
-    {
-      '026219d41c1f2f0000000fe7010000000000000000da':
-      ['026219d41c1f2f0000000fe7010000000000000000da06',
-        '025019d41c1eb5522f2f00',
-        '025119d41c1eb552112f0000010fe701aa011eb552001c00ed']
-    },
-    {
-      '026219d41c1f2f0000000fdf010000000000000000e2':
-      ['026219d41c1f2f0000000fdf010000000000000000e206',
-        '025019d41c1eb5522f2f00',
-        '025119d41c1eb552112f0000010fdf010000000000000000e1']
-    },
-    {
-      '026226b1cc1f2f0000020fe70882321eb5527f190060':
-      ['026226b1cc1f2f0000020fe70882321eb5527f19006006',
-        '025026b1cc1eb5522f2f00']
-    },
-    {
-      '026f40c23226b1cc7f1900': '026f40c23226b1cc7f190006'
-    },
-    {
-      '026219d41c1f2f0000020fdf0882321eb5527f190068':
-      ['026219d41c1f2f0000020fdf0882321eb5527f19006806',
-        '025019d41c1eb5522f2f00']
-    },
-    {
-      '026f40c23219d41c7f1900': '026f40c23219d41c7f190006'
-    }];
+        '0260': '02601eb55203379c06'
+      },
+      {
+        '0269': ['026906', '0257e20126b1cc030e41']
+      },
+      {
+        '026a': ['026a06', '0257e20119d41c033041']
+      },
+      {
+        '026a': ['026a06', '0257e21426b1cc7f1900']
+      },
+      {
+        '026a': ['026a06', '0257a20126b1cc000000']
+      },
+      {
+        '026a': ['026a06', '0257e21419d41c7f1900']
+      },
+      {
+        '026a': ['026a15', '00000000000000000000']
+      },
+      {
+        '026226b1cc1f2f0000000fff010000000000000000c2': ['026226b1cc1f2f0000000fff010000000000000000c206',
+          '025026b1cc1eb5522f2f00',
+          '025126b1cc1eb552112f0001010fff0082141eb5527f19006e'
+        ]
+      },
+      {
+        '026226b1cc1f2f0000000ff7010000000000000000ca': ['026226b1cc1f2f0000000ff7010000000000000000ca06',
+          '025026b1cc1eb5522f2f00',
+          '025126b1cc1eb552112f0001010ff700e2011eb552001c00a5'
+        ]
+      },
+      {
+        '026226b1cc1f2f0000000fef010000000000000000d2': ['026226b1cc1f2f0000000fef010000000000000000d206',
+          '025026b1cc1eb5522f2f00',
+          '025126b1cc1eb552112f0001010fef00a2011eb552001c00ed'
+        ]
+      },
+      {
+        '026226b1cc1f2f0000000fe7010000000000000000da': ['026226b1cc1f2f0000000fe7010000000000000000da06',
+          '025026b1cc1eb5522f2f00',
+          '025126b1cc1eb552112f0001010fe7000000000000000000d9'
+        ]
+      },
+      {
+        '026219d41c1f2f0000000fff010000000000000000c2': ['026219d41c1f2f0000000fff010000000000000000c206',
+          '025019d41c1eb5522f2f00',
+          '025119d41c1eb552112f0000010fff0182141eb5527f19006e'
+        ]
+      },
+      {
+        '026219d41c1f2f0000000ff7010000000000000000ca': ['026219d41c1f2f0000000ff7010000000000000000ca06',
+          '025019d41c1eb5522f2f00',
+          '025119d41c1eb552112f0000010ff701ea001eb552031c009b'
+        ]
+      },
+      {
+        '026219d41c1f2f0000000fef010000000000000000d2': ['026219d41c1f2f0000000fef010000000000000000d206',
+          '025019d41c1eb5522f2f00',
+          '025119d41c1eb552112f0000010fef01ea001eb552031c00a3'
+        ]
+      },
+      {
+        '026219d41c1f2f0000000fe7010000000000000000da': ['026219d41c1f2f0000000fe7010000000000000000da06',
+          '025019d41c1eb5522f2f00',
+          '025119d41c1eb552112f0000010fe701aa011eb552001c00ed'
+        ]
+      },
+      {
+        '026219d41c1f2f0000000fdf010000000000000000e2': ['026219d41c1f2f0000000fdf010000000000000000e206',
+          '025019d41c1eb5522f2f00',
+          '025119d41c1eb552112f0000010fdf010000000000000000e1'
+        ]
+      },
+      {
+        '026226b1cc1f2f0000020fe70882321eb5527f190060': ['026226b1cc1f2f0000020fe70882321eb5527f19006006',
+          '025026b1cc1eb5522f2f00'
+        ]
+      },
+      {
+        '026f40c23226b1cc7f1900': '026f40c23226b1cc7f190006'
+      },
+      {
+        '026219d41c1f2f0000020fdf0882321eb5527f190068': ['026219d41c1f2f0000020fdf0882321eb5527f19006806',
+          '025019d41c1eb5522f2f00'
+        ]
+      },
+      {
+        '026f40c23219d41c7f1900': '026f40c23219d41c7f190006'
+      }
+    ];
 
     gw.connect(host, function () {
 
       var responders = [{
         id: '26B1CC',
-        level: 50, /* 100% */
+        level: 50,
+        /* 100% */
         ramp: 6500 /* 2 sec */
       }, {
         id: '19D41C',
-        level: 50, /* 100% */
+        level: 50,
+        /* 100% */
         ramp: 6500 /* 2 sec */
       }];
-      gw.scene('gw', responders, { group: 50 }, function (err) {
+      gw.scene('gw', responders, {
+        group: 50
+      }, function (err) {
         should.not.exist(err);
         gw.close();
         done();
@@ -932,15 +983,14 @@ describe('Insteon Gateway (IP Interface)', function () {
   describe('Scene Control', function () {
 
     it('scene on', function (done) {
-      var plan = new Plan(4, function() {
+      var plan = new Plan(4, function () {
         gw.close();
         done();
       });
       var gw = new Insteon();
 
       mockHub.mockData = [{
-        '0261821100':
-        [
+        '0261821100': [
           '026182110006',
           '025026ace11eb552601185',
           '025806025026b1cc1eb552601185025026b1cc1eb552601185'
@@ -967,15 +1017,14 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
 
     it('scene on fast', function (done) {
-      var plan = new Plan(4, function() {
+      var plan = new Plan(4, function () {
         gw.close();
         done();
       });
       var gw = new Insteon();
 
       mockHub.mockData = [{
-        '0261851200':
-        [
+        '0261851200': [
           '026185120006',
           '025026ace11eb552601285',
           '025806025026b1cc1eb552601285025026b1cc1eb552601285'
@@ -1002,15 +1051,14 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
 
     it('scene off', function (done) {
-      var plan = new Plan(3, function() {
+      var plan = new Plan(3, function () {
         gw.close();
         done();
       });
       var gw = new Insteon();
 
       mockHub.mockData = [{
-        '0261851300':
-        [
+        '0261851300': [
           '026185130006',
           '025026ace11eb552601385',
           '025806025026b1cc1eb552651385'
@@ -1037,15 +1085,14 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
 
     it('scene off fast', function (done) {
-      var plan = new Plan(3, function() {
+      var plan = new Plan(3, function () {
         gw.close();
         done();
       });
       var gw = new Insteon();
 
       mockHub.mockData = [{
-        '0261851400':
-        [
+        '0261851400': [
           '026185140006',
           '025026ace11eb552601485',
           '025806025026b1cc1eb552651485'
@@ -1072,15 +1119,14 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
 
     it('scene dim', function (done) {
-      var plan = new Plan(3, function() {
+      var plan = new Plan(3, function () {
         gw.close();
         done();
       });
       var gw = new Insteon();
 
       mockHub.mockData = [{
-        '0261851500':
-        [
+        '0261851500': [
           '026185150006',
           '025026ace11eb552601585',
           '025806025026b1cc1eb552651585'
@@ -1107,15 +1153,14 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
 
     it('scene brighten', function (done) {
-      var plan = new Plan(3, function() {
+      var plan = new Plan(3, function () {
         gw.close();
         done();
       });
       var gw = new Insteon();
 
       mockHub.mockData = [{
-        '0261851600':
-        [
+        '0261851600': [
           '026185160006',
           '025026ace11eb552601685',
           '025806025026b1cc1eb552651685'
@@ -1146,26 +1191,25 @@ describe('Insteon Gateway (IP Interface)', function () {
   describe('Queueing', function () {
 
     it('multiple commands', function (done) {
-      var plan = new Plan(2, function() {
+      var plan = new Plan(2, function () {
         gw.close();
         done();
       });
       var gw = new Insteon();
 
       mockHub.mockData = [{
-        '026226ace10f1600':
-        [
-          '026226ace10f160006',
-          '025026ace11eb5522f1600'
-        ]
-      },
-      {
-        '026226b1cc0f1500':
-        [
-          '026226b1cc0f150006',
-          '025026b1cc1eb5522f1500'
-        ]
-      }];
+          '026226ace10f1600': [
+            '026226ace10f160006',
+            '025026ace11eb5522f1600'
+          ]
+        },
+        {
+          '026226b1cc0f1500': [
+            '026226b1cc0f150006',
+            '025026b1cc1eb5522f1500'
+          ]
+        }
+      ];
 
       gw.connect(host, function () {
         var light1 = gw.light('26ace1'),
@@ -1183,21 +1227,19 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
 
     it('multiple commands with timeout', function (done) {
-      var plan = new Plan(2, function() {
+      var plan = new Plan(2, function () {
         gw.close();
         done();
       });
       var gw = new Insteon();
       gw.commandTimeout = 2000;
 
-      mockHub.mockData = [
-        {
-          '026226b1cc0f1500':
-          [
-            '026226b1cc0f150006',
-            '025026b1cc1eb5522f1500'
-          ]
-        }];
+      mockHub.mockData = [{
+        '026226b1cc0f1500': [
+          '026226b1cc0f150006',
+          '025026b1cc1eb5522f1500'
+        ]
+      }];
 
       gw.connect(host, function () {
         var light = gw.light('26b1cc');
@@ -1214,26 +1256,25 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
 
     it('multiple commands with cancel', function (done) {
-      var plan = new Plan(5, function() {
+      var plan = new Plan(5, function () {
         gw.close();
         done();
       });
       var gw = new Insteon();
 
       mockHub.mockData = [{
-        '026226ace10f1600':
-        [
-          '026226ace10f160006',
-          '025026ace11eb5522f1600'
-        ]
-      },
-      {
-        '026226b1cc0f1500':
-        [
-          '026226b1cc0f150006',
-          '025026b1cc1eb5522f1500'
-        ]
-      }];
+          '026226ace10f1600': [
+            '026226ace10f160006',
+            '025026ace11eb5522f1600'
+          ]
+        },
+        {
+          '026226b1cc0f1500': [
+            '026226b1cc0f150006',
+            '025026b1cc1eb5522f1500'
+          ]
+        }
+      ];
 
       gw.connect(host, function () {
         var light1 = gw.light('26ace1'),
@@ -1276,7 +1317,7 @@ describe('Parser consistency', function () {
   });
 
   after(function (done) {
-    mockHub.close(function() {
+    mockHub.close(function () {
       done();
     });
   });
@@ -1284,7 +1325,7 @@ describe('Parser consistency', function () {
   it('handles incoming data not packetized well', function (done) {
     var gw = new Insteon();
     var light = gw.light('19d41c');
-    var plan = new Plan(2, function() {
+    var plan = new Plan(2, function () {
       gw.close();
       done();
     });
@@ -1302,14 +1343,16 @@ describe('Parser consistency', function () {
           '025019d41c000001cb1100' +
           '025019d41c1e', 'b552451101' +
           '025019d41c110101cf0600'
-        ], function () { plan.ok(); });
+        ], function () {
+          plan.ok();
+        });
       }, 10);
     });
   });
 
   it('handles a randomly arriving extended command (0251)', function (done) {
     var gw = new Insteon();
-    var plan = new Plan(2, function() {
+    var plan = new Plan(2, function () {
       gw.close();
       done();
     });
@@ -1320,14 +1363,16 @@ describe('Parser consistency', function () {
       setTimeout(function () { // make sure server connection event fires first
         mockHub.send([
           '0251112233ffffff112e0001010000202018fc7f0000000000'
-        ], function () { plan.ok(); });
+        ], function () {
+          plan.ok();
+        });
       }, 10);
     });
   });
 
   it('handles a randomly arriving link completed command (0253)', function (done) {
     var gw = new Insteon();
-    var plan = new Plan(2, function() {
+    var plan = new Plan(2, function () {
       gw.close();
       done();
     });
@@ -1338,7 +1383,9 @@ describe('Parser consistency', function () {
       setTimeout(function () { // make sure server connection event fires first
         mockHub.send([
           '0253010111223301204100'
-        ], function () { plan.ok(); });
+        ], function () {
+          plan.ok();
+        });
       }, 10);
     });
   });
@@ -1399,4 +1446,3 @@ describe('Util tests', function () {
     done();
   });
 });
-
