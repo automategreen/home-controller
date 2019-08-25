@@ -21,17 +21,17 @@
     "node": ">= 4.0"
   },
   "dependencies": {
-    "commander": "^2.20.0",
+    "commander": "^3.0.0",
     "debug": "^4.1.1",
     "eventsource": "^1.0.7",
     "q": "^1.5.1"
   },
   "optionalDependencies": {
-    "serialport": "^6.0.0",
+    "serialport": "^7.1.5",
     "spark": "^1.0.0"
   },
   "devDependencies": {
-    "coveralls": "^3.0.5",
+    "coveralls": "^3.0.6",
     "grunt": "^1.0.4",
     "grunt-contrib-jshint": "^2.1.0",
     "grunt-mocha-istanbul": "*",
