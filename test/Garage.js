@@ -68,7 +68,7 @@ describe('Garage Door opener', function () {
     this.slow(5000);
 
     var gw = new Insteon();
-    var plan = new Plan(3, function() {
+    var plan = new Plan(7, function() {
       gw.close();
       done();
     });
@@ -93,6 +93,19 @@ describe('Garage Door opener', function () {
 
       // for this test's purposes reduce lockout time
       g.LOCKOUT_TIME = 2000;
+
+      g.on('open', function() {
+        plan.ok();
+      });
+      g.on('closed', function() {
+        plan.ok();
+      });
+      g.on('opening', function() {
+        plan.ok();
+      });
+      g.on('closing', function() {
+        plan.ok();
+      });
 
       g.open()
         .then(function (status) {
