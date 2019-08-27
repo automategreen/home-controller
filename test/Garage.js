@@ -8,7 +8,7 @@ var mockHub = require('../lib/Test/mockHub');
 var host = '127.0.0.1';
 var port = 9761;
 
-describe('Garage Door opener', function () {
+describe('Garage Door', function () {
   this.timeout(5000);
 
   before(function (done) {
@@ -18,7 +18,7 @@ describe('Garage Door opener', function () {
   });
 
   after(function (done) {
-    mockHub.close(function() {
+    mockHub.close(function () {
       done();
     });
   });
@@ -27,8 +27,7 @@ describe('Garage Door opener', function () {
     var gw = new Insteon();
 
     mockHub.mockData = {
-      '0262aabbcc0f1901':
-      [
+      '0262aabbcc0f1901': [
         '0262aabbcc0f190106',
         '0250aabbcc1122332b0201'
       ]
@@ -68,13 +67,12 @@ describe('Garage Door opener', function () {
     this.slow(5000);
 
     var gw = new Insteon();
-    var plan = new Plan(7, function() {
+    var plan = new Plan(7, function () {
       gw.close();
       done();
     });
 
-    mockHub.mockData = [
-      {
+    mockHub.mockData = [{
         '0262aabbcc0f1901': ['0262aabbcc0f190106', '0250aabbcc1122332b0201']
       },
       {
@@ -94,16 +92,16 @@ describe('Garage Door opener', function () {
       // for this test's purposes reduce lockout time
       g.LOCKOUT_TIME = 2000;
 
-      g.on('open', function() {
+      g.on('open', function () {
         plan.ok();
       });
-      g.on('closed', function() {
+      g.on('closed', function () {
         plan.ok();
       });
-      g.on('opening', function() {
+      g.on('opening', function () {
         plan.ok();
       });
-      g.on('closing', function() {
+      g.on('closing', function () {
         plan.ok();
       });
 
@@ -135,8 +133,7 @@ describe('Garage Door opener', function () {
   it('tests wrong state/action combination', function (done) {
     var gw = new Insteon();
 
-    mockHub.mockData = [
-      {
+    mockHub.mockData = [{
         '0262aabbcc0f1901': ['0262aabbcc0f190106', '0250aabbcc1122332b0201']
       },
       {
@@ -162,12 +159,14 @@ describe('Garage Door opener', function () {
 
     gw.connect(host, function () {
       var g = gw.garage('aabbcc');
-      var plan = new Plan(2, function() {
+      var plan = new Plan(2, function () {
         gw.close();
         done();
       });
 
-      mockHub.mockData = { '0262aabbcc0f1901': '' };
+      mockHub.mockData = {
+        '0262aabbcc0f1901': ''
+      };
 
       g.status()
         .then(function (status) {
@@ -190,5 +189,66 @@ describe('Garage Door opener', function () {
       }, 10);
     });
   });
-});
 
+  describe('Garage Door Events', function () {
+    it('tests lockout period', function (done) {
+      this.slow(5000);
+
+      var gw = new Insteon();
+      var plan = new Plan(6, function () {
+        gw.close();
+        done();
+      });
+
+      mockHub.mockData = [{
+          '0262aabbcc0f1901': ['0262aabbcc0f190106', '0250aabbcc1122332b0201']
+        },
+        {
+          '0262aabbcc0f11ff': ['0262aabbcc0f11ff06', '0250aabbcc1122332b11ff']
+        },
+        {
+          '0262aabbcc0f1901': ['0262aabbcc0f190106', '0250aabbcc1122332b0200']
+        },
+        {
+          '0262aabbcc0f11ff': ['0262aabbcc0f11ff06', '0250aabbcc1122332b11ff']
+        }
+      ];
+
+      gw.connect(host, function () {
+        var g = gw.garage('aabbcc');
+
+        // for this test's purposes reduce lockout time
+        g.LOCKOUT_TIME = 2000;
+
+        g.on('open', function () {
+          plan.ok();
+        });
+        g.on('closed', function () {
+          plan.ok();
+        });
+        g.on('opening', function () {
+          plan.ok();
+        });
+        g.on('closing', function () {
+          plan.ok();
+        });
+
+        g.open()
+          .then(function (status) {
+            should.exist(status);
+            status.should.equal(true);
+            plan.ok();
+
+            setTimeout(function () {
+              g.close()
+                .then(function (status) {
+                  should.exist(status);
+                  status.should.equal(true);
+                  plan.ok();
+                });
+            }, 2500);
+          });
+      });
+    });
+  });
+});
