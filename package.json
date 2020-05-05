@@ -27,17 +27,17 @@
     "q": "^1.5.1"
   },
   "optionalDependencies": {
-    "serialport": "^7.1.5",
+    "serialport": "^8.0.7",
     "spark": "^1.0.0"
   },
   "devDependencies": {
-    "coveralls": "^3.0.6",
-    "grunt": "^1.0.4",
+    "coveralls": "^3.1.0",
+    "grunt": "^1.1.0",
     "grunt-contrib-jshint": "^2.1.0",
     "grunt-mocha-istanbul": "*",
     "grunt-mocha-test": "^0.13.3",
     "istanbul": "*",
-    "mocha": "^6.2.0",
+    "mocha": "^7.1.2",
     "should": "^13.2.3"
   },
   "scripts": {
