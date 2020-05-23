@@ -1,5 +1,5 @@
 {
-  "version": "0.9.0",
+  "version": "0.9.1",
   "author": "Brandon Goode <brandon@automategreen.com>",
   "name": "home-controller",
   "description": "A Node Home Automation Controller for Insteon Devices",
@@ -21,7 +21,7 @@
     "node": ">= 4.0"
   },
   "dependencies": {
-    "commander": "^3.0.0",
+    "commander": "^5.1.0",
     "debug": "^4.1.1",
     "eventsource": "^1.0.7",
     "q": "^1.5.1"
@@ -37,7 +37,7 @@
     "grunt-mocha-istanbul": "*",
     "grunt-mocha-test": "^0.13.3",
     "istanbul": "*",
-    "mocha": "^7.1.2",
+    "mocha": "^7.2.0",
     "should": "^13.2.3"
   },
   "scripts": {
