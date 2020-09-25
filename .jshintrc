@@ -15,6 +15,6 @@
   "browser": true,
   "node": true,
   "-W065": true,
-  "strict": false
-
+  "strict": false,
+  "esversion": 6
 }
