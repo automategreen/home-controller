@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "commander": "^5.1.0",
-    "debug": "^4.1.1",
+    "debug": "^4.2.0",
     "eventsource": "^1.0.7",
     "q": "^1.5.1"
   },
@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "coveralls": "^3.1.0",
-    "grunt": "^1.1.0",
+    "grunt": "^1.3.0",
     "grunt-contrib-jshint": "^2.1.0",
     "grunt-mocha-istanbul": "*",
     "grunt-mocha-test": "^0.13.3",
