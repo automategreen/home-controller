@@ -248,7 +248,7 @@ describe('Insteon Gateway (IP Interface)', function () {
 
           var duration = new Date() - startTime;
 
-          duration.should.be.above(4000, 'expected total duration [' + (duration/1000) + 'sec] of all attempts to be greater than 4 seconds. ');
+          duration.should.be.above(4000, 'expected total duration [' + (duration / 1000) + 'sec] of all attempts to be greater than 4 seconds. ');
         })
         .then(done)
         .catch(done)
@@ -481,7 +481,7 @@ describe('Insteon Gateway (IP Interface)', function () {
     });
   });
 
-  it('links gw to an unknown device ', function (done) {
+  it('links gw to an unknown device ', function () {
     var gw = new Insteon();
 
     mockHub.mockData = [{
@@ -490,23 +490,24 @@ describe('Insteon Gateway (IP Interface)', function () {
       {
         '02640101': ['0264010106',
           '02501122330120418f0170',
-          '0253010111223301204100'
+          '02530101112233012041'
         ]
       }
     ];
 
-    gw.connect(host, function () {
-      gw.link(function (err, link) {
-        should.not.exist(err);
+    return gw.connect(host)
+      .then(gw.link.bind(gw))
+      .then(function (link) {
         should.exist(link);
         link.group.should.eql(1);
         link.id.should.eql('112233');
         link.wasDeleted.should.be.false;
         link.deviceCategory.id.should.eql(1);
+        link.should.have.property('isNew');
+      })
+      .finally(() => {
         gw.close();
-        done();
       });
-    });
   });
 
   it('unlinks gw from a device', function (done) {
