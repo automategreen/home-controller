@@ -11,3 +11,4 @@ lib-cov/
 tmp/
 /.vscode
 /coverage
+bin/insteon-test-*

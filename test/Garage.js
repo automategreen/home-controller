@@ -191,6 +191,70 @@ describe('Garage Door', function () {
   });
 
   describe('Garage Door Events', function () {
+
+    it('emits events', function (done) {
+      var gw = new Insteon();
+      var plan = new Plan(4, function () {
+        gw.close();
+        done();
+      });
+
+      gw.connect(host, function () {
+        var g = gw.garage('aabbcc');
+
+        g.on('open', function () {
+          plan.ok();
+        });
+        g.on('close', function () {
+          plan.ok();
+        });
+      });
+
+      setTimeout(function () {
+        mockHub.send([
+          '0250aabbcc000001cf1300',
+          '0250aabbcc347828451301',
+        ], function () {
+          plan.ok();
+        });
+      }, 10);
+
+      setTimeout(function () {
+        mockHub.send([
+          '0250aabbcc000001cf1100',
+          '0250aabbcc347828451101'
+        ], function () {
+          plan.ok();
+        });
+      }, 100);
+    });
+
+    it('unknown command', function (done) {
+      var gw = new Insteon();
+      var plan = new Plan(2, function () {
+        gw.close();
+        done();
+      });
+
+      gw.connect(host, function () {
+        var g = gw.garage('aabbcc');
+
+        g.on('close', function () {
+          plan.ok();
+        });
+      });
+
+      setTimeout(function () {
+        mockHub.send([
+          '0250aabbcc000001cf1300',
+          '0250aabbcc347828451301',
+          '0250aabbcc000001cf2500',
+        ], function () {
+          plan.ok();
+        });
+      }, 10);
+    });
+
     it('tests lockout period', function (done) {
       this.slow(5000);
 
