@@ -1127,17 +1127,17 @@ describe('Insteon Gateway (IP Interface)', function () {
       var gw = new Insteon();
 
       mockHub.mockData = [{
-        '0261851500': [
-          '026185150006',
-          '025026ace11eb552601585',
-          '025806025026b1cc1eb552651585'
+        '0261851600': [
+          '026185160006',
+          '025026ace11eb552601685',
+          '025806025026b1cc1eb552651685'
         ]
       }];
 
       gw.on('command', function (cmd) {
         should.exist(cmd);
         should.exist(cmd.standard);
-        cmd.standard.command1.should.eql('15');
+        cmd.standard.command1.should.eql('16');
         cmd.standard.messageType.should.eql(3);
         plan.ok();
       });
@@ -1161,17 +1161,17 @@ describe('Insteon Gateway (IP Interface)', function () {
       var gw = new Insteon();
 
       mockHub.mockData = [{
-        '0261851600': [
-          '026185160006',
-          '025026ace11eb552601685',
-          '025806025026b1cc1eb552651685'
+        '0261851500': [
+          '026185150006',
+          '025026ace11eb552601585',
+          '025806025026b1cc1eb552651585'
         ]
       }];
 
       gw.on('command', function (cmd) {
         should.exist(cmd);
         should.exist(cmd.standard);
-        cmd.standard.command1.should.eql('16');
+        cmd.standard.command1.should.eql('15');
         cmd.standard.messageType.should.eql(3);
         plan.ok();
       });
