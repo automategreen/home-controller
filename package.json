@@ -37,7 +37,7 @@
     "grunt-mocha-istanbul": "*",
     "grunt-mocha-test": "^0.13.3",
     "istanbul": "*",
-    "mocha": "^8.4.0",
+    "mocha": "^10.2.0",
     "should": "^13.2.3"
   },
   "scripts": {
