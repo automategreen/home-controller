@@ -27,7 +27,7 @@
     "q": "^1.5.1"
   },
   "optionalDependencies": {
-    "serialport": "^8.0.7",
+    "serialport": "^11.0.0",
     "spark": "^1.0.0"
   },
   "devDependencies": {
